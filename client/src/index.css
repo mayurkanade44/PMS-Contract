@@ -9,3 +9,7 @@
 ::before {
   box-sizing: border-box;
 }
+
+.login {
+  min-height: 90vh;
+}
