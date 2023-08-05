@@ -3,11 +3,19 @@ import dotenv from "dotenv";
 import path from "path";
 import mongoose from "mongoose";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
+
+import userRouter from "./routes/userRoute.js";
+import { notFound } from "./middleware/notFound.js";
 
 dotenv.config();
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
+if (process.env.NODE_ENV !== "production") app.use(morgan("dev"));
+
+app.use("/api/user", userRouter);
 
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();
@@ -20,6 +28,8 @@ if (process.env.NODE_ENV === "production") {
     res.send("API is running....");
   });
 }
+
+app.use(notFound);
 
 const port = process.env.PORT || 5000;
 const connectDB = async () => {
