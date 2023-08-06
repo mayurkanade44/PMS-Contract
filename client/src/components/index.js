@@ -1,4 +1,5 @@
-import Input from "./Input";
+import InputRow from "./InputRow";
+import InputSelect from "./InputSelect";
 import Navbar from "./Navbar";
 
-export { Navbar, Input };
+export { Navbar, InputRow, InputSelect };
