@@ -1,6 +1,7 @@
 import { InputRow, InputSelect } from "../components";
-import { useForm, useController, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useCreateContractMutation } from "../redux/contractSlice";
 
 const contractTypes = [
   { value: "NC", label: "New Contract" },
@@ -13,12 +14,12 @@ const salesPerson = [
 ];
 
 const contractEnd = [
-  { value: "30", label: "1 Month (30 Days)" },
-  { value: "90", label: "3 Months (90 Days)" },
-  { value: "180", label: "6 Months (180 Days)" },
-  { value: "360", label: "1 Year (360 Days)" },
-  { value: "1080", label: "3 Years" },
-  { value: "1800", label: "5 Years" },
+  { value: 1, label: "1 Month" },
+  { value: 3, label: "3 Months" },
+  { value: 6, label: "6 Months" },
+  { value: 12, label: "1 Year" },
+  { value: 36, label: "3 Years" },
+  { value: 60, label: "5 Years" },
   { value: "Onwards", label: "Onwards" },
 ];
 
@@ -33,6 +34,9 @@ const preferredTime = [
 ];
 
 const Contract = () => {
+  const [createContract, { isLoading: newContractLoading }] =
+    useCreateContractMutation();
+
   const {
     register,
     formState: { errors, isValid },
@@ -47,22 +51,21 @@ const Contract = () => {
       type: "NC",
       sales: "",
       startDate: new Date().toISOString().slice(0, 10),
-      endDate: "360",
+      endDate: 12,
       serviceStartDate: new Date().toISOString().slice(0, 10),
       preferred: {
         day: "",
         time: "10 am - 12 pm",
       },
       billingFrequency: "",
-      instruction: "",
-      billToDetails: {
+      billToAddress: {
         name: "",
         address: "",
         nearBy: "",
         city: "",
         pincode: "",
       },
-      shipToDetails: {
+      shipToAddress: {
         name: "",
         address: "",
         nearBy: "",
@@ -81,12 +84,19 @@ const Contract = () => {
   });
 
   const handleCopyDetails = () => {
-    setValue("shipToDetails", getValues("billToDetails"));
+    setValue("shipToAddress", getValues("billToAddress"));
     setValue("shipToContact", getValues("billToContact"));
   };
 
-  const submit = (data) => {
-    console.log(data);
+  const submit = async (data) => {
+    try {
+      const res = await createContract(data).unwrap();
+      toast.success(res.msg);
+      reset();
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.msg || error.error);
+    }
   };
 
   return (
@@ -235,12 +245,12 @@ const Contract = () => {
               label="Full Name"
               message="Name is required"
               placeholder="Enter full name of billing"
-              id="billToDetails.name"
+              id="billToAddress.name"
               errors={errors}
               register={register}
             />
             <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.billToDetails?.name && "Billing name is required"}
+              {errors.billToAddress?.name && "Billing name is required"}
             </p>
           </div>
           <div className="mb-2">
@@ -248,12 +258,12 @@ const Contract = () => {
               label="Billing Address"
               message="Address is required"
               placeholder="Enter full address of billing"
-              id="billToDetails.address"
+              id="billToAddress.address"
               errors={errors}
               register={register}
             />
             <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.billToDetails?.address && "Billing address is required"}
+              {errors.billToAddress?.address && "Billing address is required"}
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1">
@@ -262,12 +272,12 @@ const Contract = () => {
                 label="Near By Place"
                 message="Landmark is required"
                 placeholder="Enter landmark"
-                id="billToDetails.nearBy"
+                id="billToAddress.nearBy"
                 errors={errors}
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.billToDetails?.nearBy && "Landmark is required"}
+                {errors.billToAddress?.nearBy && "Landmark is required"}
               </p>
             </div>
             <div>
@@ -275,12 +285,12 @@ const Contract = () => {
                 label="City"
                 message="City name is required"
                 placeholder="Enter city"
-                id="billToDetails.city"
+                id="billToAddress.city"
                 errors={errors}
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.billToDetails?.city && "City is required"}
+                {errors.billToAddress?.city && "City is required"}
               </p>
             </div>
             <div>
@@ -288,12 +298,12 @@ const Contract = () => {
                 label="Pincode"
                 message="Area pincode is required"
                 placeholder="Enter area pincode"
-                id="billToDetails.pincode"
+                id="billToAddress.pincode"
                 errors={errors}
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.billToDetails?.pincode && "Pincode is required"}
+                {errors.billToAddress?.pincode && "Pincode is required"}
               </p>
             </div>
             <div>
@@ -381,12 +391,12 @@ const Contract = () => {
               label="Full Name"
               message="Name is required"
               placeholder="Enter full name of shipping"
-              id="shipToDetails.name"
+              id="shipToAddress.name"
               errors={errors}
               register={register}
             />
             <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.shipToDetails?.name && "Shipping name is required"}
+              {errors.shipToAddress?.name && "Shipping name is required"}
             </p>
           </div>
           <div className="mb-2">
@@ -394,12 +404,12 @@ const Contract = () => {
               label="Shipping Address"
               message="Address is required"
               placeholder="Enter full address of shipping"
-              id="shipToDetails.address"
+              id="shipToAddress.address"
               errors={errors}
               register={register}
             />
             <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.shipToDetails?.address && "Shipping address is required"}
+              {errors.shipToAddress?.address && "Shipping address is required"}
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1">
@@ -408,12 +418,12 @@ const Contract = () => {
                 label="Near By Place"
                 message="Landmark is required"
                 placeholder="Enter landmark"
-                id="shipToDetails.nearBy"
+                id="shipToAddress.nearBy"
                 errors={errors}
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.shipToDetails?.nearBy && "Landmark is required"}
+                {errors.shipToAddress?.nearBy && "Landmark is required"}
               </p>
             </div>
             <div>
@@ -421,12 +431,12 @@ const Contract = () => {
                 label="City"
                 message="City name is required"
                 placeholder="Enter city"
-                id="shipToDetails.city"
+                id="shipToAddress.city"
                 errors={errors}
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.shipToDetails?.city && "City is required"}
+                {errors.shipToAddress?.city && "City is required"}
               </p>
             </div>
             <div>
@@ -434,12 +444,12 @@ const Contract = () => {
                 label="Pincode"
                 message="Area pincode is required"
                 placeholder="Enter area pincode"
-                id="shipToDetails.pincode"
+                id="shipToAddress.pincode"
                 errors={errors}
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.shipToDetails?.pincode && "Pincode is required"}
+                {errors.shipToAddress?.pincode && "Pincode is required"}
               </p>
             </div>
             <div>
@@ -512,6 +522,7 @@ const Contract = () => {
       </div>
       <button
         type="submit"
+        disabled={newContractLoading}
         className="py-2 px-2 mt-3 w-32 bg-green-700 hover:bg-green-500 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md rounded-lg disabled:cursor-not-allowed "
       >
         New Contract

@@ -6,6 +6,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
 import userRouter from "./routes/userRoute.js";
+import contractRouter from "./routes/contractRoute.js";
 import { notFound } from "./middleware/notFound.js";
 
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(cookieParser());
 if (process.env.NODE_ENV !== "production") app.use(morgan("dev"));
 
 app.use("/api/user", userRouter);
+app.use("/api/contract", contractRouter);
 
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();
