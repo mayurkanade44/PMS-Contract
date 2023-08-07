@@ -1,9 +1,13 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useGetSingleContractQuery } from "../redux/contractSlice";
 import { ContactTable, Loading } from "../components";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { setContractDetails } from "../redux/allSlice";
 
 const ContractDetails = () => {
   const { id } = useParams();
+  const dispatch = useDispatch();
 
   const {
     data: contract,
@@ -11,6 +15,12 @@ const ContractDetails = () => {
     refetch,
     error,
   } = useGetSingleContractQuery(id);
+
+  useEffect(() => {
+    if (contract) {
+      dispatch(setContractDetails(contract));
+    }
+  }, [contract]);
 
   return (
     <div>
@@ -40,13 +50,19 @@ const ContractDetails = () => {
             <ContactTable contacts={contract.billToContact} />
           </div>
           <div>
-            <div>
+            <div className="flex justify-around">
               <button
                 type="button"
                 className="px-2 py-[5px] w-32 mt-0.5 bg-blue-600 hover:bg-blue-500 text-white transition ease-in duration-200 text-center text-md font-semibold rounded-lg"
               >
                 Add Cards
               </button>
+              <Link
+                to={`/contract/${contract._id}`}
+                className="px-2 py-[5px] w-32 mt-0.5 bg-blue-600 hover:bg-blue-500 text-white transition ease-in duration-200 text-center text-md font-semibold rounded-lg"
+              >
+                Edit
+              </Link>
             </div>
             <h2 className="text-2xl font-semibold text-center mt-5 mb-2">
               Ship To Details
