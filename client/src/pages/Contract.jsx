@@ -38,6 +38,8 @@ const Contract = () => {
     formState: { errors, isValid },
     handleSubmit,
     reset,
+    getValues,
+    setValue,
     control,
   } = useForm({
     defaultValues: {
@@ -68,13 +70,20 @@ const Contract = () => {
         pincode: "",
       },
       billToContact: [
-        { name: "", contact: "", email: "" },
-        { name: "", contact: "", email: "" },
-        { name: "", contact: "", email: "" },
+        { name: "", number: "", email: "" },
+        { name: "", number: "", email: "" },
       ],
-      shipToContact: [],
+      shipToContact: [
+        { name: "", number: "", email: "" },
+        { name: "", number: "", email: "" },
+      ],
     },
   });
+
+  const handleCopyDetails = () => {
+    setValue("shipToDetails", getValues("billToDetails"));
+    setValue("shipToContact", getValues("billToContact"));
+  };
 
   const submit = (data) => {
     console.log(data);
@@ -92,6 +101,9 @@ const Contract = () => {
             errors={errors}
             register={register}
           />
+          <p className="text-xs text-red-500 -bottom-4 pl-1">
+            {errors.contractNo && "Contract number is required"}
+          </p>
         </div>
         <div className="col-span-6 md:col-span-4 lg:col-span-2">
           <Controller
@@ -105,7 +117,6 @@ const Contract = () => {
                 label="Contract Type"
               />
             )}
-            rules={{ required: true }}
           />
         </div>
         <div className="col-span-8 md:col-span-4 lg:col-span-2">
@@ -136,6 +147,9 @@ const Contract = () => {
             errors={errors}
             register={register}
           />
+          <p className="text-xs text-red-500 -bottom-4 pl-1">
+            {errors.billingFrequency && "Billing frequency is required"}
+          </p>
         </div>
       </div>
       <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
@@ -188,7 +202,7 @@ const Contract = () => {
             register={register}
           />
           <p className="text-xs text-red-500 -bottom-4 pl-1">
-            {errors.preferred?.day?.message}
+            {errors.preferred?.day && "Preferred day is required"}
           </p>
         </div>
         <div className="col-span-8 md:col-span-4 lg:col-span-2">
@@ -226,7 +240,7 @@ const Contract = () => {
               register={register}
             />
             <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.billToDetails?.name?.message}
+              {errors.billToDetails?.name && "Billing name is required"}
             </p>
           </div>
           <div className="mb-2">
@@ -239,10 +253,10 @@ const Contract = () => {
               register={register}
             />
             <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.billToDetails?.address?.message}
+              {errors.billToDetails?.address && "Billing address is required"}
             </p>
           </div>
-          <div className="flex justify-between">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1">
             <div>
               <InputRow
                 label="Near By Place"
@@ -253,7 +267,7 @@ const Contract = () => {
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.billToDetails?.nearBy?.message}
+                {errors.billToDetails?.nearBy && "Landmark is required"}
               </p>
             </div>
             <div>
@@ -266,7 +280,7 @@ const Contract = () => {
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.billToDetails?.city?.message}
+                {errors.billToDetails?.city && "City is required"}
               </p>
             </div>
             <div>
@@ -279,15 +293,89 @@ const Contract = () => {
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.billToDetails?.pincode?.message}
+                {errors.billToDetails?.pincode && "Pincode is required"}
               </p>
+            </div>
+            <div>
+              <InputRow
+                label="1. Contact Name"
+                placeholder="Contact Name"
+                id="billToContact.0.name"
+                errors={errors}
+                register={register}
+              />
+              <p className="text-xs text-red-500 -bottom-4 pl-1">
+                {errors.billToContact && "Contact name is required"}
+              </p>
+            </div>
+            <div>
+              <InputRow
+                label="Contact Number"
+                placeholder="Contact number"
+                id="billToContact.0.number"
+                errors={errors}
+                register={register}
+              />
+              <p className="text-xs text-red-500 -bottom-4 pl-1">
+                {errors.billToContact && "Contact number is required"}
+              </p>
+            </div>
+            <div>
+              <InputRow
+                label="Contact Email"
+                placeholder="Contact email id"
+                id="billToContact.0.email"
+                errors={errors}
+                register={register}
+                type="email"
+              />
+              <p className="text-xs text-red-500 -bottom-4 pl-1">
+                {errors.billToContact && "Contact email is required"}
+              </p>
+            </div>
+            <div>
+              <InputRow
+                required={false}
+                placeholder="Alternate contact Name"
+                id="billToContact.1.name"
+                errors={errors}
+                register={register}
+              />
+            </div>
+            <div>
+              <InputRow
+                required={false}
+                placeholder="Contact number"
+                id="billToContact.1.number"
+                errors={errors}
+                register={register}
+              />
+            </div>
+            <div>
+              <InputRow
+                placeholder="Contact email id"
+                id="billToContact.1.email"
+                errors={errors}
+                register={register}
+                type="email"
+                required={false}
+              />
             </div>
           </div>
         </div>
         <div className="col-span-12 md:col-span-6">
-          <h4 className="text-2xl font-semibold text-center text-blue-600">
-            Ship To Details
-          </h4>
+          <div className="flex justify-around">
+            <h4 className="text-2xl font-semibold text-center text-blue-600">
+              Ship To Details
+            </h4>
+            <button
+              type="button"
+              onClick={handleCopyDetails}
+              className="px-2 w-32 mt-0.5 bg-blue-600 hover:bg-blue-500 text-white transition ease-in duration-200 text-center text-md font-semibold rounded-lg"
+            >
+              Same As Billing
+            </button>
+          </div>
           <div className="mb-2">
             <InputRow
               label="Full Name"
@@ -298,7 +386,7 @@ const Contract = () => {
               register={register}
             />
             <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.shipToDetails?.name?.message}
+              {errors.shipToDetails?.name && "Shipping name is required"}
             </p>
           </div>
           <div className="mb-2">
@@ -311,10 +399,10 @@ const Contract = () => {
               register={register}
             />
             <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.shipToDetails?.address?.message}
+              {errors.shipToDetails?.address && "Shipping address is required"}
             </p>
           </div>
-          <div className="flex justify-between">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1">
             <div>
               <InputRow
                 label="Near By Place"
@@ -325,7 +413,7 @@ const Contract = () => {
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.shipToDetails?.nearBy?.message}
+                {errors.shipToDetails?.nearBy && "Landmark is required"}
               </p>
             </div>
             <div>
@@ -338,7 +426,7 @@ const Contract = () => {
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.shipToDetails?.city?.message}
+                {errors.shipToDetails?.city && "City is required"}
               </p>
             </div>
             <div>
@@ -351,34 +439,82 @@ const Contract = () => {
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.shipToDetails?.pincode?.message}
+                {errors.shipToDetails?.pincode && "Pincode is required"}
               </p>
             </div>
-          </div>
-        </div>
-        <div className="col-span-6 mt-2">
-          <div className="grid grid-cols-12 gap-x-5 gap-y-2">
-            <div className="col-span-4">
-              <h2 className="text-center">Name</h2>
+            <div>
               <InputRow
+                label="1. Contact Name"
                 placeholder="Contact Name"
-                id="billToContact.0.name"
+                id="shipToContact.0.name"
                 errors={errors}
                 register={register}
-                required={false}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.billToContact[0]?.name && "Contact name is required"}
+                {errors.shipToContact && "Contact name is required"}
               </p>
+            </div>
+            <div>
+              <InputRow
+                label="Contact Number"
+                placeholder="Contact number"
+                id="shipToContact.0.number"
+                errors={errors}
+                register={register}
+              />
+              <p className="text-xs text-red-500 -bottom-4 pl-1">
+                {errors.shipToContact && "Contact number is required"}
+              </p>
+            </div>
+            <div>
+              <InputRow
+                label="Contact Email"
+                placeholder="Contact email id"
+                id="shipToContact.0.email"
+                errors={errors}
+                register={register}
+                type="email"
+              />
+              <p className="text-xs text-red-500 -bottom-4 pl-1">
+                {errors.shipToContact && "Contact email is required"}
+              </p>
+            </div>
+            <div>
+              <InputRow
+                required={false}
+                placeholder="Alternate contact Name"
+                id="shipToContact.1.name"
+                errors={errors}
+                register={register}
+              />
+            </div>
+            <div>
+              <InputRow
+                required={false}
+                placeholder="Contact number"
+                id="shipToContact.1.number"
+                errors={errors}
+                register={register}
+              />
+            </div>
+            <div>
+              <InputRow
+                placeholder="Contact email id"
+                id="shipToContact.1.email"
+                errors={errors}
+                register={register}
+                type="email"
+                required={false}
+              />
             </div>
           </div>
         </div>
       </div>
       <button
         type="submit"
-        className="py-2 px-4 mt-3 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
+        className="py-2 px-2 mt-3 w-32 bg-green-700 hover:bg-green-500 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md rounded-lg disabled:cursor-not-allowed "
       >
-        Submit
+        New Contract
       </button>
     </form>
   );
