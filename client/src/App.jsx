@@ -8,9 +8,8 @@ import {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 import { Navbar } from "./components";
-import { Contract, Login, Register } from "./pages";
+import { Contract, ContractDetails, Login, Register } from "./pages";
 
 function App() {
   const Layout = () => {
@@ -30,6 +29,11 @@ function App() {
         <Route index={true} path="/" element={<Login />} />
         <Route index={true} path="/register" element={<Register />} />
         <Route index={true} path="/contract/:id" element={<Contract />} />
+        <Route
+          index={true}
+          path="/contract-details/:id"
+          element={<ContractDetails />}
+        />
       </Route>
     )
   );

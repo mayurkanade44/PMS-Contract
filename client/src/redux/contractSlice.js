@@ -8,8 +8,17 @@ export const contractSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Contract"],
+    }),
+    getSingleContract: builder.query({
+      query: (id) => ({
+        url: `/api/contract/singleContract/${id}`,
+      }),
+      providesTags: ["Contract"],
+      keepUnusedDataFor: 10,
     }),
   }),
 });
 
-export const { useCreateContractMutation } = contractSlice;
+export const { useCreateContractMutation, useGetSingleContractQuery } =
+  contractSlice;

@@ -33,3 +33,15 @@ export const createContract = async (req, res) => {
     res.send(500).json({ msg: "Server error, try again later" });
   }
 };
+
+export const getContract = async (req, res) => {
+  try {
+    const contract = await Contract.findById(req.params.id);
+    if (!contract) return res.status(404).json({ msg: "Contract not found" });
+
+    return res.json(contract);
+  } catch (error) {
+    console.log(error);
+    res.send(500).json({ msg: "Server error, try again later" });
+  }
+};
