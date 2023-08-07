@@ -4,9 +4,10 @@ const initialState = {
   user: localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
     : null,
+  contractDetails: null,
 };
 
-const authSlice = createSlice({
+const allSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
@@ -18,9 +19,20 @@ const authSlice = createSlice({
       state.user = null;
       localStorage.clear();
     },
+    setContractDetails: (state, action) => {
+      state.contractDetails = action.payload;
+    },
+    removeContractDetails: (state) => {
+      state.contractDetails = null
+    },
   },
 });
 
-export const { setCredentials, removeCredentials } = authSlice.actions;
+export const {
+  setCredentials,
+  removeCredentials,
+  setContractDetails,
+  removeContractDetails,
+} = allSlice.actions;
 
-export default authSlice.reducer;
+export default allSlice.reducer;

@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useLoginMutation } from "../redux/userSlice";
 import { toast } from "react-toastify";
-import { setCredentials } from "../redux/authSlice";
+import { setCredentials } from "../redux/allSlice";
 import { useDispatch } from "react-redux";
 import { HiMail } from "react-icons/hi";
 import { AiFillUnlock } from "react-icons/ai";
