@@ -5,35 +5,11 @@ import { useCreateContractMutation } from "../redux/contractSlice";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-
-const contractTypes = [
-  { value: "NC", label: "New Contract" },
-  { value: "RC", label: "Renew Contract" },
-];
+import { preferredTime, contractEnd, contractTypes } from "../utils/helper";
 
 const salesPerson = [
   { value: "Mayur", label: "Mayur" },
   { value: "Pranit", label: "Pranit" },
-];
-
-const contractEnd = [
-  { value: 1, label: "1 Month" },
-  { value: 3, label: "3 Months" },
-  { value: 6, label: "6 Months" },
-  { value: 12, label: "1 Year" },
-  { value: 36, label: "3 Years" },
-  { value: 60, label: "5 Years" },
-  { value: "Onwards", label: "Onwards" },
-];
-
-const preferredTime = [
-  { value: "10 am - 12 pm", label: "10 am - 12 pm" },
-  { value: "12 am - 2 pm", label: "12 am - 2 pm" },
-  { value: "2 pm - 4 pm", label: "2 pm - 4 pm" },
-  { value: "4 pm - 6 pm", label: "4 pm - 6 pm" },
-  { value: "Night", label: "Night" },
-  { value: "Anytime", label: "Anytime" },
-  { value: "To Confirm", label: "To Confirm" },
 ];
 
 const Contract = () => {
@@ -55,8 +31,10 @@ const Contract = () => {
       contractNo: "",
       type: "NC",
       sales: "",
-      startDate: new Date().toISOString().slice(0, 10),
-      endDate: 12,
+      tenure: {
+        startDate: new Date().toISOString().slice(0, 10),
+        months: 12,
+      },
       serviceStartDate: new Date().toISOString().slice(0, 10),
       preferred: {
         day: "",
@@ -91,8 +69,8 @@ const Contract = () => {
   useEffect(() => {
     if (contractDetails) {
       setValue(
-        "startDate",
-        new Date(contractDetails.startDate).toISOString().slice(0, 10)
+        "tenure.startDate",
+        new Date(contractDetails.tenure.startDate).toISOString().slice(0, 10)
       );
       setValue(
         "serviceStartDate",
@@ -107,6 +85,17 @@ const Contract = () => {
   };
 
   const submit = async (data) => {
+    data.contractNo =
+      data.contractNo.trim()[0].toUpperCase() + data.contractNo.slice(1);
+    const date = new Date(data.tenure.startDate);
+    data.tenure.startDate = date;
+    data.tenure.endDate = new Date(
+      date.getFullYear(),
+      date.getMonth() + data.tenure.months,
+      date.getDate()
+    );
+    data.serviceStartDate = new Date(data.serviceStartDate);
+
     try {
       const res = await createContract(data).unwrap();
       toast.success(res.msg);
@@ -188,7 +177,7 @@ const Contract = () => {
             <InputRow
               label="Contract Start Date"
               message="Start date is required"
-              id="startDate"
+              id="tenure.startDate"
               errors={errors}
               register={register}
               type="date"
@@ -196,7 +185,7 @@ const Contract = () => {
           </div>
           <div className="col-span-8 md:col-span-4 lg:col-span-2">
             <Controller
-              name="endDate"
+              name="tenure.months"
               control={control}
               rules={{ required: "Contract end date is required" }}
               render={({ field: { onChange, value, ref } }) => (

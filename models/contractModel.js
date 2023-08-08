@@ -5,8 +5,11 @@ const ContractSchema = new mongoose.Schema(
     contractNo: { type: String, required: true },
     type: { type: String, required: true },
     sales: { type: String, required: true },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    tenure: {
+      startDate: { type: Date, required: true },
+      endDate: { type: Date, required: true },
+      months: { type: Number, required: true },
+    },
     serviceStartDate: { type: Date, required: true },
     billingFrequency: { type: String, required: true },
     preferred: {
@@ -42,6 +45,7 @@ const ContractSchema = new mongoose.Schema(
       },
     ],
     sendMail: { type: Boolean, default: false },
+    active: { type: Boolean, default: true },
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
