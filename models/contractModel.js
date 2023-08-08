@@ -47,7 +47,7 @@ const ContractSchema = new mongoose.Schema(
     sendMail: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
   },
-  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+  { timestamps: true }
 );
 
 // ContractSchema.pre("remove", async function () {

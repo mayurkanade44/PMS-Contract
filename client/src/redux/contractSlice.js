@@ -15,10 +15,21 @@ export const contractSlice = apiSlice.injectEndpoints({
         url: `/api/contract/singleContract/${id}`,
       }),
       providesTags: ["Contract"],
-      keepUnusedDataFor: 10,
+      keepUnusedDataFor: 5,
+    }),
+    updateContract: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/api/contract/singleContract/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Contract"],
     }),
   }),
 });
 
-export const { useCreateContractMutation, useGetSingleContractQuery } =
-  contractSlice;
+export const {
+  useCreateContractMutation,
+  useGetSingleContractQuery,
+  useUpdateContractMutation,
+} = contractSlice;

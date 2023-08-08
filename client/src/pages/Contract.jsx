@@ -1,8 +1,11 @@
 import { InputRow, InputSelect, Loading } from "../components";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
-import { useCreateContractMutation } from "../redux/contractSlice";
-import { useParams } from "react-router-dom";
+import {
+  useCreateContractMutation,
+  useUpdateContractMutation,
+} from "../redux/contractSlice";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { preferredTime, contractEnd, contractTypes } from "../utils/helper";
@@ -14,9 +17,12 @@ const salesPerson = [
 
 const Contract = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { contractDetails } = useSelector((store) => store.all);
   const [createContract, { isLoading: newContractLoading }] =
     useCreateContractMutation();
+  const [updateContract, { isLoading: updateContractLoading }] =
+    useUpdateContractMutation();
 
   const {
     register,
@@ -97,9 +103,15 @@ const Contract = () => {
     data.serviceStartDate = new Date(data.serviceStartDate);
 
     try {
-      const res = await createContract(data).unwrap();
+      let res;
+      if (contractDetails) {
+        res = await updateContract({ id: contractDetails._id, data }).unwrap();
+        navigate(`/contract-details/${id}`);
+      } else {
+        res = await createContract(data).unwrap();
+        reset();
+      }
       toast.success(res.msg);
-      reset();
     } catch (error) {
       console.log(error);
       toast.error(error?.data?.msg || error.error);
@@ -108,7 +120,7 @@ const Contract = () => {
 
   return (
     <>
-      {newContractLoading && <Loading />}
+      {(newContractLoading || updateContractLoading) && <Loading />}
       <form onSubmit={handleSubmit(submit)}>
         <div className="grid grid-cols-12 gap-x-5 gap-y-2 mb-2">
           <div className="col-span-6 md:col-span-4 lg:col-span-3">
@@ -190,7 +202,7 @@ const Contract = () => {
               rules={{ required: "Contract end date is required" }}
               render={({ field: { onChange, value, ref } }) => (
                 <InputSelect
-                  label="Contract End Date"
+                  label="Contract End"
                   options={contractEnd}
                   onChange={onChange}
                   value={value}

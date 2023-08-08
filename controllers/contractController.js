@@ -24,11 +24,37 @@ export const createContract = async (req, res) => {
 };
 
 export const getContract = async (req, res) => {
+  const { id } = req.params;
   try {
-    const contract = await Contract.findById(req.params.id);
+    const contract = await Contract.findById(id);
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
 
     return res.json(contract);
+  } catch (error) {}
+};
+
+export const updateContract = async (req, res) => {
+  const { contractNo, type } = req.body;
+  const { id } = req.params;
+  try {
+    const contract = await Contract.findById(id);
+    if (!contract) return res.status(404).json({ msg: "Contract not found" });
+
+    if (contract.type !== type || contract.contractNo !== contractNo)
+      return res
+        .status(400)
+        .json({ msg: "Contract Number/Type change not allowed" });
+
+    req.body.billToAddress.name = capitalLetter(req.body.billToAddress.name);
+    req.body.shipToAddress.name = capitalLetter(req.body.shipToAddress.name);
+    req.body.preferred.day = capitalLetter(req.body.preferred.day);
+
+    await Contract.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    return res.status(200).json({ msg: "Contract updated" });
   } catch (error) {
     console.log(error);
     res.send(500).json({ msg: "Server error, try again later" });
