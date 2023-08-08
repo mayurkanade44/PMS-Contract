@@ -60,3 +60,38 @@ export const updateContract = async (req, res) => {
     res.send(500).json({ msg: "Server error, try again later" });
   }
 };
+
+export const deleteContract = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const contract = await Contract.findById(id);
+    if (!contract) return res.status(404).json({ msg: "Contract not found" });
+
+    await Contract.deleteOne({ _id: id });
+    
+    return res.json({ msg: "Contract has been deleted" });
+  } catch (error) {
+    console.log(error);
+    res.send(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const deactiveContract = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const contract = await Contract.findById(id);
+    if (!contract) return res.status(404).json({ msg: "Contract not found" });
+
+    contract.active = !contract.active;
+    await contract.save();
+
+    let msg;
+    if (contract.active) msg = "Contract has been activated";
+    else msg = "Contract has been deactivated";
+
+    return res.json({ msg });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
