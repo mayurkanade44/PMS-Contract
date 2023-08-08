@@ -1,4 +1,4 @@
-import { InputRow, InputSelect, Loading } from "../components";
+import { Button, InputRow, InputSelect, Loading } from "../components";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import {
@@ -184,7 +184,7 @@ const Contract = () => {
           </div>
         </div>
         <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
-        <div className="grid grid-cols-12 gap-x-5 gap-y-2 mb-2">
+        <div className="grid grid-cols-12 gap-x-5 gap-y-2 mb-3">
           <div className="col-span-8 md:col-span-4 lg:col-span-2">
             <InputRow
               label="Contract Start Date"
@@ -399,13 +399,13 @@ const Contract = () => {
               <h4 className="text-2xl font-semibold text-center text-blue-600">
                 Ship To Details
               </h4>
-              <button
-                type="button"
-                onClick={handleCopyDetails}
-                className="px-2 w-32 mt-0.5 bg-blue-600 hover:bg-blue-500 text-white transition ease-in duration-200 text-center text-md font-semibold rounded-lg"
-              >
-                Same As Billing
-              </button>
+              <Button
+                color="bg-gray-600"
+                height='py-[1px]'
+                label="Same As Billing"
+                width="w-32"
+                handleClick={handleCopyDetails}
+              />
             </div>
             <div className="mb-2">
               <InputRow
@@ -542,13 +542,14 @@ const Contract = () => {
             </div>
           </div>
         </div>
-        <button
+        <Button
+          color='bg-green-700'
           type="submit"
-          disabled={newContractLoading}
-          className="py-2 px-2 mt-3 w-32 bg-green-700 hover:bg-green-500 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md rounded-lg disabled:cursor-not-allowed "
-        >
-          New Contract
-        </button>
+          height="py-2"
+          disabled={newContractLoading || updateContractLoading}
+          label={contractDetails ? "Update Contract" : "Create Contract"}
+          width="w-36"
+        />
       </form>
     </>
   );
