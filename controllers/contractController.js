@@ -68,7 +68,7 @@ export const deleteContract = async (req, res) => {
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
 
     await Contract.deleteOne({ _id: id });
-    
+
     return res.json({ msg: "Contract has been deleted" });
   } catch (error) {
     console.log(error);
@@ -90,6 +90,17 @@ export const deactiveContract = async (req, res) => {
     else msg = "Contract has been deactivated";
 
     return res.json({ msg });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const getAllContracts = async (req, res) => {
+  try {
+    const contracts = await Contract.find().sort("-createdAt");
+
+    res.json(contracts);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

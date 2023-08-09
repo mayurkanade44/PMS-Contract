@@ -39,6 +39,13 @@ export const contractSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Contract"],
     }),
+    getAllContracts: builder.query({
+      query: (id) => ({
+        url: `/api/contract`,
+      }),
+      providesTags: ["Contract"],
+      keepUnusedDataFor: 10,
+    }),
   }),
 });
 
@@ -48,4 +55,5 @@ export const {
   useUpdateContractMutation,
   useDeleteContractMutation,
   useDeactiveContractMutation,
+  useGetAllContractsQuery,
 } = contractSlice;
