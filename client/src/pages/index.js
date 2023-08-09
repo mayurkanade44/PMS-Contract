@@ -3,5 +3,13 @@ import ContractDetails from "./ContractDetails";
 import Login from "./Login";
 import Register from "./Register";
 import Dashboard from "./Dashboard";
+import AllServiceCards from "./AllServiceCards";
 
-export { Login, Register, Contract, ContractDetails, Dashboard };
+export {
+  Login,
+  Register,
+  Contract,
+  ContractDetails,
+  Dashboard,
+  AllServiceCards,
+};

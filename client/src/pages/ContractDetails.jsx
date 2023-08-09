@@ -89,7 +89,9 @@ const ContractDetails = () => {
           </div>
           <div>
             <div className="hidden md:flex justify-around">
-              <Button label="Add Cards" width="w-28" />
+              <Link to={`/contract/${contract._id}/service-cards`}>
+                <Button label="Add Cards" width="w-28" />
+              </Link>
               <Link to={`/contract/${contract._id}`}>
                 <Button label="Edit" color="bg-gray-600" />
               </Link>

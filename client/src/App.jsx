@@ -9,7 +9,14 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Navbar } from "./components";
-import { Contract, ContractDetails, Dashboard, Login, Register } from "./pages";
+import {
+  AllServiceCards,
+  Contract,
+  ContractDetails,
+  Dashboard,
+  Login,
+  Register,
+} from "./pages";
 
 function App() {
   const Layout = () => {
@@ -27,13 +34,13 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
         <Route index={true} path="/" element={<Login />} />
-        <Route index={true} path="/register" element={<Register />} />
-        <Route index={true} path="/dashboard" element={<Dashboard />} />
-        <Route index={true} path="/contract/:id" element={<Contract />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/contract/:id" element={<Contract />} />
+        <Route path="/contract-details/:id" element={<ContractDetails />} />
         <Route
-          index={true}
-          path="/contract-details/:id"
-          element={<ContractDetails />}
+          path="/contract/:id/service-cards"
+          element={<AllServiceCards />}
         />
       </Route>
     )
