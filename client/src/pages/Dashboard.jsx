@@ -1,18 +1,36 @@
 import { Button, Loading } from "../components";
-import { AiOutlineSearch } from "react-icons/ai";
+import { AiOutlineSearch, AiOutlineClose } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { useGetAllContractsQuery } from "../redux/contractSlice";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
+  const [search, setSearch] = useState("");
+  const [tempSearch, setTempSearch] = useState("");
+  const [page, setPage] = useState(1);
+
   const {
-    data: contracts,
+    data,
     isLoading: contractsLoading,
+    isFetching,
     error,
-  } = useGetAllContractsQuery();
+  } = useGetAllContractsQuery({ search, page });
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearch(tempSearch);
+  };
+
+  const clearSearch = () => {
+    setTempSearch("");
+    setSearch("");
+  };
+
+  const pages = Array.from({ length: data?.pages }, (_, index) => index + 1);
 
   return (
     <>
-      {contractsLoading ? (
+      {contractsLoading || isFetching ? (
         <Loading />
       ) : error ? (
         <h1>Some Error</h1>
@@ -23,19 +41,29 @@ const Dashboard = () => {
               <p className=" text-center  lg:text-2xl font-bold leading-normal text-gray-800">
                 All Contracts
               </p>
-              <div className="flex items-center">
-                <div className="flex items-center pl-1 bg-white border md:w-52 lg:w-80 rounded border-gray-200 mr-3">
+              <form onSubmit={handleSearch} className="flex items-center">
+                <div className="flex items-center px-1 bg-white border md:w-52 lg:w-80 rounded border-gray-200 mr-3">
                   <AiOutlineSearch />
                   <input
                     type="text"
                     className="py-1 md:py-1.5 pl-1 w-full focus:outline-none text-sm rounded text-gray-600 placeholder-gray-500"
-                    placeholder="Search"
-                    // value={tempSearch}
-                    // onChange={optimizedDebounce}
+                    placeholder="Search..."
+                    value={tempSearch}
+                    onChange={(e) => setTempSearch(e.target.value)}
                   />
+                  {tempSearch && (
+                    <button type="button" onClick={clearSearch}>
+                      <AiOutlineClose color="red" />
+                    </button>
+                  )}
                 </div>
-                <Button label="Search" color="bg-black" height='h-8' />
-              </div>
+                <Button
+                  type="submit"
+                  label="Search"
+                  color="bg-black"
+                  height="h-8"
+                />
+              </form>
               <div className="flex items-end justify-around mt-4 md:mt-0 md:ml-3 lg:ml-0">
                 <Link to="/contract/new">
                   <button className="inline-flex mx-1.5 items-start justify-start px-4 py-3 bg-cyan-500 hover:bg-cyan-600 rounded">
@@ -47,6 +75,11 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+          {data.contracts.length === 0 && (
+            <h6 className="text-red-500 text-xl font-semibold text-center mb-2">
+              No Contract Found
+            </h6>
+          )}
           <table className="w-full border whitespace-nowrap  dark:border-neutral-500">
             <thead>
               <tr className="h-12 w-full text-md leading-none text-gray-600">
@@ -74,7 +107,7 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="w-full">
-              {contracts.map((contract) => (
+              {data.contracts.map((contract) => (
                 <tr
                   key={contract._id}
                   className="h-12 text-sm leading-none text-gray-700 border-b dark:border-neutral-500 bg-white hover:bg-gray-100"
@@ -124,6 +157,24 @@ const Dashboard = () => {
               ))}
             </tbody>
           </table>
+          {pages.length > 1 && (
+            <nav>
+              <ul className="list-style-none flex justify-center mt-2">
+                {pages.map((item) => (
+                  <li className="pr-1" key={item}>
+                    <button
+                      className={`relative block rounded px-3 py-1.5 text-sm transition-all duration-30  ${
+                        page === item ? "bg-blue-400" : "bg-neutral-700"
+                      } text-white hover:bg-blue-400`}
+                      onClick={() => setPage(item)}
+                    >
+                      {item}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
         </>
       )}
     </>

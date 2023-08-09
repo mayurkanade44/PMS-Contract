@@ -40,8 +40,9 @@ export const contractSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Contract"],
     }),
     getAllContracts: builder.query({
-      query: (id) => ({
+      query: ({ search, page }) => ({
         url: `/api/contract`,
+        params: { search, page },
       }),
       providesTags: ["Contract"],
       keepUnusedDataFor: 10,

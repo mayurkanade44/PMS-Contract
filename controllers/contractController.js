@@ -97,10 +97,28 @@ export const deactiveContract = async (req, res) => {
 };
 
 export const getAllContracts = async (req, res) => {
+  const { search, page } = req.query;
+  let query = {};
+  if (search) {
+    query = {
+      $or: [
+        { contractNo: { $regex: search, $options: "i" } },
+        { "shipToAddress.name": { $regex: search, $options: "i" } },
+        { "billToAddress.name": { $regex: search, $options: "i" } },
+      ],
+    };
+  }
   try {
-    const contracts = await Contract.find().sort("-createdAt");
+    let pageNumber = Number(page) || 1;
 
-    res.json(contracts);
+    const count = await Contract.countDocuments({ ...query });
+
+    const contracts = await Contract.find(query)
+      .sort("-createdAt")
+      .skip(10 * (pageNumber - 1))
+      .limit(10);
+
+    res.json({ contracts, pages: Math.ceil(count / 10) });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
