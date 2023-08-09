@@ -4,7 +4,7 @@ import {
   useDeleteContractMutation,
   useGetSingleContractQuery,
 } from "../redux/contractSlice";
-import { Button, ContactTable, Loading } from "../components";
+import { AlertMessage, Button, ContactTable, Loading } from "../components";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { setContractDetails } from "../redux/allSlice";
@@ -65,7 +65,7 @@ const ContractDetails = () => {
       {contractLoading || deleteLoading || deactiveLoading ? (
         <Loading />
       ) : error ? (
-        <h1>Some Error</h1>
+        <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
           <div>

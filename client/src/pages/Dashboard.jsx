@@ -33,7 +33,7 @@ const Dashboard = () => {
       {contractsLoading || isFetching ? (
         <Loading />
       ) : error ? (
-        <h1>Some Error</h1>
+        <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
         <>
           <div className="px-2 py-5">
