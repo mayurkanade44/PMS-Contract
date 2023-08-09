@@ -4,22 +4,13 @@ const ContactTable = ({ contacts }) => {
       <table className="min-w-full border text-center text-sm font-light dark:border-neutral-500">
         <thead className="border-b font-medium dark:border-neutral-800 border-2">
           <tr>
-            <th
-              scope="col"
-              className="border-r px-6 py-1 dark:border-neutral-800 border-2"
-            >
+            <th className="border-r px-6 py-1 dark:border-neutral-800 border-2">
               Name
             </th>
-            <th
-              scope="col"
-              className="border-r px-6 py-1 dark:border-neutral-800 border-2"
-            >
+            <th className="border-r px-6 py-1 dark:border-neutral-800 border-2">
               Contact
             </th>
-            <th
-              scope="col"
-              className="border-r px-6 py-1 dark:border-neutral-800 border-2"
-            >
+            <th className="border-r px-6 py-1 dark:border-neutral-800 border-2">
               Email
             </th>
           </tr>

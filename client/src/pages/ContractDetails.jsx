@@ -18,17 +18,18 @@ const ContractDetails = () => {
   const dispatch = useDispatch();
   const [openDelete, setOpenDelete] = useState(false);
   const [openDeactive, setOpenDeactive] = useState(false);
+
   const [deleteContract, { isLoading: deleteLoading }] =
     useDeleteContractMutation();
   const [deactiveContract, { isLoading: deactiveLoading }] =
     useDeactiveContractMutation();
-
   const {
     data: contract,
     isLoading: contractLoading,
     refetch,
     error,
   } = useGetSingleContractQuery(id);
+
 
   useEffect(() => {
     if (contract) {

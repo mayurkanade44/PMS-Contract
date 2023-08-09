@@ -26,8 +26,12 @@ export const createContract = async (req, res) => {
 export const getContract = async (req, res) => {
   const { id } = req.params;
   try {
-    const contract = await Contract.findById(id);
+    const contract = await Contract.findById(id).populate({
+      path: "services",
+      select: "frequency services serviceDates",
+    });
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
+
 
     return res.json(contract);
   } catch (error) {}
