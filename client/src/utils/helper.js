@@ -22,3 +22,47 @@ export const contractTypes = [
   { value: "NC", label: "New Contract" },
   { value: "RC", label: "Renew Contract" },
 ];
+
+export const allFrequency = [
+  {
+    value: {
+      name: "Single",
+      days: 365,
+    },
+    label: "Single",
+  },
+  {
+    value: {
+      name: "Weekly",
+      days: 7,
+    },
+    label: "Weekly",
+  },
+  {
+    value: {
+      name: "2 Times In A Month",
+      days: 15,
+    },
+    label: "2 Times In A Month",
+  },
+  {
+    value: {
+      name: "Monthly",
+      days: 30,
+    },
+    label: "Monthly",
+  },
+  {
+    value: {
+      name: "Quarterly",
+      days: 90,
+    },
+    label: "Quarterly",
+  },
+];
+
+export const allService = [
+  { value: "Green Shield", label: "Green Shield" },
+  { value: "Bedbugs", label: "Bedbugs" },
+  { value: "Antron", label: "Antron" },
+];

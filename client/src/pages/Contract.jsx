@@ -188,12 +188,14 @@ const Contract = () => {
           <div className="col-span-8 md:col-span-4 lg:col-span-2">
             <InputRow
               label="Contract Start Date"
-              message="Start date is required"
               id="tenure.startDate"
               errors={errors}
               register={register}
               type="date"
             />
+            <p className="text-xs text-red-500 -bottom-4 pl-1">
+              {errors.tenure?.startDate && "Contract Start date is required"}
+            </p>
           </div>
           <div className="col-span-8 md:col-span-4 lg:col-span-2">
             <Controller
@@ -401,7 +403,7 @@ const Contract = () => {
               </h4>
               <Button
                 color="bg-gray-600"
-                height='py-[1px]'
+                height="py-[1px]"
                 label="Same As Billing"
                 width="w-32"
                 handleClick={handleCopyDetails}
@@ -543,7 +545,7 @@ const Contract = () => {
           </div>
         </div>
         <Button
-          color='bg-green-700'
+          color="bg-green-700"
           type="submit"
           height="py-2"
           disabled={newContractLoading || updateContractLoading}
