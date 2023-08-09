@@ -4,13 +4,17 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { allFrequency, allService } from "../utils/helper";
 import { Button, InputRow, InputSelect } from "../components";
-import Select from 'react-select'
+import Select from "react-select";
+import { useAddCardMutation } from "../redux/serviceSlice";
+import { toast } from "react-toastify";
 
 const AllServiceCards = () => {
-  const [selectedOption, setSelectedOption] = useState([])
+  const [selectedOption, setSelectedOption] = useState([]);
   const { contractDetails } = useSelector((store) => store.all);
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const [addCard, { isLoading: addCardLoading }] = useAddCardMutation();
 
   const {
     register,
@@ -34,9 +38,16 @@ const AllServiceCards = () => {
     if (!contractDetails) navigate(`/contract-details/${id}`);
   }, []);
 
-  const submit = (data) => {
-    data.services = selectedOption
-    console.log(data);
+  const submit = async (data) => {
+    data.services = selectedOption;
+
+    try {
+      const res = await addCard(data).unwrap();
+      toast.success(res.msg);
+      reset();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

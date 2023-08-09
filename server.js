@@ -19,7 +19,7 @@ if (process.env.NODE_ENV !== "production") app.use(morgan("dev"));
 
 app.use("/api/user", userRouter);
 app.use("/api/contract", contractRouter);
-app.use("/api/card", serviceRouter);
+app.use("/api/service", serviceRouter);
 
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();

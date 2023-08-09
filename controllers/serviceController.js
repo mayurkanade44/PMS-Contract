@@ -11,7 +11,7 @@ export const addCard = async (req, res) => {
 
     const serviceDates = [];
     const serviceMonths = [];
-   
+
     let serviceStart = contract.serviceStartDate;
     const end = Math.floor(365 / frequency.days);
 
@@ -36,9 +36,10 @@ export const addCard = async (req, res) => {
       area: req.body.area,
       treatmentLocation: req.body.treatmentLocation,
       contract: id,
+      services: req.body.services,
     });
 
-    return res.json({ service });
+    return res.json({ msg: "Service card added" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
