@@ -32,7 +32,7 @@ const ServiceTable = ({
                 {service.area}
               </td>
               <td className="border-r w-36 px-2 py-1 font-normal dark:border-neutral-500">
-                {service.frequency.name}
+                {service.frequency}
               </td>
               <td className="text-left border-r px-2 py-1 font-normal dark:border-neutral-500">
                 {service.serviceMonths?.join(", ")}

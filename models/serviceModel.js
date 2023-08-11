@@ -2,10 +2,7 @@ import mongoose from "mongoose";
 
 const ServiceSchema = new mongoose.Schema(
   {
-    frequency: {
-      name: { type: String },
-      days: { type: Number },
-    },
+    frequency: { type: String, required: true },
     services: [Object],
     serviceMonths: [String],
     serviceDates: [String],

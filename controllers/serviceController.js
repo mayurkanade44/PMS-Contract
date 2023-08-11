@@ -5,6 +5,7 @@ import { createCanvas, loadImage } from "canvas";
 import QRCode from "qrcode";
 import fs from "fs";
 import { v2 as cloudinary } from "cloudinary";
+import { serviceDue } from "../utils/helper.js";
 
 export const addCard = async (req, res) => {
   const { frequency, id } = req.body;
@@ -13,30 +14,15 @@ export const addCard = async (req, res) => {
     if (!contract || !contract.active)
       return res.status(404).json({ msg: "Contract not found" });
 
-    const serviceDates = [];
-    const serviceMonths = [];
-
-    let serviceStart = contract.serviceStartDate;
-    const end = Math.floor(365 / frequency.days);
-
-    for (let i = 0; i < end; i++) {
-      serviceDates.push(moment(serviceStart).format("DD/MM/YYYY"));
-
-      if (!serviceMonths.includes(moment(serviceStart).format("MMM YY"))) {
-        serviceMonths.push(moment(serviceStart).format("MMM YY"));
-      }
-
-      serviceStart = new Date(
-        serviceStart.getFullYear(),
-        serviceStart.getMonth(),
-        serviceStart.getDate() + frequency.days
-      );
-    }
+    const due = serviceDue({
+      frequency,
+      serviceStart: contract.serviceStartDate,
+    });
 
     const service = await Service.create({
       frequency,
-      serviceMonths,
-      serviceDates,
+      serviceMonths: due.serviceMonths,
+      serviceDates: due.serviceDates,
       area: req.body.area,
       treatmentLocation: req.body.treatmentLocation,
       contract: id,
@@ -104,45 +90,32 @@ const qrCodeGenerator = async (link, contractNo, serviceName) => {
 };
 
 export const updateCard = async (req, res) => {
-  const { id } = req.body;
+  const { id, frequency, serviceCardId } = req.body;
   try {
-    const service = await Service.findById(id);
+    const service = await Service.findById(serviceCardId);
     if (!service)
       return res.status(404).json({ msg: "Service card not found" });
 
-    const contract = await Contract.findById(service.contract);
+    const contract = await Contract.findById(id);
     if (!contract || !contract.active)
       return res.status(404).json({ msg: "Contract not found" });
 
-    const serviceDates = [];
-    const serviceMonths = [];
+    if (frequency !== service.frequency) {
+      const due = serviceDue({
+        frequency,
+        serviceStart: contract.serviceStartDate,
+      });
 
-    let serviceStart = contract.serviceStartDate;
-    const end = Math.floor(365 / frequency.days);
-
-    for (let i = 0; i < end; i++) {
-      serviceDates.push(moment(serviceStart).format("DD/MM/YYYY"));
-
-      if (!serviceMonths.includes(moment(serviceStart).format("MMM YY"))) {
-        serviceMonths.push(moment(serviceStart).format("MMM YY"));
-      }
-
-      serviceStart = new Date(
-        serviceStart.getFullYear(),
-        serviceStart.getMonth(),
-        serviceStart.getDate() + frequency.days
-      );
+      req.body.serviceMonths = due.serviceMonths;
+      req.body.serviceDates = due.serviceDates;
     }
 
-    req.body.serviceMonths = serviceMonths;
-    req.body.serviceDates = serviceDates;
-
-    await Service.findByIdAndUpdate(id, re.body, {
+    await Service.findByIdAndUpdate(serviceCardId, req.body, {
       new: true,
       runValidators: true,
     });
 
-    return res.status(204).json({ msg: "Service card updated" });
+    return res.status(200).json({ msg: "Service card updated" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

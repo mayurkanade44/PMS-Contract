@@ -13,6 +13,7 @@ import Select from "react-select";
 import {
   useAddCardMutation,
   useDeleteCardMutation,
+  useUpdateCardMutation,
 } from "../redux/serviceSlice";
 import { toast } from "react-toastify";
 import { useGetSingleContractQuery } from "../redux/contractSlice";
@@ -20,7 +21,7 @@ import DeleteModal from "../components/Modals/DeleteModal";
 import { dateFormat } from "../utils/functionHelper";
 
 const AllServiceCards = () => {
-  const [selectedOption, setSelectedOption] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
   const [openDelete, setOpenDelete] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ const AllServiceCards = () => {
   } = useGetSingleContractQuery(id);
 
   const [addCard, { isLoading: addCardLoading }] = useAddCardMutation();
+  const [updateCard, { isLoading: updateLoading }] = useUpdateCardMutation();
   const [deleteCard, { isLoading: deleteCardLoading }] =
     useDeleteCardMutation();
 
@@ -48,18 +50,23 @@ const AllServiceCards = () => {
     defaultValues: {
       id: id,
       area: "",
-      frequency: {},
+      frequency: "Single",
       treatmentLocation: "",
+      serviceCardId: "",
     },
   });
 
   const submit = async (data) => {
     data.services = selectedOption;
-
     console.log(data);
 
+    // let res;
     // try {
-    //   const res = await addCard(data).unwrap();
+    //   if (contractDetails) {
+    //     res = await updateCard(data).unwrap();
+    //   } else {
+    //     res = await addCard(data).unwrap();
+    //   }
     //   toast.success(res.msg);
     //   refetch();
     //   reset();
@@ -82,11 +89,11 @@ const AllServiceCards = () => {
   };
 
   const handleEdit = (data) => {
-    console.log(data);
     setValue("frequency", data.frequency);
     setValue("area", data.area);
     setValue("treatmentLocation", data.treatmentLocation);
-    setSelectedOption(data.services);
+    setValue("serviceCardId", data._id);
+    setSelectedOption([{ value: "Green Shield", label: "Green Shield" }]);
   };
 
   return (
@@ -97,13 +104,6 @@ const AllServiceCards = () => {
         <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
         <div>
-          <DeleteModal
-            open={openDelete}
-            close={() => setOpenDelete(false)}
-            title="Confirm Delete"
-            description="Are you sure you want delete this service card? It will delete all the service data & disable QR Code"
-            handleClick={() => handleDelete(service._id)}
-          />
           <div className="md:flex justify-between">
             <h2 className="text-2xl font-semibold">
               Contract Number - {contractDetails.contractNo}
@@ -221,7 +221,7 @@ const AllServiceCards = () => {
                       {service.services.map((item) => item.label + ", ")}
                     </td>
                     <td className="border-r w-36 px-2 py-1 font-normal dark:border-neutral-500">
-                      {service.frequency.name}
+                      {service.frequency}
                     </td>
                     <td className="text-left border-r px-2 py-1 font-normal dark:border-neutral-500">
                       {service.serviceDates.join(", ")}
@@ -237,6 +237,13 @@ const AllServiceCards = () => {
                         label="Delete"
                         width="w-20"
                         color="bg-red-600"
+                      />
+                      <DeleteModal
+                        open={openDelete}
+                        close={() => setOpenDelete(false)}
+                        title="Confirm Delete"
+                        description="Are you sure you want delete this service card? It will delete all the service data & disable QR Code"
+                        handleClick={() => handleDelete(service._id)}
                       />
                     </td>
                   </tr>

@@ -10,8 +10,8 @@ export const serviceSlice = apiSlice.injectEndpoints({
       }),
     }),
     updateCard: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `/api/service/${id}`,
+      query: (data) => ({
+        url: `/api/service/${data.id}`,
         method: "PUT",
         body: data,
       }),
@@ -25,4 +25,8 @@ export const serviceSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useAddCardMutation, useDeleteCardMutation } = serviceSlice;
+export const {
+  useAddCardMutation,
+  useDeleteCardMutation,
+  useUpdateCardMutation,
+} = serviceSlice;

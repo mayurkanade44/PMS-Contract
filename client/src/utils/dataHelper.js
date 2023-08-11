@@ -24,41 +24,11 @@ export const contractTypes = [
 ];
 
 export const allFrequency = [
-  {
-    value: {
-      name: "Single",
-      days: 365,
-    },
-    label: "Single",
-  },
-  {
-    value: {
-      name: "Weekly",
-      days: 7,
-    },
-    label: "Weekly",
-  },
-  {
-    value: {
-      name: "2 Times In A Month",
-      days: 15,
-    },
-    label: "2 Times In A Month",
-  },
-  {
-    value: {
-      name: "Monthly",
-      days: 30,
-    },
-    label: "Monthly",
-  },
-  {
-    value: {
-      name: "Quarterly",
-      days: 90,
-    },
-    label: "Quarterly",
-  },
+  { value: "Single", label: "Single" },
+  { value: "Weekly", label: "Weekly" },
+  { value: "2 Times In A Month", label: "2 Times In A Month" },
+  { value: "Monthly", label: "Monthly" },
+  { value: "Quarterly", label: "Quarterly" },
 ];
 
 export const allService = [
