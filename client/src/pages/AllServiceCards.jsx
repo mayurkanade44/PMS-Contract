@@ -1,35 +1,40 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { allFrequency, allService } from "../utils/helper";
+import { allFrequency, allService } from "../utils/dataHelper";
 import {
   AlertMessage,
   Button,
   InputRow,
   InputSelect,
   Loading,
-  ServiceTable,
 } from "../components";
 import Select from "react-select";
-import { useAddCardMutation } from "../redux/serviceSlice";
+import {
+  useAddCardMutation,
+  useDeleteCardMutation,
+} from "../redux/serviceSlice";
 import { toast } from "react-toastify";
 import { useGetSingleContractQuery } from "../redux/contractSlice";
+import DeleteModal from "../components/Modals/DeleteModal";
+import { dateFormat } from "../utils/functionHelper";
 
 const AllServiceCards = () => {
   const [selectedOption, setSelectedOption] = useState([]);
+  const [openDelete, setOpenDelete] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
 
   const {
     data: contractDetails,
     isLoading,
-    isFetching,
     refetch,
     error,
   } = useGetSingleContractQuery(id);
 
   const [addCard, { isLoading: addCardLoading }] = useAddCardMutation();
+  const [deleteCard, { isLoading: deleteCardLoading }] =
+    useDeleteCardMutation();
 
   const {
     register,
@@ -59,12 +64,25 @@ const AllServiceCards = () => {
       reset();
     } catch (error) {
       console.log(error);
+      toast.error(error?.data?.msg || error.error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await deleteCard(id).unwrap();
+      toast.success(res.msg);
+      refetch();
+      setOpenDelete(false);
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.msg || error.error);
     }
   };
 
   return (
     <>
-      {isLoading || addCardLoading ? (
+      {isLoading || addCardLoading || deleteCardLoading ? (
         <Loading />
       ) : error ? (
         <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
@@ -75,37 +93,13 @@ const AllServiceCards = () => {
               Contract Number - {contractDetails.contractNo}
             </h2>
             <h2 className="text-2xl font-semibold">
-              Start Date -{" "}
-              {new Date(contractDetails.tenure.startDate).toLocaleDateString(
-                "en-IN",
-                {
-                  day: "numeric",
-                  month: "numeric",
-                  year: "numeric",
-                }
-              )}
+              Start Date - {dateFormat(contractDetails.tenure.startDate)}
             </h2>
             <h2 className="text-2xl font-semibold">
-              End Date -{" "}
-              {new Date(contractDetails.tenure.endDate).toLocaleDateString(
-                "en-IN",
-                {
-                  day: "numeric",
-                  month: "numeric",
-                  year: "numeric",
-                }
-              )}
+              End Date - {dateFormat(contractDetails.tenure.endDate)}
             </h2>
             <h2 className="text-2xl font-semibold">
-              Service Start -{" "}
-              {new Date(contractDetails.serviceStartDate).toLocaleDateString(
-                "en-IN",
-                {
-                  day: "numeric",
-                  month: "numeric",
-                  year: "numeric",
-                }
-              )}
+              Service Start - {dateFormat(contractDetails.serviceStartDate)}
             </h2>
           </div>
           <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
@@ -184,10 +178,58 @@ const AllServiceCards = () => {
             </div>
           </form>
           <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
-          <ServiceTable
-            th={["Service", "Frequency", "Service Due Dates", "Action"]}
-            data={contractDetails}
-          />
+          <div className="overflow-y-auto">
+            <table className="min-w-full border text-sm font-light dark:border-neutral-500">
+              <thead className="border-b font-medium dark:border-neutral-800 border-2">
+                <tr>
+                  {["Service", "Frequency", "Service Due Dates", "Action"].map(
+                    (item) => (
+                      <th
+                        className="border-r px-2 py-1 dark:border-neutral-800 border-2"
+                        key={item}
+                      >
+                        {item}
+                      </th>
+                    )
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {contractDetails.services?.map((service) => (
+                  <tr
+                    className="border-b dark:border-neutral-500"
+                    key={service._id}
+                  >
+                    <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
+                      {service.services.map((item) => item.label + ", ")}
+                    </td>
+                    <td className="border-r w-36 px-2 py-1 font-normal dark:border-neutral-500">
+                      {service.frequency.name}
+                    </td>
+                    <td className="text-left border-r px-2 py-1 font-normal dark:border-neutral-500">
+                      {service.serviceDates.join(", ")}
+                    </td>
+                    <td className="border-r flex px-1 gap-1 py-1 font-normal dark:border-neutral-500">
+                      <Button label="Edit" width="w-20" />
+                      <Button
+                        handleClick={() => setOpenDelete(true)}
+                        label="Delete"
+                        width="w-20"
+                        color="bg-red-600"
+                      />
+                    </td>
+                    <DeleteModal
+                      open={openDelete}
+                      close={() => setOpenDelete(false)}
+                      title="Confirm Delete"
+                      description="Are you sure you want delete this service card? It will delete all the service data & disable QR Code"
+                      handleClick={() => handleDelete(service._id)}
+                    />
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </>

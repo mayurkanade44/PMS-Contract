@@ -102,3 +102,13 @@ const qrCodeGenerator = async (link, contractNo, serviceName) => {
     return false;
   }
 };
+
+export const deleteCard = async (req, res) => {
+  try {
+    await Service.findByIdAndDelete(req.params.id);
+    return res.json({ msg: "Service card has been deleted" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};

@@ -9,7 +9,13 @@ export const serviceSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    deleteCard: builder.mutation({
+      query: (id) => ({
+        url: `/api/service/${id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
-export const { useAddCardMutation } = serviceSlice;
+export const { useAddCardMutation, useDeleteCardMutation } = serviceSlice;

@@ -3,6 +3,7 @@ import { AiOutlineSearch, AiOutlineClose } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { useGetAllContractsQuery } from "../redux/contractSlice";
 import { useEffect, useState } from "react";
+import { dateFormat } from "../utils/functionHelper";
 
 const Dashboard = () => {
   const [search, setSearch] = useState("");
@@ -116,11 +117,7 @@ const Dashboard = () => {
                     {contract.contractNo} - {contract.type}
                   </td>
                   <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
-                    {new Date(contract.createdAt).toLocaleDateString("en-IN", {
-                      day: "numeric",
-                      month: "numeric",
-                      year: "numeric",
-                    })}
+                    {dateFormat(contract.createdAt)}
                   </td>
                   <td className="px-3 border-r font-normal dark:border-neutral-500">
                     {contract.billToAddress.name}
@@ -129,24 +126,10 @@ const Dashboard = () => {
                     {contract.shipToAddress.name}
                   </td>
                   <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
-                    {new Date(contract.tenure.startDate).toLocaleDateString(
-                      "en-IN",
-                      {
-                        day: "numeric",
-                        month: "numeric",
-                        year: "numeric",
-                      }
-                    )}
+                    {dateFormat(contract.tenure.startDate)}
                   </td>
                   <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
-                    {new Date(contract.tenure.endDate).toLocaleDateString(
-                      "en-IN",
-                      {
-                        day: "numeric",
-                        month: "numeric",
-                        year: "numeric",
-                      }
-                    )}
+                    {dateFormat(contract.tenure.endDate)}
                   </td>
                   <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
                     <Link to={`/contract-details/${contract._id}`}>
