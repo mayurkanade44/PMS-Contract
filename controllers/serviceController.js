@@ -103,6 +103,52 @@ const qrCodeGenerator = async (link, contractNo, serviceName) => {
   }
 };
 
+export const updateCard = async (req, res) => {
+  const { id } = req.body;
+  try {
+    const service = await Service.findById(id);
+    if (!service)
+      return res.status(404).json({ msg: "Service card not found" });
+
+    const contract = await Contract.findById(service.contract);
+    if (!contract || !contract.active)
+      return res.status(404).json({ msg: "Contract not found" });
+
+    const serviceDates = [];
+    const serviceMonths = [];
+
+    let serviceStart = contract.serviceStartDate;
+    const end = Math.floor(365 / frequency.days);
+
+    for (let i = 0; i < end; i++) {
+      serviceDates.push(moment(serviceStart).format("DD/MM/YYYY"));
+
+      if (!serviceMonths.includes(moment(serviceStart).format("MMM YY"))) {
+        serviceMonths.push(moment(serviceStart).format("MMM YY"));
+      }
+
+      serviceStart = new Date(
+        serviceStart.getFullYear(),
+        serviceStart.getMonth(),
+        serviceStart.getDate() + frequency.days
+      );
+    }
+
+    req.body.serviceMonths = serviceMonths;
+    req.body.serviceDates = serviceDates;
+
+    await Service.findByIdAndUpdate(id, re.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    return res.status(204).json({ msg: "Service card updated" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
 export const deleteCard = async (req, res) => {
   try {
     await Service.findByIdAndDelete(req.params.id);

@@ -47,9 +47,8 @@ const AllServiceCards = () => {
   } = useForm({
     defaultValues: {
       id: id,
-      services: [],
       area: "",
-      frequency: "",
+      frequency: {},
       treatmentLocation: "",
     },
   });
@@ -57,15 +56,17 @@ const AllServiceCards = () => {
   const submit = async (data) => {
     data.services = selectedOption;
 
-    try {
-      const res = await addCard(data).unwrap();
-      toast.success(res.msg);
-      refetch();
-      reset();
-    } catch (error) {
-      console.log(error);
-      toast.error(error?.data?.msg || error.error);
-    }
+    console.log(data);
+
+    // try {
+    //   const res = await addCard(data).unwrap();
+    //   toast.success(res.msg);
+    //   refetch();
+    //   reset();
+    // } catch (error) {
+    //   console.log(error);
+    //   toast.error(error?.data?.msg || error.error);
+    // }
   };
 
   const handleDelete = async (id) => {
@@ -80,6 +81,14 @@ const AllServiceCards = () => {
     }
   };
 
+  const handleEdit = (data) => {
+    console.log(data);
+    setValue("frequency", data.frequency);
+    setValue("area", data.area);
+    setValue("treatmentLocation", data.treatmentLocation);
+    setSelectedOption(data.services);
+  };
+
   return (
     <>
       {isLoading || addCardLoading || deleteCardLoading ? (
@@ -88,6 +97,13 @@ const AllServiceCards = () => {
         <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
         <div>
+          <DeleteModal
+            open={openDelete}
+            close={() => setOpenDelete(false)}
+            title="Confirm Delete"
+            description="Are you sure you want delete this service card? It will delete all the service data & disable QR Code"
+            handleClick={() => handleDelete(service._id)}
+          />
           <div className="md:flex justify-between">
             <h2 className="text-2xl font-semibold">
               Contract Number - {contractDetails.contractNo}
@@ -114,6 +130,7 @@ const AllServiceCards = () => {
               </label>
               <Select
                 closeMenuOnSelect={false}
+                defaultValue={selectedOption}
                 onChange={setSelectedOption}
                 options={allService}
                 isMulti
@@ -210,7 +227,11 @@ const AllServiceCards = () => {
                       {service.serviceDates.join(", ")}
                     </td>
                     <td className="border-r flex px-1 gap-1 py-1 font-normal dark:border-neutral-500">
-                      <Button label="Edit" width="w-20" />
+                      <Button
+                        handleClick={() => handleEdit(service)}
+                        label="Edit"
+                        width="w-20"
+                      />
                       <Button
                         handleClick={() => setOpenDelete(true)}
                         label="Delete"
@@ -218,13 +239,6 @@ const AllServiceCards = () => {
                         color="bg-red-600"
                       />
                     </td>
-                    <DeleteModal
-                      open={openDelete}
-                      close={() => setOpenDelete(false)}
-                      title="Confirm Delete"
-                      description="Are you sure you want delete this service card? It will delete all the service data & disable QR Code"
-                      handleClick={() => handleDelete(service._id)}
-                    />
                   </tr>
                 ))}
               </tbody>
