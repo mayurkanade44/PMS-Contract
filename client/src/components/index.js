@@ -5,6 +5,7 @@ import InputRow from "./InputRow";
 import InputSelect from "./InputSelect";
 import Loading from "./Loading";
 import Navbar from "./Navbar";
+import ServiceTable from "./ServiceTable";
 
 export {
   Navbar,
@@ -14,4 +15,5 @@ export {
   ContactTable,
   Button,
   AlertMessage,
+  ServiceTable,
 };

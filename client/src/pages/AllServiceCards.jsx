@@ -9,6 +9,7 @@ import {
   InputRow,
   InputSelect,
   Loading,
+  ServiceTable,
 } from "../components";
 import Select from "react-select";
 import { useAddCardMutation } from "../redux/serviceSlice";
@@ -69,7 +70,7 @@ const AllServiceCards = () => {
         <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
         <div>
-          <div className="flex justify-between">
+          <div className="md:flex justify-between">
             <h2 className="text-2xl font-semibold">
               Contract Number - {contractDetails.contractNo}
             </h2>
@@ -183,7 +184,11 @@ const AllServiceCards = () => {
             </div>
           </form>
           <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
-          <div className="overflow-y-auto">
+          <ServiceTable
+            th={["Service", "Frequency", "Service Due Dates", "Action"]}
+            data={contractDetails}
+          />
+          {/* <div className="overflow-y-auto">
             <table className="min-w-full border text-center text-sm font-light dark:border-neutral-500">
               <thead className="border-b font-medium dark:border-neutral-800 border-2">
                 <tr>
@@ -193,7 +198,7 @@ const AllServiceCards = () => {
                   <th className="border-r px-6 py-1 dark:border-neutral-800 border-2">
                     Frequency
                   </th>
-                  <th className="border-r px-6 py-1 text-left dark:border-neutral-800 border-2">
+                  <th className="border-r pl-2 py-1 text-left dark:border-neutral-800 border-2">
                     Service Due Dates
                   </th>
                   <th className="border-r px-6 py-1 dark:border-neutral-800 border-2">
@@ -205,7 +210,7 @@ const AllServiceCards = () => {
                 {contractDetails.services?.map((service, index) => (
                   <tr className="border-b dark:border-neutral-500" key={index}>
                     <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
-                      Test
+                      {service.services.map((item) => item.label + ", ")}
                     </td>
                     <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
                       {service.frequency.name}
@@ -221,7 +226,7 @@ const AllServiceCards = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+                </div> */}
         </div>
       )}
     </>
