@@ -188,45 +188,6 @@ const AllServiceCards = () => {
             th={["Service", "Frequency", "Service Due Dates", "Action"]}
             data={contractDetails}
           />
-          {/* <div className="overflow-y-auto">
-            <table className="min-w-full border text-center text-sm font-light dark:border-neutral-500">
-              <thead className="border-b font-medium dark:border-neutral-800 border-2">
-                <tr>
-                  <th className="border-r px-6 py-1 dark:border-neutral-800 border-2">
-                    Service
-                  </th>
-                  <th className="border-r px-6 py-1 dark:border-neutral-800 border-2">
-                    Frequency
-                  </th>
-                  <th className="border-r pl-2 py-1 text-left dark:border-neutral-800 border-2">
-                    Service Due Dates
-                  </th>
-                  <th className="border-r px-6 py-1 dark:border-neutral-800 border-2">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {contractDetails.services?.map((service, index) => (
-                  <tr className="border-b dark:border-neutral-500" key={index}>
-                    <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
-                      {service.services.map((item) => item.label + ", ")}
-                    </td>
-                    <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
-                      {service.frequency.name}
-                    </td>
-                    <td className="text-left border-r px-2 py-1 font-normal dark:border-neutral-500">
-                      {service.serviceDates.join(", ")}
-                    </td>
-                    <td className="border-r flex px-1 gap-1 py-1 font-normal dark:border-neutral-500">
-                      <Button label="Edit" width="w-20" />
-                      <Button label="Delete" width="w-20" color="bg-red-600" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-                </div> */}
         </div>
       )}
     </>

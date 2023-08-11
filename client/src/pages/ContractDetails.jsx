@@ -148,7 +148,10 @@ const ContractDetails = () => {
               <ContactTable contacts={contract.shipToContact} />
             </div>
           </div>
-          <hr className="h-px my-5 border-0 dark:bg-gray-800" />
+          <hr className="h-px mt-4 border-0 dark:bg-gray-800" />
+          <h2 className="text-3xl font-semibold text-center mt-1 mb-2">
+            Service Cards
+          </h2>
           <ServiceTable
             th={[
               "Service",
@@ -156,7 +159,7 @@ const ContractDetails = () => {
               "Frequency",
               "Service Due Months",
               "Download",
-              "Update"
+              "Update",
             ]}
             data={contract}
             contractDetails={true}

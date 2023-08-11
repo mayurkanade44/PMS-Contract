@@ -4,6 +4,8 @@ import path from "path";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import { v2 as cloudinary } from "cloudinary";
+import fileUpload from "express-fileupload";
 
 import userRouter from "./routes/userRoute.js";
 import contractRouter from "./routes/contractRoute.js";
@@ -11,10 +13,18 @@ import serviceRouter from "./routes/serviceRoute.js";
 import { notFound } from "./middleware/notFound.js";
 
 dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_KEY,
+  api_secret: process.env.CLOUD_SECRET,
+});
+
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(fileUpload({ useTempFiles: true }));
 if (process.env.NODE_ENV !== "production") app.use(morgan("dev"));
 
 app.use("/api/user", userRouter);
