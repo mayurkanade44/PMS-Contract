@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { allFrequency, allService } from "../utils/dataHelper";
 import {
   AlertMessage,
@@ -12,6 +12,7 @@ import {
 import Select from "react-select";
 import {
   useAddCardMutation,
+  useCreateCardMutation,
   useDeleteCardMutation,
   useUpdateCardMutation,
 } from "../redux/serviceSlice";
@@ -21,14 +22,18 @@ import DeleteModal from "../components/Modals/DeleteModal";
 import { dateFormat } from "../utils/functionHelper";
 
 const AllServiceCards = () => {
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState([]);
+  const [edit, setEdit] = useState({
+    status: false,
+    loading: false,
+  });
   const [openDelete, setOpenDelete] = useState(false);
   const { id } = useParams();
-  const navigate = useNavigate();
 
   const {
     data: contractDetails,
     isLoading,
+    isFetching,
     refetch,
     error,
   } = useGetSingleContractQuery(id);
@@ -37,13 +42,14 @@ const AllServiceCards = () => {
   const [updateCard, { isLoading: updateLoading }] = useUpdateCardMutation();
   const [deleteCard, { isLoading: deleteCardLoading }] =
     useDeleteCardMutation();
+  const [createCard, { isLoading: createCardLoading }] =
+    useCreateCardMutation();
 
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
     reset,
-    getValues,
     setValue,
     control,
   } = useForm({
@@ -58,22 +64,23 @@ const AllServiceCards = () => {
 
   const submit = async (data) => {
     data.services = selectedOption;
-    console.log(data);
 
-    // let res;
-    // try {
-    //   if (contractDetails) {
-    //     res = await updateCard(data).unwrap();
-    //   } else {
-    //     res = await addCard(data).unwrap();
-    //   }
-    //   toast.success(res.msg);
-    //   refetch();
-    //   reset();
-    // } catch (error) {
-    //   console.log(error);
-    //   toast.error(error?.data?.msg || error.error);
-    // }
+    let res;
+    try {
+      if (edit.status) {
+        res = await updateCard(data).unwrap();
+      } else {
+        res = await addCard(data).unwrap();
+      }
+      toast.success(res.msg);
+      refetch();
+      reset();
+      setSelectedOption([]);
+      setEdit({ loading: false, status: false });
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.msg || error.error);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -88,17 +95,38 @@ const AllServiceCards = () => {
     }
   };
 
+  const handleCreateCard = async () => {
+    try {
+      const res = await createCard(id).unwrap();
+      refetch();
+      toast.success(res.msg);
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.msg || error.error);
+    }
+  };
+
   const handleEdit = (data) => {
+    setEdit({ status: true, loading: true });
     setValue("frequency", data.frequency);
     setValue("area", data.area);
     setValue("treatmentLocation", data.treatmentLocation);
     setValue("serviceCardId", data._id);
-    setSelectedOption([{ value: "Green Shield", label: "Green Shield" }]);
+    setSelectedOption(data.services);
+
+    setTimeout(() => {
+      setEdit((prev) => ({ ...prev, loading: false }));
+    }, 500);
   };
 
   return (
     <>
-      {isLoading || addCardLoading || deleteCardLoading ? (
+      {isLoading ||
+      addCardLoading ||
+      deleteCardLoading ||
+      edit.loading ||
+      createCardLoading ||
+      isFetching ? (
         <Loading />
       ) : error ? (
         <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
@@ -191,12 +219,12 @@ const AllServiceCards = () => {
               </div>
             </div>
             <div className="col-span-2 flex items-center justify-center">
-              <Button label="Add Card" height="h-10" type="submit" />
+              <Button label="Save Card" height="h-10" type="submit" />
             </div>
           </form>
           <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
           <div className="overflow-y-auto">
-            <table className="min-w-full border text-sm font-light dark:border-neutral-500">
+            <table className="min-w-full border text-sm font-light dark:border-neutral-500 my-2 mb-4">
               <thead className="border-b font-medium dark:border-neutral-800 border-2">
                 <tr>
                   {["Service", "Frequency", "Service Due Dates", "Action"].map(
@@ -250,6 +278,13 @@ const AllServiceCards = () => {
                 ))}
               </tbody>
             </table>
+            <Button
+              label="Create Cards"
+              width="w-32"
+              height="py-2"
+              color="bg-green-600"
+              handleClick={() => handleCreateCard()}
+            />
           </div>
         </div>
       )}

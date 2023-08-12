@@ -1,12 +1,11 @@
 import { Link } from "react-router-dom";
+import { saveAs } from "file-saver";
 
-const ServiceTable = ({
-  th,
-  data,
-  handleButton1,
-  handleButton2,
-  handleButton3,
-}) => {
+const ServiceTable = ({ th, data, handleButton1, handleButton3 }) => {
+  const downloadImage = ({ url, name }) => {
+    saveAs(url, `${name}.png`); // Put your image url here.
+  };
+
   return (
     <div className="overflow-y-auto">
       <table className="min-w-full border text-sm font-light dark:border-neutral-500">
@@ -40,15 +39,26 @@ const ServiceTable = ({
               <td className="border-r w-80 px-1 gap-1 py-1 font-normal dark:border-neutral-500">
                 <button
                   type="button"
-                  disabled={true}
+                  disabled={service.card ? false : true}
                   onClick={handleButton1}
                   className="text-white font-semibold mx-1 items-start justify-start px-2 py-2 bg-green-700 disabled:bg-green-500 disabled:cursor-not-allowed rounded"
                 >
-                  Service Card
+                  <a
+                    style={{
+                      textDecoration: "none",
+                      color: "white",
+                    }}
+                    href={service.card}
+                  >
+                    Service Card
+                  </a>
                 </button>
                 <button
                   type="button"
-                  onClick={handleButton2}
+                  onClick={() =>
+                    downloadImage({ url: service.qr, name: "QR Code" })
+                  }
+                  disabled={service.qr ? false : true}
                   className="text-white font-semibold mx-1 items-start justify-start px-2 py-2 bg-cyan-700 disabled:bg-cyan-500 disabled:cursor-not-allowed rounded"
                 >
                   QR Code
