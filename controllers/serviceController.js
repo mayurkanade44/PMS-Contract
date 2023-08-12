@@ -197,11 +197,35 @@ export const createCard = async (req, res) => {
           runValidators: true,
         }
       );
-      
+
       fs.unlinkSync(`./tmp/${filename}.docx`);
     });
 
     return res.json({ msg: "Cards created successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const getSingleCard = async (req, res) => {
+  try {
+    const service = await Service.findById(req.params.id).populate({
+      path: "contract",
+      select: "contractNo",
+    });
+    if (!service)
+      return res
+        .status(404)
+        .json({ msg: "Service card not found, contact Admin" });
+
+    const serviceCard = {
+      contractNo: service.contract.contractNo,
+      contractId: service.contract._id,
+      name: service.services.map((ser) => ser.label),
+    };
+
+    return res.json(serviceCard);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

@@ -4,6 +4,8 @@ import Login from "./Login";
 import Register from "./Register";
 import Dashboard from "./Dashboard";
 import AllServiceCards from "./AllServiceCards";
+import ServiceCard from "./ServiceCard";
+
 
 export {
   Login,
@@ -12,4 +14,5 @@ export {
   ContractDetails,
   Dashboard,
   AllServiceCards,
+  ServiceCard,
 };

@@ -36,3 +36,19 @@ export const allService = [
   { value: "Bedbugs", label: "Bedbugs" },
   { value: "Antron", label: "Antron" },
 ];
+
+export const serviceType = [
+  { value: "Regular", label: "Regular" },
+  { value: "Complaint", label: "Complaint" },
+];
+
+export const serviceStatus = [
+  { value: "Completed", label: "Completed" },
+  { value: "Partially Completed", label: "Partially Completed" },
+  { value: "Not Completed", label: "Not Completed" },
+];
+
+export const serviceComment = [
+  { value: "All job done", label: "All job completed" },
+  { value: "Client cancelled", label: "Client cancelled" },
+];

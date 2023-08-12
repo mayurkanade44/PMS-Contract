@@ -29,6 +29,11 @@ export const serviceSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Contract"],
     }),
+    singleCard: builder.query({
+      query: (id) => ({
+        url: `/api/service/${id}`,
+      }),
+    }),
   }),
 });
 
@@ -37,4 +42,5 @@ export const {
   useDeleteCardMutation,
   useUpdateCardMutation,
   useCreateCardMutation,
+  useSingleCardQuery,
 } = serviceSlice;

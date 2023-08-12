@@ -73,7 +73,7 @@ const ServiceTable = ({ th, data, handleButton1, handleButton3 }) => {
               </td>
               <td className="text-left border-r px-2 py-1 font-normal dark:border-neutral-500">
                 <Link
-                  to="/service-card/:id"
+                  to={`/service-card/${service._id}`}
                   className="text-white font-semibold items-start justify-start px-2 py-2 bg-blue-700 rounded"
                 >
                   Update

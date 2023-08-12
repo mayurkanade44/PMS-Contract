@@ -16,6 +16,7 @@ import {
   Dashboard,
   Login,
   Register,
+  ServiceCard,
 } from "./pages";
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           path="/contract/:id/service-cards"
           element={<AllServiceCards />}
         />
+        <Route path="/service-card/:id" element={<ServiceCard />} />
       </Route>
     )
   );
