@@ -6,6 +6,7 @@ import QRCode from "qrcode";
 import fs from "fs";
 import { v2 as cloudinary } from "cloudinary";
 import { serviceDue } from "../utils/helper.js";
+import { createReport } from "docx-templates";
 
 export const addCard = async (req, res) => {
   const { frequency, id } = req.body;
@@ -126,6 +127,81 @@ export const deleteCard = async (req, res) => {
   try {
     await Service.findByIdAndDelete(req.params.id);
     return res.json({ msg: "Service card has been deleted" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const createCard = async (req, res) => {
+  const { id: contractId } = req.params;
+  try {
+    const contract = await Contract.findById(contractId).populate("services");
+    if (!contract) return res.status(404).json({ msg: "Contract not found" });
+
+    contract.services.forEach(async (service, index) => {
+      const serviceId = service._id.toString();
+      const qrCode = await QRCode.toDataURL(
+        `https://cqr.sat9.in/feedback/${serviceId}`
+      );
+      const template = fs.readFileSync("./tmp/template.docx");
+
+      const buffer = await createReport({
+        cmdDelimiter: ["{", "}"],
+        template,
+
+        additionalJsContext: {
+          contractNo: contract.contractNo,
+          type: contract.type,
+          sales: contract.sales,
+          day: contract.preferred.day,
+          time: contract.preferred.time,
+          card: index + 1,
+          name: contract.shipToAddress.name,
+          address: contract.shipToAddress.address,
+          city: contract.shipToAddress.city,
+          nearBy: contract.shipToAddress.nearBy,
+          pincode: contract.shipToAddress.pincode,
+          shipToContact: contract.shipToContact,
+          serviceDue: service.serviceMonths,
+          service: service.services,
+          frequency: service.frequency,
+          location: service.treatmentLocation,
+          area: service.area,
+          billingFrequency: contract.billingFrequency,
+          url: "12",
+          qrCode: async (url12) => {
+            const dataUrl = qrCode;
+            const data = await dataUrl.slice("data:image/png;base64,".length);
+            return { width: 2, height: 2, data, extension: ".png" };
+          },
+        },
+      });
+
+      const contractName = contract.contractNo.replace(/\//g, "-");
+      const filename = `${contractName} ${service.frequency} ${index + 1}`;
+
+      fs.writeFileSync(`./tmp/${filename}.docx`, buffer);
+
+      const result = await cloudinary.uploader.upload(`tmp/${filename}.docx`, {
+        resource_type: "raw",
+        use_filename: true,
+        folder: "PMS",
+      });
+
+      await Service.findByIdAndUpdate(
+        serviceId,
+        { card: result.secure_url },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+      
+      fs.unlinkSync(`./tmp/${filename}.docx`);
+    });
+
+    return res.json({ msg: "Cards created successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
