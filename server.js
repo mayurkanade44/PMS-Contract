@@ -10,6 +10,7 @@ import fileUpload from "express-fileupload";
 import userRouter from "./routes/userRoute.js";
 import contractRouter from "./routes/contractRoute.js";
 import serviceRouter from "./routes/serviceRoute.js";
+import reportRouter from "./routes/reportRoute.js";
 import { notFound } from "./middleware/notFound.js";
 
 dotenv.config();
@@ -30,6 +31,7 @@ if (process.env.NODE_ENV !== "production") app.use(morgan("dev"));
 app.use("/api/user", userRouter);
 app.use("/api/contract", contractRouter);
 app.use("/api/service", serviceRouter);
+app.use("/api/report", reportRouter);
 
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();

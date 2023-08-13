@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import moment from "moment";
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
 
 export const generateToken = (res, userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -50,4 +52,22 @@ export const serviceDue = ({ frequency, serviceStart }) => {
   }
 
   return { serviceMonths, serviceDates };
+};
+
+export const uploadFile = async ({ filePath }) => {
+  try {
+    const result = await cloudinary.uploader.upload(filePath, {
+      use_filename: true,
+      folder: "PMS",
+      quality: 50,
+      resource_type: "auto",
+    });
+
+    fs.unlinkSync(filePath);
+
+    return result.secure_url;
+  } catch (error) {
+    console.log("Cloud Upload", error);
+    return false;
+  }
 };
