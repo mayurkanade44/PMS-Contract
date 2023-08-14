@@ -5,10 +5,12 @@ import { setCredentials } from "../redux/allSlice";
 import { useDispatch } from "react-redux";
 import { HiMail } from "react-icons/hi";
 import { AiFillUnlock } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -25,8 +27,9 @@ const Login = () => {
   const submit = async (data) => {
     try {
       const res = await login(data).unwrap();
-      dispatch(setCredentials(res));
+      dispatch(setCredentials({ ...res }));
       toast.success(`Welcome ${res.name}`);
+      navigate("/home");
       reset();
     } catch (error) {
       console.log(error);
@@ -35,7 +38,7 @@ const Login = () => {
   };
 
   return (
-    <div className="mx-5 flex h-[90vh] justify-center items-center">
+    <div className="mx-5 flex h-[80vh] justify-center items-center">
       <div className="flex flex-col w-full max-w-md px-4 py-8 bg-white rounded-lg shadow dark:bg-gray-800 sm:px-6 md:px-8 lg:px-10">
         <div className="self-center mb-6 text-xl font-light text-gray-600 sm:text-2xl dark:text-white">
           Login To Your Account

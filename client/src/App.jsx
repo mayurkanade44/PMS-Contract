@@ -8,12 +8,14 @@ import {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { Navbar } from "./components";
+import { Navbar, ProtectedRoute } from "./components";
 import {
+  Admin,
   AllServiceCards,
   Contract,
   ContractDetails,
   Dashboard,
+  Home,
   Login,
   Register,
   ServiceCard,
@@ -35,15 +37,24 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
         <Route index={true} path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/home" element={<Dashboard />} />
-        <Route path="/contract/:id" element={<Contract />} />
-        <Route path="/contract-details/:id" element={<ContractDetails />} />
-        <Route
-          path="/contract/:id/service-cards"
-          element={<AllServiceCards />}
-        />
-        <Route path="/service-card/:id" element={<ServiceCard />} />
+
+        <Route path="" element={<ProtectedRoute />}>
+          <Route path="/register" element={<Register />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/contract/:id" element={<Contract />} />
+          <Route path="/contract-details/:id" element={<ContractDetails />} />
+          <Route
+            path="/contract/:id/service-cards"
+            element={<AllServiceCards />}
+          />
+          <Route path="/service-card/:id" element={<ServiceCard />} />
+        </Route>
+
+        <Route path="" element={<ProtectedRoute admin={true} />}>
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
       </Route>
     )
   );

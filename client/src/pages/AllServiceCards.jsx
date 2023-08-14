@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 import { useGetSingleContractQuery } from "../redux/contractSlice";
 import DeleteModal from "../components/Modals/DeleteModal";
 import { dateFormat } from "../utils/functionHelper";
+import { useSelector } from "react-redux";
 
 const AllServiceCards = () => {
   const [selectedOption, setSelectedOption] = useState([]);
@@ -29,6 +30,7 @@ const AllServiceCards = () => {
   });
   const [openDelete, setOpenDelete] = useState(false);
   const { id } = useParams();
+  const { user } = useSelector((store) => store.all);
 
   const {
     data: contractDetails,
@@ -254,18 +256,20 @@ const AllServiceCards = () => {
                     <td className="text-left border-r px-2 py-1 font-normal dark:border-neutral-500">
                       {service.serviceDates.join(", ")}
                     </td>
-                    <td className="border-r flex px-1 gap-1 py-1 font-normal dark:border-neutral-500">
+                    <td className="border-r flex px-2 gap-1 py-1 font-normal dark:border-neutral-500">
                       <Button
                         handleClick={() => handleEdit(service)}
                         label="Edit"
                         width="w-20"
                       />
-                      <Button
-                        handleClick={() => setOpenDelete(true)}
-                        label="Delete"
-                        width="w-20"
-                        color="bg-red-600"
-                      />
+                      {user.role === "Delete" && (
+                        <Button
+                          handleClick={() => setOpenDelete(true)}
+                          label="Delete"
+                          width="w-20"
+                          color="bg-red-600"
+                        />
+                      )}
                       <DeleteModal
                         open={openDelete}
                         close={() => setOpenDelete(false)}

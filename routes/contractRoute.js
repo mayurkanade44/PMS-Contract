@@ -7,14 +7,22 @@ import {
   getContract,
   updateContract,
 } from "../controllers/contractController.js";
+import { authorizeUser } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
-router.route("/").post(createContract).get(getAllContracts);
+router
+  .route("/")
+  .post(authorizeUser("Admin", "Back Office"), createContract)
+  .get(getAllContracts);
 router
   .route("/singleContract/:id")
-  .get(getContract)
-  .put(updateContract)
-  .delete(deleteContract);
-router.put("/deactive/:id", deactiveContract);
+  .get(authorizeUser("Admin", "Back Office"), getContract)
+  .put(authorizeUser("Admin", "Back Office"), updateContract)
+  .delete(authorizeUser("Admin"), deleteContract);
+router.put(
+  "/deactive/:id",
+  authorizeUser("Admin", "Back Office"),
+  deactiveContract
+);
 
 export default router;

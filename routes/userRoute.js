@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 router.post("/login", loginUser);
-router.post("/logout", logoutUser);
+router.post("/logout", authenticateUser, logoutUser);
 router.post(
   "/register",
   authenticateUser,

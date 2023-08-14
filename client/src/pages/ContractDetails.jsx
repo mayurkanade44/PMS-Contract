@@ -11,12 +11,12 @@ import {
   Loading,
   ServiceTable,
 } from "../components";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { setContractDetails } from "../redux/allSlice";
 import { toast } from "react-toastify";
 import DeleteModal from "../components/Modals/DeleteModal";
-import DeleteActive from "../components/Modals/DeleteModal";
+import DeactiveModal from "../components/Modals/DeleteModal";
 
 const ContractDetails = () => {
   const { id } = useParams();
@@ -24,6 +24,8 @@ const ContractDetails = () => {
   const dispatch = useDispatch();
   const [openDelete, setOpenDelete] = useState(false);
   const [openDeactive, setOpenDeactive] = useState(false);
+
+  const { user } = useSelector((store) => store.all);
 
   const [deleteContract, { isLoading: deleteLoading }] =
     useDeleteContractMutation();
@@ -107,12 +109,15 @@ const ContractDetails = () => {
                   handleClick={() => setOpenDeactive(true)}
                   label={contract.active ? "Deactive" : "Active"}
                 />
-                <Button
-                  color="bg-red-600"
-                  label="Delete"
-                  handleClick={() => setOpenDelete(true)}
-                />
-                <DeleteActive
+                {user.role === "Admin" && (
+                  <Button
+                    color="bg-red-600"
+                    label="Delete"
+                    handleClick={() => setOpenDelete(true)}
+                  />
+                )}
+
+                <DeactiveModal
                   open={openDeactive}
                   close={() => setOpenDeactive(false)}
                   title={contract.active ? "Confirm Dective" : "Confirm Active"}

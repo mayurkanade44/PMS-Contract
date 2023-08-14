@@ -12,6 +12,7 @@ import contractRouter from "./routes/contractRoute.js";
 import serviceRouter from "./routes/serviceRoute.js";
 import reportRouter from "./routes/reportRoute.js";
 import { notFound } from "./middleware/notFound.js";
+import { authenticateUser } from "./middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -29,8 +30,8 @@ app.use(fileUpload({ useTempFiles: true }));
 if (process.env.NODE_ENV !== "production") app.use(morgan("dev"));
 
 app.use("/api/user", userRouter);
-app.use("/api/contract", contractRouter);
-app.use("/api/service", serviceRouter);
+app.use("/api/contract", authenticateUser, contractRouter);
+app.use("/api/service", authenticateUser, serviceRouter);
 app.use("/api/report", reportRouter);
 
 if (process.env.NODE_ENV === "production") {

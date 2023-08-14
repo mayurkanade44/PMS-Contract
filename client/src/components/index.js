@@ -5,6 +5,7 @@ import InputRow from "./InputRow";
 import InputSelect from "./InputSelect";
 import Loading from "./Loading";
 import Navbar from "./Navbar";
+import ProtectedRoute from "./ProtectedRoute";
 import ServiceTable from "./ServiceTable";
 
 export {
@@ -16,4 +17,5 @@ export {
   Button,
   AlertMessage,
   ServiceTable,
+  ProtectedRoute,
 };
