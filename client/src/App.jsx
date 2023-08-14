@@ -25,7 +25,7 @@ function App() {
       <>
         <ToastContainer position="top-center" autoClose={2000} />
         <Navbar />
-        <div className="mx-5 md:mx-10 my-5">
+        <div className="mx-5 md:mx-10 my-16 lg:my-5">
           <Outlet />
         </div>
       </>
@@ -36,7 +36,7 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index={true} path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/home" element={<Dashboard />} />
         <Route path="/contract/:id" element={<Contract />} />
         <Route path="/contract-details/:id" element={<ContractDetails />} />
         <Route

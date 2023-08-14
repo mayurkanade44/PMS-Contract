@@ -23,7 +23,7 @@ const allSlice = createSlice({
       state.contractDetails = action.payload;
     },
     removeContractDetails: (state) => {
-      state.contractDetails = null
+      state.contractDetails = null;
     },
   },
 });
