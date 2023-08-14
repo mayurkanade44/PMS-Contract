@@ -15,10 +15,10 @@ const AlertMessage = ({ children }) => {
           <p className="text-md font-normal text-red-700">{children}</p>
           <div className="mt-2">
             <Link
-              to="/dashboard"
+              to="/home"
               className="rounded-md bg-green-50 px-2 py-1.5 text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
             >
-              Back To Dashboard
+              Back To Home Page
             </Link>
           </div>
         </div>

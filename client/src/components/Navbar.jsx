@@ -74,7 +74,7 @@ const Navbar = () => {
                       <Link
                         key={nav.name}
                         to={nav.link}
-                        className="flex px-5 items-center py-6 text-md leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                        className="flex px-5 items-center py-6 text-md leading-5 text-black hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
                       >
                         {nav.icon}
                         {nav.name}
@@ -83,7 +83,7 @@ const Navbar = () => {
                     {user.role === "Admin" && (
                       <Link
                         to="/admin"
-                        className="flex px-5 items-center py-6 text-md leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                        className="flex px-5 items-center py-6 text-md leading-5 text-black hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
                       >
                         <RiAdminLine className="mr-2 w-4 h-4" />
                         Admin
@@ -113,7 +113,7 @@ const Navbar = () => {
                           </ul>
                         )}
                         <div className="cursor-pointer mr-5 text-blue-500 font-semibold flex text-lg border-2 border-transparent rounded-full transition duration-150 ease-in-out">
-                          Mayur
+                          {user.name}
                         </div>
                       </div>
                     </div>
@@ -136,7 +136,7 @@ const Navbar = () => {
             {user && (
               <div className="flex items-center">
                 <div className="relative mr-4 text-blue-500 font-semibold">
-                  Mayur
+                  {user.name}
                 </div>
                 <div
                   id="menu"
