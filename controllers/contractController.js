@@ -34,7 +34,10 @@ export const getContract = async (req, res) => {
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
 
     return res.json(contract);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.send(500).json({ msg: "Server error, try again later" });
+  }
 };
 
 export const updateContract = async (req, res) => {
