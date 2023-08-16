@@ -41,7 +41,8 @@ const Admin = () => {
       email: "",
       password: "",
       serviceName: "",
-      serviceComment: "",
+      commentLabel: "",
+      commentValue: "",
       sales: "",
     },
   });
@@ -68,6 +69,15 @@ const Admin = () => {
       form.serviceName = {
         label: data.serviceName,
         value: "30ml / 20ml / 10ml / 5ml                    ODR / GEL / SPRAY",
+      };
+    }
+    if (data.sales) {
+      form.sales = { label: data.sales, value: data.sales };
+    }
+    if (data.commentLabel && data.commentValue) {
+      form.serviceComment = {
+        label: data.commentLabel,
+        value: data.commentValue,
       };
     }
 
@@ -111,7 +121,7 @@ const Admin = () => {
             ) : showTable === "All Services" ? (
               <div>
                 <form
-                  className="flex items-center gap-8"
+                  className="flex items-center gap-8 mb-4"
                   onSubmit={handleSubmit(submit)}
                 >
                   <InputRow
@@ -130,29 +140,72 @@ const Admin = () => {
                     type="submit"
                   />
                 </form>
-                <div className="flex justify-center mt-4">
-                  <AdminTable
-                    th="Services"
-                    data={data?.services}
-                    handleDelete={handleDelete}
-                  />
-                </div>
+                <AdminTable
+                  th="Services"
+                  data={data?.services}
+                  handleDelete={handleDelete}
+                />
               </div>
             ) : showTable === "All Sales Person" ? (
-              <>
-                <AdminTable th="Sales" data={data.sales} />
-                <Button label="New Person" width="w-32" height="h-9" />
-              </>
-            ) : showTable === "All Service Comments" ? (
-              <>
-                <AdminTable th="Comments" data={data.comments} />
-                <Button
-                  label="New Comment"
-                  color="bg-green-600"
-                  width="w-32"
-                  height="h-9"
+              <div>
+                <form
+                  className="flex items-center gap-8 mb-4"
+                  onSubmit={handleSubmit(submit)}
+                >
+                  <InputRow
+                    label="Sales Name"
+                    message="Service name is required"
+                    placeholder="Enter person name"
+                    id="sales"
+                    errors={errors}
+                    register={register}
+                  />
+                  <Button
+                    label="Add Person"
+                    color="bg-green-600"
+                    width="w-28"
+                    height="h-9"
+                    type="submit"
+                  />
+                </form>
+                <AdminTable
+                  th="Sales"
+                  data={data.sales}
+                  handleDelete={handleDelete}
                 />
-              </>
+              </div>
+            ) : showTable === "All Service Comments" ? (
+              <div>
+                <form
+                  className="flex items-center gap-8 mb-4"
+                  onSubmit={handleSubmit(submit)}
+                >
+                  <InputRow
+                    label="English Comment"
+                    message="Comment is required"
+                    placeholder="Enter comment in english"
+                    id="commentValue"
+                    errors={errors}
+                    register={register}
+                  />
+                  <InputRow
+                    label="Hindi Comment"
+                    message="Comment is required"
+                    placeholder="Enter comment in hindi"
+                    id="commentLabel"
+                    errors={errors}
+                    register={register}
+                  />
+                  <Button
+                    label="Add Comment"
+                    color="bg-green-600"
+                    width="w-32"
+                    height="h-9"
+                    type="submit"
+                  />
+                </form>
+                <AdminTable th="Comments" data={data.comments} />
+              </div>
             ) : null}
           </div>
         </>

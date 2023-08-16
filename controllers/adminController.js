@@ -32,11 +32,11 @@ export const getAllValues = async (req, res) => {
     const comments = [];
 
     for (let item of values) {
-      item.sales && sales.push({ name: item.sales, id: item._id }),
+      item.sales && sales.push({ name: item.sales.label, id: item._id }),
         item.serviceName &&
           services.push({ name: item.serviceName.label, id: item._id }),
         item.serviceComment &&
-          comments.push({ name: item.serviceComment.label, id: item._id });
+          comments.push({ name: item.serviceComment.value, id: item._id });
     }
 
     return res.json({ services, sales, comments });
