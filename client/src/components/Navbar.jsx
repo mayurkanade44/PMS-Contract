@@ -53,19 +53,19 @@ const Navbar = () => {
     <>
       <div className="bg-gray-200 h-full w-full">
         <nav className="bg-white shadow xl:block hidden">
-          <div className="mx-auto container px-11 py-2 xl:py-0">
+          <div className="mx-auto container px-1 py-2 xl:py-0">
             <div
               className={`flex items-center ${
                 user ? "justify-between" : "justify-center"
               } `}
             >
               <div className="flex w-full sm:w-auto items-center sm:items-stretch justify-end sm:justify-center">
-                <div className="flex items-center py-3">
+                {/* <div className="flex items-center py-3">
                   <img src={logo} className="w-24 mr-5" alt="logo" />
                   <h2 className="hidden sm:block text-xl text-gray-700 font-bold leading-normal pl-3">
                     Pest Management & Services
                   </h2>
-                </div>
+                </div> */}
               </div>
               {user && (
                 <div className="flex mr-8">

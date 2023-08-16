@@ -1,3 +1,4 @@
+import AdminTable from "./AdminTable";
 import AlertMessage from "./AlertMessage";
 import Button from "./Button";
 import ContactTable from "./ContactTable";
@@ -18,4 +19,5 @@ export {
   AlertMessage,
   ServiceTable,
   ProtectedRoute,
+  AdminTable,
 };

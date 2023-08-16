@@ -27,7 +27,7 @@ function App() {
       <>
         <ToastContainer position="top-center" autoClose={2000} />
         <Navbar />
-        <div className="mx-5 md:mx-10 my-16 lg:my-5">
+        <div className="mx-5 md:mx-10">
           <Outlet />
         </div>
       </>
