@@ -12,7 +12,9 @@ const AlertMessage = ({ children }) => {
           />
         </div>
         <div className="ml-2">
-          <p className="text-md font-normal text-red-700">{children}</p>
+          <p className="text-md font-normal text-red-700">
+            {children || "Server Error, Try Again Later"}
+          </p>
           <div className="mt-2">
             <Link
               to="/home"

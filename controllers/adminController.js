@@ -15,8 +15,31 @@ export const addAdminValue = async (req, res) => {
 
 export const deleteAdminValue = async (req, res) => {
   try {
-    await Admin.findByIdAndDelete(req.params.id);
-    res.status(201).json({ msg: "Added successfully" });
+    await Admin.findByIdAndDelete(req.body.id);
+    res.status(200).json({ msg: "Deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const getAllValues = async (req, res) => {
+  try {
+    const values = await Admin.find();
+
+    const services = [];
+    const sales = [];
+    const comments = [];
+
+    for (let item of values) {
+      item.sales && sales.push({ name: item.sales, id: item._id }),
+        item.serviceName &&
+          services.push({ name: item.serviceName.label, id: item._id }),
+        item.serviceComment &&
+          comments.push({ name: item.serviceComment.label, id: item._id });
+    }
+
+    return res.json({ services, sales, comments });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

@@ -14,7 +14,18 @@ export const adminSlice = apiSlice.injectEndpoints({
         url: "/api/admin/value",
       }),
     }),
+    deleteAdminValue: builder.mutation({
+      query: (data) => ({
+        url: `/api/admin/value`,
+        method: "DELETE",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useAddAdminValueMutation, useGetAdminValueQuery } = adminSlice;
+export const {
+  useAddAdminValueMutation,
+  useGetAdminValueQuery,
+  useDeleteAdminValueMutation,
+} = adminSlice;
