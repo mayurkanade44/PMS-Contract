@@ -9,7 +9,9 @@ import {
 import { useForm } from "react-hook-form";
 import {
   useAddAdminValueMutation,
+  useAllUsersQuery,
   useDeleteAdminValueMutation,
+  useDeleteUserMutation,
   useGetAdminValueQuery,
 } from "../redux/adminSlice";
 import { toast } from "react-toastify";
@@ -31,6 +33,14 @@ const Admin = () => {
     useDeleteAdminValueMutation();
 
   const {
+    data: allUsers,
+    isLoading: userLoading,
+    refetch: userRefetch,
+  } = useAllUsersQuery();
+  const [deleteUser, { isLoading: deleteUserLoading }] =
+    useDeleteUserMutation();
+
+  const {
     register,
     formState: { errors },
     handleSubmit,
@@ -40,6 +50,7 @@ const Admin = () => {
       name: "",
       email: "",
       password: "",
+      role: "",
       serviceName: "",
       commentLabel: "",
       commentValue: "",
@@ -54,9 +65,15 @@ const Admin = () => {
   const handleDelete = async (id) => {
     let data = { id: id };
     try {
-      const res = await deleteValue(data).unwrap();
+      let res;
+      if (showTable === "All Users") {
+        res = await deleteUser(data).unwrap();
+        userRefetch();
+      } else {
+        res = await deleteValue(data).unwrap();
+        refetch();
+      }
       toast.success(res.msg);
-      refetch();
     } catch (error) {
       console.log(error);
       toast.error(error?.data?.msg || error.error);
@@ -94,7 +111,7 @@ const Admin = () => {
 
   return (
     <div className="py-14 lg:py-0">
-      {isLoading || deleteValueLoading || addValueLoading ? (
+      {isLoading || deleteValueLoading || addValueLoading || userLoading ? (
         <Loading />
       ) : (
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
@@ -115,8 +132,72 @@ const Admin = () => {
           <div className="flex justify-center py-2 gap-5">
             {showTable === "All Users" ? (
               <div>
-                <Button label="New User" width="w-32" height="h-9" />
-                <AdminTable th="Users" data={data.comments} />
+                <form
+                  className="flex items-center gap-8 mb-4"
+                  onSubmit={handleSubmit(submit)}
+                >
+                  <InputRow
+                    label="Service Name"
+                    message="Service name is required"
+                    placeholder="Enter new service"
+                    id="serviceName"
+                    errors={errors}
+                    register={register}
+                  />
+                  <Button
+                    label="Add Service"
+                    color="bg-green-600"
+                    width="w-28"
+                    height="h-9"
+                    type="submit"
+                  />
+                </form>
+                <table className="border text-sm font-light dark:border-neutral-500">
+                  <thead className="border-b font-medium dark:border-neutral-800 border-2">
+                    <tr>
+                      <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
+                        Name
+                      </th>
+                      <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
+                        Email
+                      </th>
+                      <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
+                        Role
+                      </th>
+                      <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allUsers?.map((item) => (
+                      <tr
+                        className="border-b  dark:border-neutral-500"
+                        key={item._id}
+                      >
+                        <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
+                          {item.name}
+                        </td>
+                        <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
+                          {item.email}
+                        </td>
+                        <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
+                          {item.role}
+                        </td>
+                        <td className="border-r flex justify-center w-32 px-2 py-1 font-normal dark:border-neutral-500">
+                          {item.role !== "Admin" && (
+                            <Button
+                              label="Delete"
+                              color="bg-red-600"
+                              width="w-20"
+                              handleClick={() => handleDelete(item._id)}
+                            />
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             ) : showTable === "All Services" ? (
               <div>

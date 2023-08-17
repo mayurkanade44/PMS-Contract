@@ -2,6 +2,7 @@ import Admin from "../models/adminModel.js";
 import Contract from "../models/contractModel.js";
 import Service from "../models/serviceModel.js";
 import Report from "../models/reportModel.js";
+import User from "../models/userModel.js";
 
 export const addAdminValue = async (req, res) => {
   try {
@@ -40,6 +41,29 @@ export const getAllValues = async (req, res) => {
     }
 
     return res.json({ services, sales, comments });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    return res.json(users);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.body.id);
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    await user.deleteOne();
+    return res.json({ msg: "User Deleted" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
