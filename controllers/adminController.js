@@ -77,6 +77,10 @@ export const addUser = async (req, res) => {
     if (!name || !email || !password || !role)
       return res.status(400).json({ msg: "Please provide required values" });
 
+    const userExist = await User.findOne({ email });
+    if (userExist)
+      return res.status(400).json({ msg: "Email id already exist" });
+
     req.body.name = capitalLetter(name);
 
     const user = await User.create(req.body);

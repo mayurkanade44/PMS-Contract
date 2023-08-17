@@ -75,12 +75,7 @@ const Admin = () => {
 
   const submit = async (data) => {
     let form = {};
-    if (showTable === "All Users") {
-      form.name = data.name;
-      form.email = data.email;
-      form.password = data.password;
-      form.role = data.role;
-    } else if (showTable === "All Services") {
+    if (showTable === "All Services") {
       form.serviceName = {
         label: data.serviceName,
         value: "30ml / 20ml / 10ml / 5ml                    ODR / GEL / SPRAY",
@@ -97,7 +92,7 @@ const Admin = () => {
     try {
       let res;
       if (showTable === "All Users") {
-        res = await addUser(form).unwrap();
+        res = await addUser(data).unwrap();
       } else {
         res = await addValue(form).unwrap();
         refetch();
