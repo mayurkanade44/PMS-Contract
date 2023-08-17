@@ -9,7 +9,15 @@ export const reportSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    generateReport: builder.mutation({
+      query: (data) => ({
+        url: `/api/report/generate`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useAddReportDataMutation } = reportSlice;
+export const { useAddReportDataMutation, useGenerateReportMutation } =
+  reportSlice;

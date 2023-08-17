@@ -17,6 +17,9 @@ import { setContractDetails } from "../redux/allSlice";
 import { toast } from "react-toastify";
 import DeleteModal from "../components/Modals/DeleteModal";
 import DeactiveModal from "../components/Modals/DeleteModal";
+import { saveAs } from "file-saver";
+
+import { useGenerateReportMutation } from "../redux/reportSlice";
 
 const ContractDetails = () => {
   const { id } = useParams();
@@ -24,7 +27,6 @@ const ContractDetails = () => {
   const dispatch = useDispatch();
   const [openDelete, setOpenDelete] = useState(false);
   const [openDeactive, setOpenDeactive] = useState(false);
-
   const { user } = useSelector((store) => store.all);
 
   const [deleteContract, { isLoading: deleteLoading }] =
@@ -37,6 +39,9 @@ const ContractDetails = () => {
     refetch,
     error,
   } = useGetSingleContractQuery(id);
+
+  const [generateReport, { isLoading: reportLoading }] =
+    useGenerateReportMutation();
 
   useEffect(() => {
     if (contract) {
@@ -68,9 +73,21 @@ const ContractDetails = () => {
     }
   };
 
+  const handleReport = async (id) => {
+    const data = { id: id };
+    try {
+      const res = await generateReport(data).unwrap();
+      toast.success(res.msg);
+      if (res.link) saveAs(res.link, `${contract.contractNo}_Report`);
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.msg || error.error);
+    }
+  };
+
   return (
     <div>
-      {contractLoading || deleteLoading || deactiveLoading ? (
+      {contractLoading || deleteLoading || deactiveLoading || reportLoading ? (
         <Loading />
       ) : error ? (
         <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
@@ -166,6 +183,7 @@ const ContractDetails = () => {
               "Download",
               "Update",
             ]}
+            handleButton3={handleReport}
             data={contract}
             contractDetails={true}
           />
