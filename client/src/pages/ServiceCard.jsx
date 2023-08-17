@@ -16,10 +16,15 @@ import {
 } from "../utils/dataHelper";
 import { useState } from "react";
 import { useAddReportDataMutation } from "../redux/reportSlice";
+import { useGetAllValuesQuery } from "../redux/contractSlice";
 
 const ServiceCard = () => {
   const [images, setImages] = useState([]);
   const { id } = useParams();
+
+  const { data: adminValues, isLoading: adminLoading } = useGetAllValuesQuery();
+  const { data, isLoading: cardLoading, error } = useSingleCardQuery(id);
+  const [addReportData, { isLoading: addLoading }] = useAddReportDataMutation();
 
   const {
     register,
@@ -36,9 +41,6 @@ const ServiceCard = () => {
       serviceComment: "All job done",
     },
   });
-
-  const { data, isLoading: cardLoading, error } = useSingleCardQuery(id);
-  const [addReportData, { isLoading: addLoading }] = useAddReportDataMutation();
 
   const submit = async (values) => {
     if (images.length < 1) return toast.error("Please upload images");
@@ -71,7 +73,7 @@ const ServiceCard = () => {
 
   return (
     <div>
-      {cardLoading || addLoading ? (
+      {cardLoading || addLoading || adminLoading ? (
         <Loading />
       ) : (
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
@@ -162,7 +164,7 @@ const ServiceCard = () => {
                   render={({ field: { onChange, value, ref } }) => (
                     <InputSelect
                       label="Service Comment"
-                      options={serviceComment}
+                      options={adminValues?.comments}
                       onChange={onChange}
                       value={value}
                       placeholder="Select comment"

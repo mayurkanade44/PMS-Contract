@@ -4,6 +4,7 @@ import {
   deactiveContract,
   deleteContract,
   getAllContracts,
+  getAllValues,
   getContract,
   updateContract,
 } from "../controllers/contractController.js";
@@ -14,6 +15,8 @@ router
   .route("/")
   .post(authorizeUser("Admin", "Back Office"), createContract)
   .get(getAllContracts);
+
+router.get("/getAllValues", getAllValues);
 router
   .route("/singleContract/:id")
   .get(authorizeUser("Admin", "Back Office"), getContract)

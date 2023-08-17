@@ -3,6 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import {
   useCreateContractMutation,
+  useGetAllValuesQuery,
   useUpdateContractMutation,
 } from "../redux/contractSlice";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,6 +24,8 @@ const Contract = () => {
     useCreateContractMutation();
   const [updateContract, { isLoading: updateContractLoading }] =
     useUpdateContractMutation();
+
+  const { data, isLoading } = useGetAllValuesQuery();
 
   const {
     register,
@@ -109,6 +112,7 @@ const Contract = () => {
         navigate(`/contract-details/${id}`);
       } else {
         res = await createContract(data).unwrap();
+        navigate(`/contract/${res.id}/service-cards`);
         reset();
       }
       toast.success(res.msg);
@@ -120,14 +124,16 @@ const Contract = () => {
 
   return (
     <>
-      {(newContractLoading || updateContractLoading) && <Loading />}
-      <form onSubmit={handleSubmit(submit)}>
+      {(newContractLoading || updateContractLoading || isLoading) && (
+        <Loading />
+      )}
+      <form onSubmit={handleSubmit(submit)} className="my-4">
         <div className="grid grid-cols-12 gap-x-5 gap-y-2 mb-2">
           <div className="col-span-6 md:col-span-4 lg:col-span-3">
             <InputRow
               label="Contract Number"
               message="Contract number is required"
-              placeholder="A-45"
+              placeholder="A/44"
               id="contractNo"
               errors={errors}
               register={register}
@@ -158,7 +164,7 @@ const Contract = () => {
               render={({ field: { onChange, value, ref } }) => (
                 <InputSelect
                   label="Sales Person"
-                  options={salesPerson}
+                  options={data?.sales}
                   onChange={onChange}
                   value={value}
                   placeholder="Select sales person"

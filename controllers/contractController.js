@@ -1,3 +1,4 @@
+import Admin from "../models/adminModel.js";
 import Contract from "../models/contractModel.js";
 import { capitalLetter } from "../utils/helper.js";
 
@@ -19,7 +20,7 @@ export const createContract = async (req, res) => {
       .json({ id: newContract._id, msg: "New contract created" });
   } catch (error) {
     console.log(error);
-    res.send(500).json({ msg: "Server error, try again later" });
+    res.status(500).json({ msg: "Server error, try again later" });
   }
 };
 
@@ -36,7 +37,7 @@ export const getContract = async (req, res) => {
     return res.json(contract);
   } catch (error) {
     console.log(error);
-    res.send(500).json({ msg: "Server error, try again later" });
+    res.status(500).json({ msg: "Server error, try again later" });
   }
 };
 
@@ -64,7 +65,7 @@ export const updateContract = async (req, res) => {
     return res.status(200).json({ msg: "Contract updated" });
   } catch (error) {
     console.log(error);
-    res.send(500).json({ msg: "Server error, try again later" });
+    res.status(500).json({ msg: "Server error, try again later" });
   }
 };
 
@@ -79,7 +80,7 @@ export const deleteContract = async (req, res) => {
     return res.json({ msg: "Contract has been deleted" });
   } catch (error) {
     console.log(error);
-    res.send(500).json({ msg: "Server error, try again later" });
+    res.status(500).json({ msg: "Server error, try again later" });
   }
 };
 
@@ -126,6 +127,27 @@ export const getAllContracts = async (req, res) => {
       .limit(10);
 
     res.json({ contracts, pages: Math.ceil(count / 10) });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const getAllValues = async (req, res) => {
+  try {
+    const values = await Admin.find();
+
+    const services = [];
+    const sales = [];
+    const comments = [];
+
+    for (let item of values) {
+      item.sales && sales.push(item.sales),
+        item.serviceName && services.push(item.serviceName),
+        item.serviceComment && comments.push(item.serviceComment);
+    }
+
+    return res.json({ services, sales, comments });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

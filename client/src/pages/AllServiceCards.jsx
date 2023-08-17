@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useParams } from "react-router-dom";
-import { allFrequency, allService } from "../utils/dataHelper";
+import { allFrequency } from "../utils/dataHelper";
 import {
   AlertMessage,
   Button,
@@ -17,13 +17,17 @@ import {
   useUpdateCardMutation,
 } from "../redux/serviceSlice";
 import { toast } from "react-toastify";
-import { useGetSingleContractQuery } from "../redux/contractSlice";
+import {
+  useGetAllValuesQuery,
+  useGetSingleContractQuery,
+} from "../redux/contractSlice";
 import DeleteModal from "../components/Modals/DeleteModal";
 import { dateFormat } from "../utils/functionHelper";
 import { useSelector } from "react-redux";
 
 const AllServiceCards = () => {
   const [selectedOption, setSelectedOption] = useState([]);
+  const [allService, setAllService] = useState([]);
   const [edit, setEdit] = useState({
     status: false,
     loading: false,
@@ -46,6 +50,7 @@ const AllServiceCards = () => {
     useDeleteCardMutation();
   const [createCard, { isLoading: createCardLoading }] =
     useCreateCardMutation();
+  const { data: adminValues, isLoading: valueLoading } = useGetAllValuesQuery();
 
   const {
     register,
@@ -162,8 +167,8 @@ const AllServiceCards = () => {
                 closeMenuOnSelect={false}
                 defaultValue={selectedOption}
                 onChange={setSelectedOption}
-                options={allService}
-                isMulti
+                options={adminValues?.services}
+                isMulti={true}
                 placeholder="Select Service"
                 required
               />

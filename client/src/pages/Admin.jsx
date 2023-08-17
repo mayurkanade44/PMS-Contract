@@ -78,7 +78,7 @@ const Admin = () => {
     if (showTable === "All Services") {
       form.serviceName = {
         label: data.serviceName,
-        value: "30ml / 20ml / 10ml / 5ml                    ODR / GEL / SPRAY",
+        value: data.serviceName,
       };
     } else if (showTable === "All Sales Person") {
       form.sales = { label: data.sales, value: data.sales };
