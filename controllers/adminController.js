@@ -3,6 +3,7 @@ import Contract from "../models/contractModel.js";
 import Service from "../models/serviceModel.js";
 import Report from "../models/reportModel.js";
 import User from "../models/userModel.js";
+import { capitalLetter } from "../utils/helper.js";
 
 export const addAdminValue = async (req, res) => {
   try {
@@ -64,6 +65,22 @@ export const deleteUser = async (req, res) => {
 
     await user.deleteOne();
     return res.json({ msg: "User Deleted" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const addUser = async (req, res) => {
+  const { name, email, password, role } = req.body;
+  try {
+    if (!name || !email || !password || !role)
+      return res.status(400).json({ msg: "Please provide required values" });
+
+    req.body.name = capitalLetter(name);
+
+    const user = await User.create(req.body);
+    return res.status(201).json({ msg: `${user.name} is added` });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

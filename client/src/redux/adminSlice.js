@@ -34,6 +34,15 @@ export const adminSlice = apiSlice.injectEndpoints({
         method: "DELETE",
         body: data,
       }),
+      invalidatesTags: ["User"],
+    }),
+    addUser: builder.mutation({
+      query: (data) => ({
+        url: `/api/admin/user`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
     }),
   }),
 });
@@ -44,4 +53,5 @@ export const {
   useDeleteAdminValueMutation,
   useAllUsersQuery,
   useDeleteUserMutation,
+  useAddUserMutation,
 } = adminSlice;

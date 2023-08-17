@@ -52,3 +52,16 @@ export const serviceComment = [
   { value: "All job done", label: "All job completed" },
   { value: "Client cancelled", label: "Client cancelled" },
 ];
+
+export const adminNavbar = [
+  "All Users",
+  "All Services",
+  "All Sales Person",
+  "All Service Comments",
+];
+
+export const userRoles = [
+  { value: "Technician", label: "Technician" },
+  { value: "Back Office", label: "Back Office" },
+  { value: "Admin", label: "Admin" },
+];

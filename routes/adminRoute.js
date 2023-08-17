@@ -1,6 +1,7 @@
 import express from "express";
 import {
   addAdminValue,
+  addUser,
   deleteAdminValue,
   deleteUser,
   getAllUsers,
@@ -14,6 +15,6 @@ router
   .delete(deleteAdminValue)
   .get(getAllValues);
 
-router.route("/user").get(getAllUsers).delete(deleteUser);
+router.route("/user").get(getAllUsers).delete(deleteUser).post(addUser);
 
 export default router;

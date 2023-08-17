@@ -1,56 +1,49 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   AdminTable,
   AlertMessage,
   Button,
   InputRow,
   Loading,
+  InputSelect,
 } from "../components";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {
   useAddAdminValueMutation,
+  useAddUserMutation,
   useAllUsersQuery,
   useDeleteAdminValueMutation,
   useDeleteUserMutation,
   useGetAdminValueQuery,
 } from "../redux/adminSlice";
 import { toast } from "react-toastify";
-
-const adminNavbar = [
-  "All Users",
-  "All Services",
-  "All Sales Person",
-  "All Service Comments",
-];
+import { adminNavbar, userRoles } from "../utils/dataHelper";
 
 const Admin = () => {
   const [showTable, setShowTable] = useState("All Users");
-  const [service, setService] = useState([]);
 
   const { data, isLoading, refetch, error } = useGetAdminValueQuery();
   const [addValue, { isLoading: addValueLoading }] = useAddAdminValueMutation();
   const [deleteValue, { isLoading: deleteValueLoading }] =
     useDeleteAdminValueMutation();
 
-  const {
-    data: allUsers,
-    isLoading: userLoading,
-    refetch: userRefetch,
-  } = useAllUsersQuery();
+  const { data: allUsers, isLoading: userLoading } = useAllUsersQuery();
   const [deleteUser, { isLoading: deleteUserLoading }] =
     useDeleteUserMutation();
+  const [addUser, { isLoading: addUserLoading }] = useAddUserMutation();
 
   const {
     register,
     formState: { errors },
     handleSubmit,
     reset,
+    control,
   } = useForm({
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      role: "",
+      role: "Technician",
       serviceName: "",
       commentLabel: "",
       commentValue: "",
@@ -60,6 +53,7 @@ const Admin = () => {
 
   const handleTable = (item) => {
     setShowTable(item);
+    reset();
   };
 
   const handleDelete = async (id) => {
@@ -68,7 +62,6 @@ const Admin = () => {
       let res;
       if (showTable === "All Users") {
         res = await deleteUser(data).unwrap();
-        userRefetch();
       } else {
         res = await deleteValue(data).unwrap();
         refetch();
@@ -82,16 +75,19 @@ const Admin = () => {
 
   const submit = async (data) => {
     let form = {};
-    if (data.serviceName) {
+    if (showTable === "All Users") {
+      form.name = data.name;
+      form.email = data.email;
+      form.password = data.password;
+      form.role = data.role;
+    } else if (showTable === "All Services") {
       form.serviceName = {
         label: data.serviceName,
         value: "30ml / 20ml / 10ml / 5ml                    ODR / GEL / SPRAY",
       };
-    }
-    if (data.sales) {
+    } else if (showTable === "All Sales Person") {
       form.sales = { label: data.sales, value: data.sales };
-    }
-    if (data.commentLabel && data.commentValue) {
+    } else if (showTable === "All Service Comments") {
       form.serviceComment = {
         label: data.commentLabel,
         value: data.commentValue,
@@ -99,9 +95,14 @@ const Admin = () => {
     }
 
     try {
-      const res = await addValue(form).unwrap();
+      let res;
+      if (showTable === "All Users") {
+        res = await addUser(form).unwrap();
+      } else {
+        res = await addValue(form).unwrap();
+        refetch();
+      }
       toast.success(res.msg);
-      refetch();
       reset();
     } catch (error) {
       console.log(error);
@@ -111,7 +112,12 @@ const Admin = () => {
 
   return (
     <div className="py-14 lg:py-0">
-      {isLoading || deleteValueLoading || addValueLoading || userLoading ? (
+      {isLoading ||
+      deleteValueLoading ||
+      addValueLoading ||
+      userLoading ||
+      deleteUserLoading ||
+      addUserLoading ? (
         <Loading />
       ) : (
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
@@ -136,68 +142,118 @@ const Admin = () => {
                   className="flex items-center gap-8 mb-4"
                   onSubmit={handleSubmit(submit)}
                 >
-                  <InputRow
-                    label="Service Name"
-                    message="Service name is required"
-                    placeholder="Enter new service"
-                    id="serviceName"
-                    errors={errors}
-                    register={register}
-                  />
+                  <div>
+                    <InputRow
+                      label="User Name"
+                      placeholder="Enter full name"
+                      id="name"
+                      errors={errors}
+                      register={register}
+                    />
+                    <p className="text-xs text-red-500 -bottom-4 pl-1">
+                      {errors.name && "Name is required"}
+                    </p>
+                  </div>
+                  <div>
+                    <InputRow
+                      label="Email"
+                      placeholder="abc@pms.in"
+                      id="email"
+                      errors={errors}
+                      register={register}
+                    />
+                    <p className="text-xs text-red-500 -bottom-4 pl-1">
+                      {errors.email && "Email id is required"}
+                    </p>
+                  </div>
+                  <div>
+                    <InputRow
+                      label="Password"
+                      message="Password is required"
+                      placeholder="Minium 5 letters"
+                      id="password"
+                      errors={errors}
+                      register={register}
+                    />
+                    <p className="text-xs text-red-500 -bottom-4 pl-1">
+                      {errors.password && "Password is required"}
+                    </p>
+                  </div>
+                  <div>
+                    <Controller
+                      name="role"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { onChange, value, ref } }) => (
+                        <InputSelect
+                          options={userRoles}
+                          onChange={onChange}
+                          value={value}
+                          label="Role"
+                        />
+                      )}
+                    />
+                    <p className="text-xs text-red-500 -bottom-4 pl-1">
+                      {errors.role && "Role is required"}
+                    </p>
+                  </div>
+
                   <Button
-                    label="Add Service"
+                    label="Add User"
                     color="bg-green-600"
                     width="w-28"
                     height="h-9"
                     type="submit"
                   />
                 </form>
-                <table className="border text-sm font-light dark:border-neutral-500">
-                  <thead className="border-b font-medium dark:border-neutral-800 border-2">
-                    <tr>
-                      <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
-                        Name
-                      </th>
-                      <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
-                        Email
-                      </th>
-                      <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
-                        Role
-                      </th>
-                      <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allUsers?.map((item) => (
-                      <tr
-                        className="border-b  dark:border-neutral-500"
-                        key={item._id}
-                      >
-                        <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
-                          {item.name}
-                        </td>
-                        <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
-                          {item.email}
-                        </td>
-                        <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
-                          {item.role}
-                        </td>
-                        <td className="border-r flex justify-center w-32 px-2 py-1 font-normal dark:border-neutral-500">
-                          {item.role !== "Admin" && (
-                            <Button
-                              label="Delete"
-                              color="bg-red-600"
-                              width="w-20"
-                              handleClick={() => handleDelete(item._id)}
-                            />
-                          )}
-                        </td>
+                <div className="flex justify-center">
+                  <table className="border text-sm font-light dark:border-neutral-500">
+                    <thead className="border-b font-medium dark:border-neutral-800 border-2">
+                      <tr>
+                        <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
+                          Name
+                        </th>
+                        <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
+                          Email
+                        </th>
+                        <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
+                          Role
+                        </th>
+                        <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
+                          Action
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {allUsers?.map((item) => (
+                        <tr
+                          className="border-b  dark:border-neutral-500"
+                          key={item._id}
+                        >
+                          <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
+                            {item.name}
+                          </td>
+                          <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
+                            {item.email}
+                          </td>
+                          <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
+                            {item.role}
+                          </td>
+                          <td className="border-r flex justify-center w-32 px-2 py-1 font-normal dark:border-neutral-500">
+                            {item.role !== "Admin" && (
+                              <Button
+                                label="Delete"
+                                color="bg-red-600"
+                                width="w-20"
+                                handleClick={() => handleDelete(item._id)}
+                              />
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ) : showTable === "All Services" ? (
               <div>
