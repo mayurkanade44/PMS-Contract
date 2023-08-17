@@ -33,7 +33,7 @@ export const addCard = async (req, res) => {
     const serviceName = service.services.map((item) => item.label + ",");
 
     const buf = await qrCodeGenerator(
-      `https://pestxz.com/service-card/${service._id}`,
+      `https://pestxz.com/report/${service._id}`,
       contract.contractNo,
       serviceName
     );
@@ -142,7 +142,7 @@ export const createCard = async (req, res) => {
     contract.services.forEach(async (service, index) => {
       const serviceId = service._id.toString();
       const qrCode = await QRCode.toDataURL(
-        `https://cqr.sat9.in/feedback/${serviceId}`
+        `https://cqr.sat9.in/report/${serviceId}`
       );
       const template = fs.readFileSync("./tmp/template.docx");
 

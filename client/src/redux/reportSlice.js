@@ -16,8 +16,16 @@ export const reportSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getClientReport: builder.query({
+      query: (id) => ({
+        url: `/api/report/clientReport/${id}`,
+      }),
+    }),
   }),
 });
 
-export const { useAddReportDataMutation, useGenerateReportMutation } =
-  reportSlice;
+export const {
+  useAddReportDataMutation,
+  useGenerateReportMutation,
+  useGetClientReportQuery,
+} = reportSlice;

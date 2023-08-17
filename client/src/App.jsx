@@ -12,6 +12,7 @@ import { Navbar, ProtectedRoute } from "./components";
 import {
   Admin,
   AllServiceCards,
+  ClientReport,
   Contract,
   ContractDetails,
   Dashboard,
@@ -37,6 +38,7 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
         <Route index={true} path="/" element={<Login />} />
+        <Route path="/report/:id" element={<ClientReport />} />
 
         <Route path="" element={<ProtectedRoute />}>
           <Route path="/register" element={<Register />} />

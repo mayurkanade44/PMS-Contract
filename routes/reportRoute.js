@@ -1,10 +1,23 @@
 import express from "express";
 const router = express.Router();
 
-import { addServiceReport, generateReport } from "../controllers/reportController.js";
-import { authenticateUser } from "../middleware/authMiddleware.js";
+import {
+  addServiceReport,
+  clientReport,
+  generateReport,
+} from "../controllers/reportController.js";
+import {
+  authenticateUser,
+  authorizeUser,
+} from "../middleware/authMiddleware.js";
 
 router.post("/add", authenticateUser, addServiceReport);
-router.post("/generate", generateReport);
+router.post(
+  "/generate",
+  authenticateUser,
+  authorizeUser("Admin", "Back Office"),
+  generateReport
+);
+router.get("/clientReport/:id", clientReport);
 
 export default router;

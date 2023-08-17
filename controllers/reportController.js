@@ -112,3 +112,19 @@ export const generateReport = async (req, res) => {
     res.status(500).json({ msg: "Server error, try again later" });
   }
 };
+
+export const clientReport = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const report = await Report.find({
+      service: new mongoose.Types.ObjectId(id),
+    }).select("-image -contract");
+
+    if (!report.length) return res.status(404).json({ msg: "No data found" });
+
+    return res.json(report);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
