@@ -35,11 +35,12 @@ const Home = () => {
     <>
       {contractsLoading || isFetching ? (
         <Loading />
-      ) : error ? (
-        <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
+        error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
+      )}
+      {data && (
         <>
-          <div className="px-2 py-5">
+          <div className="px-2 my-5">
             <div className="md:flex items-center justify-between">
               <p className=" text-center  lg:text-2xl font-bold leading-normal text-gray-800">
                 All Contracts
@@ -68,13 +69,15 @@ const Home = () => {
                 />
               </form>
               <div className="flex items-end justify-around mt-4 md:mt-0 md:ml-3 lg:ml-0">
-                <Link to="/contract/new">
-                  <button className="inline-flex mx-1.5 items-start justify-start px-4 py-3 bg-cyan-500 hover:bg-cyan-600 rounded">
-                    <p className="text-sm font-medium leading-none text-white">
-                      Add New Contract
-                    </p>
-                  </button>
-                </Link>
+                {user.role !== "Technician" && (
+                  <Link to="/contract/new">
+                    <button className="inline-flex mx-1.5 items-start justify-start px-4 py-3 bg-cyan-500 hover:bg-cyan-600 rounded">
+                      <p className="text-sm font-medium leading-none text-white">
+                        Add New Contract
+                      </p>
+                    </button>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -104,7 +107,7 @@ const Home = () => {
                 <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28 px-3">
                   End Date
                 </th>
-                {user !== "Technician" && (
+                {user.role !== "Technician" && (
                   <th className="font-bold text-center  dark:border-neutral-800 border-2 w-40 px-3">
                     Action
                   </th>
@@ -135,11 +138,13 @@ const Home = () => {
                   <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
                     {dateFormat(contract.tenure.endDate)}
                   </td>
-                  <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
-                    <Link to={`/contract-details/${contract._id}`}>
-                      <Button label="Details" height="py-2" width="w-20" />
-                    </Link>
-                  </td>
+                  {user.role !== "Technician" && (
+                    <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
+                      <Link to={`/contract-details/${contract._id}`}>
+                        <Button label="Details" height="py-2" width="w-20" />
+                      </Link>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

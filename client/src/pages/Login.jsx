@@ -2,13 +2,15 @@ import { useForm } from "react-hook-form";
 import { useLoginMutation } from "../redux/userSlice";
 import { toast } from "react-toastify";
 import { setCredentials } from "../redux/allSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { HiMail } from "react-icons/hi";
 import { AiFillUnlock } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Login = () => {
   const [login, { isLoading }] = useLoginMutation();
+  const { user } = useSelector((store) => store.all);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,6 +25,10 @@ const Login = () => {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (user) navigate("/home");
+  }, []);
 
   const submit = async (data) => {
     try {

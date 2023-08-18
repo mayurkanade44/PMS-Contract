@@ -66,12 +66,12 @@ const ServiceTable = ({ th, data, handleButton1, handleButton3 }) => {
                 <button
                   type="button"
                   onClick={() => handleButton3(service._id)}
-                  className="text-white font-semibold mx-1 items-start justify-start px-2 py-2 bg-orange-700 disabled:bg-green-500 disabled:cursor-not-allowed rounded"
+                  className="text-white font-semibold mx-1 items-start justify-start px-2 py-2 bg-orange-500 disabled:bg-green-500 disabled:cursor-not-allowed rounded"
                 >
                   Generate Report
                 </button>
               </td>
-              <td className="text-left border-r px-2 py-1 font-normal dark:border-neutral-500">
+              <td className="text-left w-20 border-r px-2 py-1 font-normal dark:border-neutral-500">
                 <Link
                   to={`/service-card/${service._id}`}
                   className="text-white font-semibold items-start justify-start px-2 py-2 bg-blue-700 rounded"

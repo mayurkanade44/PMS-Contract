@@ -1,17 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetClientReportQuery } from "../redux/reportSlice";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button, Loading } from "../components";
+import { useSelector } from "react-redux";
 
 const ClientReport = () => {
   const { id } = useParams();
   const [show, setShow] = useState(true);
+  const { user } = useSelector((store) => store.all);
+  const navigate = useNavigate();
 
   const {
     data: report,
     isLoading: reportLoading,
     error,
   } = useGetClientReportQuery(id, { skip: show });
+
+  useEffect(() => {
+    if (user) navigate(`/service-card/${id}`);
+  }, []);
 
   return (
     <div className="my-16 lg:my-4">

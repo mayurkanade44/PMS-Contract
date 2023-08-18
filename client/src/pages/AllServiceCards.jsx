@@ -135,10 +135,11 @@ const AllServiceCards = () => {
       createCardLoading ||
       isFetching ? (
         <Loading />
-      ) : error ? (
-        <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
-        <div>
+        error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
+      )}
+      {contractDetails && (
+        <div className="my-5">
           <div className="md:flex justify-between">
             <h2 className="text-2xl font-semibold">
               Contract Number - {contractDetails.contractNo}

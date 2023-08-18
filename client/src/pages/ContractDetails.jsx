@@ -89,11 +89,12 @@ const ContractDetails = () => {
     <div>
       {contractLoading || deleteLoading || deactiveLoading || reportLoading ? (
         <Loading />
-      ) : error ? (
-        <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
+        error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
+      )}
+      {contract && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 my-5">
             <div>
               <h1 className="text-3xl font-bold text-center">
                 Contract Number: {contract.contractNo}
