@@ -5,6 +5,7 @@ import {
   addServiceReport,
   clientReport,
   generateReport,
+  serviceNotification,
 } from "../controllers/reportController.js";
 import {
   authenticateUser,
@@ -19,5 +20,7 @@ router.post(
   generateReport
 );
 router.get("/clientReport/:id", clientReport);
+
+router.get("/serviceDue", serviceNotification);
 
 export default router;

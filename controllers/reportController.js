@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { uploadFile } from "../utils/helper.js";
 import exceljs from "exceljs";
 import fs from "fs";
+import moment from "moment";
 
 export const addServiceReport = async (req, res) => {
   const { contract: contractId, service: serviceId } = req.body;
@@ -80,19 +81,19 @@ export const generateReport = async (req, res) => {
           serviceComment: item.serviceComment,
           image1:
             (item.image.length >= 1 && {
-              text: "Image 1",
+              text: "Download",
               hyperlink: item.image[0],
             }) ||
             "No Image",
           image2:
             (item.image.length >= 2 && {
-              text: "Image 2",
+              text: "Download",
               hyperlink: item.image[1],
             }) ||
             "No Image",
           image3:
             (item.image.length >= 3 && {
-              text: "Image 3",
+              text: "Download",
               hyperlink: item.image[2],
             }) ||
             "No Image",
@@ -100,9 +101,7 @@ export const generateReport = async (req, res) => {
       });
 
       const filePath = "./tmp/serviceReport.xlsx";
-
       await workbook.xlsx.writeFile(filePath);
-
       const link = await uploadFile({ filePath });
 
       return res.status(201).json({ msg: "Report Generated", link });
@@ -123,6 +122,51 @@ export const clientReport = async (req, res) => {
     if (!report.length) return res.status(404).json({ msg: "No data found" });
 
     return res.json(report);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const serviceNotification = async (req, res) => {
+  try {
+    const date = moment().add(7, "days").format("DD/MM/YYYY");
+
+    const services = await Service.find({
+      serviceDates: { $in: date },
+    }).populate({
+      path: "contract",
+      select: "contractNo active billToAddress shipToAddress",
+      match: { active: true },
+    });
+
+    if (!services.length) return res.status(404).json({ msg: "No data found" });
+
+    const workbook = new exceljs.Workbook();
+    let worksheet = workbook.addWorksheet("Sheet1");
+
+    worksheet.columns = [
+      { header: "Contract Number", key: "contract" },
+      { header: "Service Name", key: "serviceName" },
+      { header: "Frequency", key: "frequency" },
+      { header: "Ship To Name", key: "name" },
+    ];
+
+    for (let service of services) {
+      if (service.contract) {
+        worksheet.addRow({
+          contract: service.contract.contractNo,
+          serviceName: service.services.map((item) => item.label).join(", "),
+          frequency: service.frequency,
+          name: service.contract.shipToAddress.name,
+        });
+      }
+    }
+    const filePath = "./tmp/serviceDue.xlsx";
+    await workbook.xlsx.writeFile(filePath);
+    const link = await uploadFile({ filePath });
+
+    return res.status(200).json({ msg: "Notification generated", link });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
