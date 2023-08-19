@@ -252,10 +252,10 @@ const AllServiceCards = () => {
                     className="border-b dark:border-neutral-500"
                     key={service._id}
                   >
-                    <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
+                    <td className="border-r w-44 px-2 py-1 font-normal dark:border-neutral-500">
                       {service.services.map((item) => item.label + ", ")}
                     </td>
-                    <td className="border-r w-36 px-2 py-1 font-normal dark:border-neutral-500">
+                    <td className="border-r text-center w-36 px-2 py-1 font-normal dark:border-neutral-500">
                       {service.frequency}
                     </td>
                     <td className="text-left border-r px-2 py-1 font-normal dark:border-neutral-500">

@@ -6,6 +6,8 @@ import QRCode from "qrcode";
 import fs from "fs";
 import { serviceDue, uploadFile } from "../utils/helper.js";
 import { createReport } from "docx-templates";
+import sgMail from "@sendgrid/mail";
+import axios from "axios";
 
 let cardId = null;
 
@@ -210,48 +212,105 @@ export const sendContract = async (req, res) => {
   try {
     const contract = await Contract.findById(contractId).populate("services");
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
+    if (contract.softCopy && contract.sendMail)
+      return res.status(200).json({ msg: "Contract already sent" });
 
-    const template = fs.readFileSync("./tmp/contractTemp.docx");
+    if (!contract.softCopy) {
+      const template = fs.readFileSync("./tmp/contractTemp.docx");
 
-    const buffer = await createReport({
-      cmdDelimiter: ["{", "}"],
-      template,
+      const buffer = await createReport({
+        cmdDelimiter: ["{", "}"],
+        template,
 
-      additionalJsContext: {
-        contractNo: contract.contractNo,
-        type: contract.type === "NC" ? "New Contract" : "Renewal Contract",
-        sales: contract.sales,
-        startDate: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
-        endDate: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
-        billToName: contract.billToAddress.name,
-        billToAddress: contract.billToAddress.address,
-        billToCity: contract.billToAddress.city,
-        billToPincode: contract.billToAddress.pincode,
-        shipToAddress: contract.shipToAddress.address,
-        shipToCity: contract.shipToAddress.city,
-        shipToPincode: contract.shipToAddress.pincode,
-        contactName: contract.billToContact[0].name,
-        contactNumber: contract.billToContact[0].number,
-        date: moment().format("DD/MM/YYYY"),
-        billingFrequency: contract.billingFrequency,
-      },
-    });
+        additionalJsContext: {
+          contractNo: contract.contractNo,
+          type: contract.type === "NC" ? "New Contract" : "Renewal Contract",
+          sales: contract.sales,
+          startDate: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
+          endDate: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
+          billToName: contract.billToAddress.name,
+          billToAddress: contract.billToAddress.address,
+          billToCity: contract.billToAddress.city,
+          billToPincode: contract.billToAddress.pincode,
+          shipToAddress: contract.shipToAddress.address,
+          shipToCity: contract.shipToAddress.city,
+          shipToPincode: contract.shipToAddress.pincode,
+          contactName: contract.billToContact[0].name,
+          contactNumber: contract.billToContact[0].number,
+          date: moment().format("DD/MM/YYYY"),
+          billingFrequency: contract.billingFrequency,
+        },
+      });
 
-    const contractName = contract.contractNo.replace(/\//g, "-");
-    const filePath = `./tmp/${contractName}.docx`;
-    fs.writeFileSync(filePath, buffer);
-    const link = await uploadFile({ filePath });
-    if (!link)
-      return res.status(400).json({ msg: "Upload error, try again later" });
+      const contractName = contract.contractNo.replace(/\//g, "-");
+      const filePath = `./tmp/${contractName}.docx`;
+      fs.writeFileSync(filePath, buffer);
+      const link = await uploadFile({ filePath });
+      if (!link)
+        return res.status(400).json({ msg: "Upload error, try again later" });
 
-    await Contract.findByIdAndUpdate(
-      contractId,
-      { softCopy: link },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+      await Contract.findByIdAndUpdate(
+        contractId,
+        { softCopy: link },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+    }
+
+    if (!contract.sendMail) {
+      const allServices = [];
+      contract.services.map((item) => {
+        item.services.map(
+          (s) => !allServices.includes(s.label) && allServices.push(s.label)
+        );
+      });
+
+      const tempEmails = new Set();
+      contract.billToContact.map(
+        (item) => item.email && tempEmails.add(item.email)
+      );
+      contract.shipToContact.map(
+        (item) => item.email && tempEmails.add(item.email)
+      );
+
+      const emailList = [...tempEmails];
+
+      let file = contract.softCopy.split(".");
+      const fileType = file.pop();
+      const fileName = contract.contractNo.replace(/\//g, "-");
+      const result = await axios.get(contract.softCopy, {
+        responseType: "arraybuffer",
+      });
+      const base64File = Buffer.from(result.data, "binary").toString("base64");
+
+      const attachObj = {
+        content: base64File,
+        filename: `${fileName}.${fileType}`,
+        type: `application/${fileType}`,
+        disposition: "attachment",
+      };
+
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+      const msg = {
+        to: emailList,
+        from: { email: "noreply.pestbytes@gmail.com", name: "PMS" },
+        dynamic_template_data: {
+          contractNo: contract.contractNo,
+          start: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
+          end: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
+          service: allServices.join(", "),
+        },
+        template_id: "d-ebf14fa28bf5478ea134f97af409b1b7",
+        attachments: [attachObj],
+      };
+      await sgMail.send(msg);
+
+      contract.sendMail = true;
+      await contract.save();
+    }
 
     return res.json({ msg: "Contract Sent" });
   } catch (error) {
