@@ -27,12 +27,11 @@ import { useSelector } from "react-redux";
 
 const AllServiceCards = () => {
   const [selectedOption, setSelectedOption] = useState([]);
-
   const [edit, setEdit] = useState({
     status: false,
     loading: false,
   });
-  const [openDelete, setOpenDelete] = useState(false);
+  const [openDelete, setOpenDelete] = useState({ state: false, id: "" });
   const { id } = useParams();
   const { user } = useSelector((store) => store.all);
 
@@ -90,12 +89,13 @@ const AllServiceCards = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
+    console.log(openDelete.id);
     try {
-      const res = await deleteCard(id).unwrap();
+      const res = await deleteCard(openDelete.id).unwrap();
       toast.success(res.msg);
       refetch();
-      setOpenDelete(false);
+      setOpenDelete({ state: false, id: "" });
     } catch (error) {
       console.log(error);
       toast.error(error?.data?.msg || error.error);
@@ -261,27 +261,31 @@ const AllServiceCards = () => {
                     <td className="text-left border-r px-2 py-1 font-normal dark:border-neutral-500">
                       {service.serviceDates.join(", ")}
                     </td>
-                    <td className="border-r flex px-2 gap-1 py-1 font-normal dark:border-neutral-500">
-                      <Button
-                        handleClick={() => handleEdit(service)}
-                        label="Edit"
-                        width="w-20"
-                      />
-                      {user.role !== "Technician" && (
+                    <td className="border-r w-48 px-2 gap-1 py-1 font-normal dark:border-neutral-500">
+                      <div className="flex justify-around">
                         <Button
-                          handleClick={() => setOpenDelete(true)}
-                          label="Delete"
+                          handleClick={() => handleEdit(service)}
+                          label="Edit"
                           width="w-20"
-                          color="bg-red-600"
                         />
-                      )}
-                      <DeleteModal
-                        open={openDelete}
-                        close={() => setOpenDelete(false)}
-                        title="Confirm Delete"
-                        description="Are you sure you want delete this service card? It will delete all the service data & disable QR Code"
-                        handleClick={() => handleDelete(service._id)}
-                      />
+                        {user.role !== "Technician" && (
+                          <Button
+                            handleClick={() =>
+                              setOpenDelete({ state: true, id: service._id })
+                            }
+                            label="Delete"
+                            width="w-20"
+                            color="bg-red-600"
+                          />
+                        )}
+                        <DeleteModal
+                          open={openDelete.state}
+                          close={() => setOpenDelete({ state: false, id: "" })}
+                          title="Confirm Delete"
+                          description="Are you sure you want delete this service card? It will delete all the service data & disable QR Code"
+                          handleClick={handleDelete}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))}
