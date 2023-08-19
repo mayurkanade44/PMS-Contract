@@ -297,7 +297,9 @@ const AllServiceCards = () => {
               height="py-2"
               color="bg-green-600"
               handleClick={() => handleSendContract()}
-              disabled={!contractDetails.services?.length}
+              disabled={
+                !contractDetails.services?.length || contractDetails.sendMail
+              }
             />
           </div>
         </div>
