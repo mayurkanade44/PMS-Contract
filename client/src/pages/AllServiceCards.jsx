@@ -27,7 +27,7 @@ import { useSelector } from "react-redux";
 
 const AllServiceCards = () => {
   const [selectedOption, setSelectedOption] = useState([]);
-  const [allService, setAllService] = useState([]);
+
   const [edit, setEdit] = useState({
     status: false,
     loading: false,
@@ -135,10 +135,9 @@ const AllServiceCards = () => {
       createCardLoading ||
       isFetching ? (
         <Loading />
+      ) : error ? (
+        <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
-        error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
-      )}
-      {contractDetails && (
         <div className="my-5">
           <div className="md:flex justify-between">
             <h2 className="text-2xl font-semibold">

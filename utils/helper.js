@@ -24,7 +24,7 @@ export const capitalLetter = (phrase) => {
     .join(" ");
 };
 
-export const serviceDue = ({ frequency, serviceStart }) => {
+export const serviceDue = ({ frequency, serviceStart, diffDays }) => {
   const serviceDates = [];
   const serviceMonths = [];
   let frequencyDays;
@@ -35,7 +35,7 @@ export const serviceDue = ({ frequency, serviceStart }) => {
   else if (frequency === "Monthly") frequencyDays = 30;
   else if (frequency === "Quarterly") frequencyDays = 90;
 
-  const end = Math.floor(365 / frequencyDays);
+  const end = Math.floor(diffDays / frequencyDays);
 
   for (let i = 0; i < end; i++) {
     serviceDates.push(moment(serviceStart).format("DD/MM/YYYY"));

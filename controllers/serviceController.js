@@ -16,9 +16,15 @@ export const addCard = async (req, res) => {
     if (!contract || !contract.active)
       return res.status(404).json({ msg: "Contract not found" });
 
+    const diffDays = moment(contract.tenure.endDate).diff(
+      moment(contract.tenure.startDate),
+      "days"
+    );
+
     const due = serviceDue({
       frequency,
       serviceStart: contract.serviceStartDate,
+      diffDays,
     });
 
     cardId = null;
