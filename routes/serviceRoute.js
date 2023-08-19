@@ -1,9 +1,9 @@
 import express from "express";
 import {
   addCard,
-  createCard,
   deleteCard,
   getSingleCard,
+  sendContract,
   updateCard,
 } from "../controllers/serviceController.js";
 import { authorizeUser } from "../middleware/authMiddleware.js";
@@ -11,8 +11,8 @@ const router = express.Router();
 
 router.route("/add-card").post(authorizeUser("Admin", "Back Office"), addCard);
 router
-  .route("/create-card/:id")
-  .put(authorizeUser("Admin", "Back Office"), createCard);
+  .route("/send-contract/:id")
+  .put(authorizeUser("Admin", "Back Office"), sendContract);
 router
   .route("/:id")
   .put(authorizeUser("Admin", "Back Office"), updateCard)

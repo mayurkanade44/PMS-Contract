@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { allFrequency } from "../utils/dataHelper";
@@ -12,8 +12,8 @@ import {
 import Select from "react-select";
 import {
   useAddCardMutation,
-  useCreateCardMutation,
   useDeleteCardMutation,
+  useSendContractMutation,
   useUpdateCardMutation,
 } from "../redux/serviceSlice";
 import { toast } from "react-toastify";
@@ -48,8 +48,8 @@ const AllServiceCards = () => {
   const [updateCard, { isLoading: updateLoading }] = useUpdateCardMutation();
   const [deleteCard, { isLoading: deleteCardLoading }] =
     useDeleteCardMutation();
-  const [createCard, { isLoading: createCardLoading }] =
-    useCreateCardMutation();
+  const [sendContract, { isLoading: createCardLoading }] =
+    useSendContractMutation();
   const { data: adminValues, isLoading: valueLoading } = useGetAllValuesQuery();
 
   const {
@@ -102,9 +102,9 @@ const AllServiceCards = () => {
     }
   };
 
-  const handleCreateCard = async () => {
+  const handleSendContract = async () => {
     try {
-      const res = await createCard(id).unwrap();
+      const res = await sendContract(id).unwrap();
       refetch();
       toast.success(res.msg);
     } catch (error) {
@@ -289,11 +289,11 @@ const AllServiceCards = () => {
               </tbody>
             </table>
             <Button
-              label="Create Cards"
+              label="Send Contract"
               width="w-32"
               height="py-2"
               color="bg-green-600"
-              handleClick={() => handleCreateCard()}
+              handleClick={() => handleSendContract()}
             />
           </div>
         </div>

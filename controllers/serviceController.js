@@ -5,7 +5,7 @@ import { createCanvas, loadImage } from "canvas";
 import QRCode from "qrcode";
 import fs from "fs";
 import { v2 as cloudinary } from "cloudinary";
-import { serviceDue } from "../utils/helper.js";
+import { serviceDue, uploadFile } from "../utils/helper.js";
 import { createReport } from "docx-templates";
 
 export const addCard = async (req, res) => {
@@ -133,75 +133,115 @@ export const deleteCard = async (req, res) => {
   }
 };
 
-export const createCard = async (req, res) => {
+export const sendContract = async (req, res) => {
   const { id: contractId } = req.params;
   try {
     const contract = await Contract.findById(contractId).populate("services");
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
 
-    contract.services.forEach(async (service, index) => {
-      const serviceId = service._id.toString();
-      const qrCode = await QRCode.toDataURL(
-        `https://cqr.sat9.in/report/${serviceId}`
-      );
-      const template = fs.readFileSync("./tmp/template.docx");
+    const template = fs.readFileSync("./tmp/contractTemp.docx");
 
-      const buffer = await createReport({
-        cmdDelimiter: ["{", "}"],
-        template,
+    const buffer = await createReport({
+      cmdDelimiter: ["{", "}"],
+      template,
 
-        additionalJsContext: {
-          contractNo: contract.contractNo,
-          type: contract.type,
-          sales: contract.sales,
-          day: contract.preferred.day,
-          time: contract.preferred.time,
-          card: index + 1,
-          name: contract.shipToAddress.name,
-          address: contract.shipToAddress.address,
-          city: contract.shipToAddress.city,
-          nearBy: contract.shipToAddress.nearBy,
-          pincode: contract.shipToAddress.pincode,
-          shipToContact: contract.shipToContact,
-          serviceDue: service.serviceMonths,
-          service: service.services,
-          frequency: service.frequency,
-          location: service.treatmentLocation,
-          area: service.area,
-          billingFrequency: contract.billingFrequency,
-          url: "12",
-          qrCode: async (url12) => {
-            const dataUrl = qrCode;
-            const data = await dataUrl.slice("data:image/png;base64,".length);
-            return { width: 2, height: 2, data, extension: ".png" };
-          },
-        },
-      });
-
-      const contractName = contract.contractNo.replace(/\//g, "-");
-      const filename = `${contractName} ${service.frequency} ${index + 1}`;
-
-      fs.writeFileSync(`./tmp/${filename}.docx`, buffer);
-
-      const result = await cloudinary.uploader.upload(`tmp/${filename}.docx`, {
-        resource_type: "raw",
-        use_filename: true,
-        folder: "PMS",
-      });
-
-      await Service.findByIdAndUpdate(
-        serviceId,
-        { card: result.secure_url },
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
-
-      fs.unlinkSync(`./tmp/${filename}.docx`);
+      additionalJsContext: {
+        contractNo: contract.contractNo,
+        type: contract.type === "NC" ? "New Contract" : "Renewal Contract",
+        sales: contract.sales,
+        startDate: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
+        endDate: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
+        billToName: contract.billToAddress.name,
+        billToAddress: contract.billToAddress.address,
+        billToCity: contract.billToAddress.city,
+        billToPincode: contract.billToAddress.pincode,
+        shipToAddress: contract.shipToAddress.address,
+        shipToCity: contract.shipToAddress.city,
+        shipToPincode: contract.shipToAddress.pincode,
+        contactName: contract.billToContact[0].name,
+        contactNumber: contract.billToContact[0].number,
+        date: moment().format("DD/MM/YYYY"),
+        billingFrequency: contract.billingFrequency,
+      },
     });
 
-    return res.json({ msg: "Cards created successfully" });
+    const contractName = contract.contractNo.replace(/\//g, "-");
+    const filePath = `./tmp/${contractName}.docx`;
+    fs.writeFileSync(filePath, buffer);
+    const link = await uploadFile({ filePath });
+
+    await Contract.findByIdAndUpdate(
+      contractId,
+      { softCopy: link },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    // contract.services.forEach(async (service, index) => {
+    //   const serviceId = service._id.toString();
+    //   const qrCode = await QRCode.toDataURL(
+    //     `https://cqr.sat9.in/report/${serviceId}`
+    //   );
+    //   const template = fs.readFileSync("./tmp/template.docx");
+
+    // //   const buffer = await createReport({
+    // //     cmdDelimiter: ["{", "}"],
+    // //     template,
+
+    // //     additionalJsContext: {
+    // //       contractNo: contract.contractNo,
+    // //       type: contract.type,
+    // //       sales: contract.sales,
+    // //       day: contract.preferred.day,
+    // //       time: contract.preferred.time,
+    // //       card: index + 1,
+    // //       name: contract.shipToAddress.name,
+    // //       address: contract.shipToAddress.address,
+    // //       city: contract.shipToAddress.city,
+    // //       nearBy: contract.shipToAddress.nearBy,
+    // //       pincode: contract.shipToAddress.pincode,
+    // //       shipToContact: contract.shipToContact,
+    // //       serviceDue: service.serviceMonths,
+    // //       service: service.services,
+    // //       frequency: service.frequency,
+    // //       location: service.treatmentLocation,
+    // //       area: service.area,
+    // //       billingFrequency: contract.billingFrequency,
+    // //       url: "12",
+    // //       qrCode: async (url12) => {
+    // //         const dataUrl = qrCode;
+    // //         const data = await dataUrl.slice("data:image/png;base64,".length);
+    // //         return { width: 2, height: 2, data, extension: ".png" };
+    // //       },
+    // //     },
+    // //   });
+
+    // //   const contractName = contract.contractNo.replace(/\//g, "-");
+    // //   const filename = `${contractName} ${service.frequency} ${index + 1}`;
+
+    // //   fs.writeFileSync(`./tmp/${filename}.docx`, buffer);
+
+    // //   const result = await cloudinary.uploader.upload(`tmp/${filename}.docx`, {
+    // //     resource_type: "raw",
+    // //     use_filename: true,
+    // //     folder: "PMS",
+    // //   });
+
+    // //   await Service.findByIdAndUpdate(
+    // //     serviceId,
+    // //     { card: result.secure_url },
+    // //     {
+    // //       new: true,
+    // //       runValidators: true,
+    // //     }
+    // //   );
+
+    // //   fs.unlinkSync(`./tmp/${filename}.docx`);
+    // // });
+
+    return res.json({ msg: "Contract Sent" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

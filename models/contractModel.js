@@ -46,6 +46,7 @@ const ContractSchema = new mongoose.Schema(
     ],
     sendMail: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
+    softCopy: { type: String },
   },
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );
