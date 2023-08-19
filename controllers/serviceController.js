@@ -4,14 +4,15 @@ import moment from "moment";
 import { createCanvas, loadImage } from "canvas";
 import QRCode from "qrcode";
 import fs from "fs";
-import { v2 as cloudinary } from "cloudinary";
 import { serviceDue, uploadFile } from "../utils/helper.js";
 import { createReport } from "docx-templates";
+
+let cardId = null;
 
 export const addCard = async (req, res) => {
   const { frequency, id } = req.body;
   try {
-    const contract = await Contract.findById(id);
+    const contract = await Contract.findById(id).populate("services");
     if (!contract || !contract.active)
       return res.status(404).json({ msg: "Contract not found" });
 
@@ -20,6 +21,7 @@ export const addCard = async (req, res) => {
       serviceStart: contract.serviceStartDate,
     });
 
+    cardId = null;
     const service = await Service.create({
       frequency,
       serviceMonths: due.serviceMonths,
@@ -30,29 +32,93 @@ export const addCard = async (req, res) => {
       services: req.body.services,
     });
 
+    cardId = service._id;
+    const qrLink = `https://pestxz.com/report/${service._id}`;
+
+    //service qr image creation
     const serviceName = service.services.map((item) => item.label + ",");
+    const buf = await qrCodeGenerator(qrLink, contract.contractNo, serviceName);
+    if (!buf) {
+      if (cardId) {
+        await Service.findByIdAndDelete(cardId);
+        cardId = null;
+      }
+      return res.status(400).json({ msg: "QR error, trg again later" });
+    }
 
-    const buf = await qrCodeGenerator(
-      `https://pestxz.com/report/${service._id}`,
-      contract.contractNo,
-      serviceName
-    );
-    if (!buf) return res.status(400).json({ msg: "QR error, trg again later" });
+    //upload qr image
+    const qrFilePath = "./tmp/cardQR.jpeg";
+    fs.writeFileSync(qrFilePath, buf);
+    const qrUrl = await uploadFile({ filePath: qrFilePath });
+    if (!qrUrl) {
+      if (cardId) {
+        await Service.findByIdAndDelete(cardId);
+        cardId = null;
+      }
+      return res.status(400).json({ msg: "Upload error, trg again later" });
+    }
 
-    fs.writeFileSync("./tmp/image.jpeg", buf);
+    //service card creation
+    const cardQrCode = await QRCode.toDataURL(qrLink);
+    const template = fs.readFileSync("./tmp/cardTemp.docx");
 
-    const result = await cloudinary.uploader.upload("tmp/image.jpeg", {
-      use_filename: true,
-      folder: "PMS",
+    const buffer = await createReport({
+      cmdDelimiter: ["{", "}"],
+      template,
+
+      additionalJsContext: {
+        contractNo: contract.contractNo,
+        type: contract.type,
+        sales: contract.sales,
+        day: contract.preferred.day,
+        time: contract.preferred.time,
+        card: contract.services?.length + 1 || 1,
+        name: contract.shipToAddress.name,
+        address: contract.shipToAddress.address,
+        city: contract.shipToAddress.city,
+        nearBy: contract.shipToAddress.nearBy,
+        pincode: contract.shipToAddress.pincode,
+        shipToContact: contract.shipToContact,
+        serviceDue: service.serviceMonths,
+        service: service.services,
+        frequency: service.frequency,
+        location: service.treatmentLocation,
+        area: service.area,
+        billingFrequency: contract.billingFrequency,
+        url: "12",
+        qrCode: async (url12) => {
+          const dataUrl = cardQrCode;
+          const data = await dataUrl.slice("data:image/png;base64,".length);
+          return { width: 2, height: 2, data, extension: ".png" };
+        },
+      },
     });
 
-    service.qr = result.secure_url;
+    const contractName = contract.contractNo.replace(/\//g, "-");
+    const filename = `${contractName} ${service.frequency}`;
+    const filePath = `./tmp/${filename}.docx`;
+    fs.writeFileSync(filePath, buffer);
+    const cardUrl = await uploadFile({ filePath });
+    if (!cardUrl) {
+      if (cardId) {
+        await Service.findByIdAndDelete(cardId);
+        cardId = null;
+      }
+      return res.status(400).json({ msg: "Upload error, trg again later" });
+    }
+
+    service.qr = qrUrl;
+    service.card = cardUrl;
     await service.save();
 
-    fs.unlinkSync("./tmp/image.jpeg");
-
+    cardId = null;
     return res.json({ msg: "Service card added" });
   } catch (error) {
+    //delete card if created
+    if (cardId) {
+      await Service.findByIdAndDelete(cardId);
+      cardId = null;
+    }
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
   }
@@ -76,7 +142,7 @@ const qrCodeGenerator = async (link, contractNo, serviceName) => {
     ctx.font = "12px Arial";
     ctx.textAlign = "start";
     ctx.fillText(`Contract Number: ${contractNo}`, 2, height + 40);
-    ctx.fillText(`Service Name: ${serviceName}`, 2, height + 53);
+    ctx.fillText(`Service: ${serviceName}`, 2, height + 53);
     ctx.fillStyle = "rgb(32, 125, 192)";
     ctx.textAlign = "center";
     ctx.font = "italic bold 15px Arial";
@@ -169,6 +235,8 @@ export const sendContract = async (req, res) => {
     const filePath = `./tmp/${contractName}.docx`;
     fs.writeFileSync(filePath, buffer);
     const link = await uploadFile({ filePath });
+    if (!link)
+      return res.status(400).json({ msg: "Upload error, try again later" });
 
     await Contract.findByIdAndUpdate(
       contractId,
@@ -178,68 +246,6 @@ export const sendContract = async (req, res) => {
         runValidators: true,
       }
     );
-
-    // contract.services.forEach(async (service, index) => {
-    //   const serviceId = service._id.toString();
-    //   const qrCode = await QRCode.toDataURL(
-    //     `https://cqr.sat9.in/report/${serviceId}`
-    //   );
-    //   const template = fs.readFileSync("./tmp/template.docx");
-
-    // //   const buffer = await createReport({
-    // //     cmdDelimiter: ["{", "}"],
-    // //     template,
-
-    // //     additionalJsContext: {
-    // //       contractNo: contract.contractNo,
-    // //       type: contract.type,
-    // //       sales: contract.sales,
-    // //       day: contract.preferred.day,
-    // //       time: contract.preferred.time,
-    // //       card: index + 1,
-    // //       name: contract.shipToAddress.name,
-    // //       address: contract.shipToAddress.address,
-    // //       city: contract.shipToAddress.city,
-    // //       nearBy: contract.shipToAddress.nearBy,
-    // //       pincode: contract.shipToAddress.pincode,
-    // //       shipToContact: contract.shipToContact,
-    // //       serviceDue: service.serviceMonths,
-    // //       service: service.services,
-    // //       frequency: service.frequency,
-    // //       location: service.treatmentLocation,
-    // //       area: service.area,
-    // //       billingFrequency: contract.billingFrequency,
-    // //       url: "12",
-    // //       qrCode: async (url12) => {
-    // //         const dataUrl = qrCode;
-    // //         const data = await dataUrl.slice("data:image/png;base64,".length);
-    // //         return { width: 2, height: 2, data, extension: ".png" };
-    // //       },
-    // //     },
-    // //   });
-
-    // //   const contractName = contract.contractNo.replace(/\//g, "-");
-    // //   const filename = `${contractName} ${service.frequency} ${index + 1}`;
-
-    // //   fs.writeFileSync(`./tmp/${filename}.docx`, buffer);
-
-    // //   const result = await cloudinary.uploader.upload(`tmp/${filename}.docx`, {
-    // //     resource_type: "raw",
-    // //     use_filename: true,
-    // //     folder: "PMS",
-    // //   });
-
-    // //   await Service.findByIdAndUpdate(
-    // //     serviceId,
-    // //     { card: result.secure_url },
-    // //     {
-    // //       new: true,
-    // //       runValidators: true,
-    // //     }
-    // //   );
-
-    // //   fs.unlinkSync(`./tmp/${filename}.docx`);
-    // // });
 
     return res.json({ msg: "Contract Sent" });
   } catch (error) {

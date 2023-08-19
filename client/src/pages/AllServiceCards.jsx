@@ -268,7 +268,7 @@ const AllServiceCards = () => {
                         label="Edit"
                         width="w-20"
                       />
-                      {user.role === "Delete" && (
+                      {user.role !== "Technician" && (
                         <Button
                           handleClick={() => setOpenDelete(true)}
                           label="Delete"
@@ -294,6 +294,7 @@ const AllServiceCards = () => {
               height="py-2"
               color="bg-green-600"
               handleClick={() => handleSendContract()}
+              disabled={!contractDetails.services?.length}
             />
           </div>
         </div>
