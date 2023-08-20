@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 
 import {
-  addServiceReport,
+  addServiceData,
   clientReport,
   generateReport,
   serviceNotification,
@@ -12,7 +12,7 @@ import {
   authorizeUser,
 } from "../middleware/authMiddleware.js";
 
-router.post("/add", authenticateUser, addServiceReport);
+router.post("/add", authenticateUser, addServiceData);
 router.post(
   "/generate",
   authenticateUser,

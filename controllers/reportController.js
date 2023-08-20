@@ -2,12 +2,12 @@ import Report from "../models/reportModel.js";
 import Contract from "../models/contractModel.js";
 import Service from "../models/serviceModel.js";
 import mongoose from "mongoose";
-import { uploadFile } from "../utils/helper.js";
+import { sendEmail, uploadFile } from "../utils/helper.js";
 import exceljs from "exceljs";
 import fs from "fs";
 import moment from "moment";
 
-export const addServiceReport = async (req, res) => {
+export const addServiceData = async (req, res) => {
   const { contract: contractId, service: serviceId } = req.body;
   try {
     const contractExist = await Contract.findById(contractId);
@@ -30,7 +30,7 @@ export const addServiceReport = async (req, res) => {
         if (!link)
           return res
             .status(400)
-            .json({ msg: "Upload Server error, please try again later" });
+            .json({ msg: "Upload error, please try again later" });
 
         imageLinks.push(link);
       }
@@ -38,9 +38,53 @@ export const addServiceReport = async (req, res) => {
 
     req.body.image = imageLinks;
     req.body.serviceDate = new Date(req.body.serviceDate);
+
+    const tempEmails = new Set();
+    contractExist.billToContact.map(
+      (item) => item.email && tempEmails.add(item.email)
+    );
+    contractExist.shipToContact.map(
+      (item) => item.email && tempEmails.add(item.email)
+    );
+    const emailList = [...tempEmails];
+
+    const attachObj = [];
+    for (let i = 0; i < imageLinks.length; i++) {
+      const result = await axios.get(image, {
+        responseType: "arraybuffer",
+      });
+      const base64File = Buffer.from(result.data, "binary").toString("base64");
+
+      attachObj.push({
+        content: base64File,
+        filename: `service image-${i + 1}.jpg`,
+        type: `application/jpg`,
+        disposition: "attachment",
+      });
+    }
+
+    const dynamicData = {
+      contractNo: req.body.contractNo,
+      serviceName: req.body.serviceName,
+      serviceType: req.body.serviceType,
+      serviceDate: req.body.serviceDate,
+      serviceStatus: req.body.serviceStatus,
+      serviceComment: req.body.serviceComment,
+    };
+
+    const mailSent = await sendEmail({
+      emailList,
+      attachObj,
+      templateId: "d-ebf14fa28bf5478ea134f97af409b1b7",
+      dynamicData,
+    });
+
     await Report.create(req.body);
 
-    res.status(201).json({ msg: "Report submitted" });
+    if (!mailSent)
+      return res.status(400).json({ msg: "Email not sent, try again later" });
+
+    res.status(201).json({ msg: "Report submitted & Email Sent" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
