@@ -4,6 +4,7 @@ const router = express.Router();
 import {
   addServiceData,
   clientReport,
+  dailyServices,
   generateReport,
   sendServiceNotification,
   serviceNotification,
@@ -24,5 +25,11 @@ router.get("/clientReport/:id", clientReport);
 
 router.get("/serviceDue", serviceNotification);
 router.get("/serviceDueMail", sendServiceNotification);
+router.get(
+  "/dailyServices",
+  authenticateUser,
+  authorizeUser("Admin", "Back Office"),
+  dailyServices
+);
 
 export default router;

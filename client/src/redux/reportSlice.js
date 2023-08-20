@@ -21,6 +21,11 @@ export const reportSlice = apiSlice.injectEndpoints({
         url: `/api/report/clientReport/${id}`,
       }),
     }),
+    dailyServices: builder.query({
+      query: () => ({
+        url: "/api/report/dailyServices",
+      }),
+    }),
   }),
 });
 
@@ -28,4 +33,5 @@ export const {
   useAddReportDataMutation,
   useGenerateReportMutation,
   useGetClientReportQuery,
+  useDailyServicesQuery,
 } = reportSlice;

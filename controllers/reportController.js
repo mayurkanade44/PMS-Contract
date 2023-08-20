@@ -73,7 +73,6 @@ export const addServiceData = async (req, res) => {
       serviceComment: req.body.serviceComment,
     };
 
-    
     await Report.create(req.body);
 
     const mailSent = await sendEmail({
@@ -82,7 +81,6 @@ export const addServiceData = async (req, res) => {
       templateId: "d-ebf14fa28bf5478ea134f97af409b1b7",
       dynamicData,
     });
-
 
     if (!mailSent)
       return res.status(400).json({ msg: "Email not sent, try again later" });
@@ -264,6 +262,24 @@ export const sendServiceNotification = async (req, res) => {
     );
 
     return res.status(200).json({ msg: "Email Sent" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const dailyServices = async (req, res) => {
+  try {
+    const date = moment().format("DD/MM/YYYY");
+
+    const services = await Service.find({
+      serviceDates: { $in: date },
+    }).populate({
+      path: "contract",
+      select: "contractNo active billToAddress",
+    });
+
+    return res.json({ services });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

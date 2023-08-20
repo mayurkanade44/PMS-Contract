@@ -1,4 +1,9 @@
+import { useDailyServicesQuery } from "../redux/reportSlice";
+
 const Dashboard = () => {
-  return <div>Dashboard</div>;
+  const { data: dailyServices, isLoading: dailyLoading } =
+    useDailyServicesQuery();
+
+  return <div className="my-5">Dashboard</div>;
 };
 export default Dashboard;
