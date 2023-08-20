@@ -51,14 +51,14 @@ export const addServiceData = async (req, res) => {
 
     const attachObj = [];
     for (let i = 0; i < imageLinks.length; i++) {
-      const result = await axios.get(image, {
+      const result = await axios.get(imageLinks[i], {
         responseType: "arraybuffer",
       });
       const base64File = Buffer.from(result.data, "binary").toString("base64");
 
       attachObj.push({
         content: base64File,
-        filename: `service image-${i + 1}.jpg`,
+        filename: `image-${i + 1}.jpg`,
         type: `application/jpg`,
         disposition: "attachment",
       });
@@ -73,6 +73,9 @@ export const addServiceData = async (req, res) => {
       serviceComment: req.body.serviceComment,
     };
 
+    
+    await Report.create(req.body);
+
     const mailSent = await sendEmail({
       emailList,
       attachObj,
@@ -80,7 +83,6 @@ export const addServiceData = async (req, res) => {
       dynamicData,
     });
 
-    await Report.create(req.body);
 
     if (!mailSent)
       return res.status(400).json({ msg: "Email not sent, try again later" });
