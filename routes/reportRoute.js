@@ -5,6 +5,7 @@ import {
   addServiceData,
   clientReport,
   generateReport,
+  sendServiceNotification,
   serviceNotification,
 } from "../controllers/reportController.js";
 import {
@@ -22,5 +23,6 @@ router.post(
 router.get("/clientReport/:id", clientReport);
 
 router.get("/serviceDue", serviceNotification);
+router.get("/serviceDueMail", sendServiceNotification);
 
 export default router;
