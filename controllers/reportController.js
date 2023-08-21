@@ -279,7 +279,7 @@ export const dailyServices = async (req, res) => {
       select: "contractNo active billToAddress",
     });
 
-    return res.json({ services });
+    return res.json(services);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

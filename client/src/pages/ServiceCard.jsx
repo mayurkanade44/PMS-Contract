@@ -104,6 +104,7 @@ const ServiceCard = () => {
                   onChange={(e) => setImages(Array.from(e.target.files))}
                   multiple
                   className="mt-0.5"
+                  accept="image/*"
                 />
               </div>
               <div>
