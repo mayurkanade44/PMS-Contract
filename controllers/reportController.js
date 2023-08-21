@@ -66,9 +66,10 @@ export const addServiceData = async (req, res) => {
 
     const dynamicData = {
       contractNo: req.body.contractNo,
+      shipToAddress: `${contractExist.shipToAddress.address} ${contractExist.shipToAddress.city} - ${contractExist.shipToAddress.pincode}`,
       serviceName: req.body.serviceName,
       serviceType: req.body.serviceType,
-      serviceDate: req.body.serviceDate,
+      serviceDate: moment(req.body.serviceDate).format("DD/MM/YYYY"),
       serviceStatus: req.body.serviceStatus,
       serviceComment: req.body.serviceComment,
     };
@@ -78,7 +79,7 @@ export const addServiceData = async (req, res) => {
     const mailSent = await sendEmail({
       emailList,
       attachObj,
-      templateId: "d-ebf14fa28bf5478ea134f97af409b1b7",
+      templateId: "d-ebb9f0ccce80432dba009696fe455382",
       dynamicData,
     });
 
@@ -276,7 +277,7 @@ export const dailyServices = async (req, res) => {
       serviceDates: { $in: date },
     }).populate({
       path: "contract",
-      select: "contractNo active billToAddress",
+      select: "contractNo active billToAddress preferred",
     });
 
     return res.json(services);

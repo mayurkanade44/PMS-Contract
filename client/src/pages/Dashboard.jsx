@@ -38,6 +38,9 @@ const Dashboard = () => {
                   <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
                     Frequency
                   </th>
+                  <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
+                    Preferred Time
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -57,6 +60,9 @@ const Dashboard = () => {
                     </td>
                     <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
                       {service.frequency}
+                    </td>
+                    <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
+                      {service.contract.preferred.time}
                     </td>
                   </tr>
                 ))}
