@@ -247,10 +247,10 @@ export const sendServiceNotification = async (req, res) => {
     ];
 
     const mailSent = await sendEmail({
-      emailList: ["mayurkanade44@gmail.com"],
+      emailList: ["exteam.epcorn@gmail.com"],
       attachObj,
-      templateId: "d-ebf14fa28bf5478ea134f97af409b1b7",
-      dynamicData: { start: fileName },
+      templateId: "d-80c1a47b2e014671aa2f536409ee4504",
+      dynamicData: { date: fileName },
     });
 
     if (!mailSent)
