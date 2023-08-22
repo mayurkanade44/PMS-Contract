@@ -54,7 +54,7 @@ const ContractDetails = () => {
       const res = await deleteContract(id).unwrap();
       toast.success(res.msg);
       setOpenDelete(false);
-      navigate("/dashboard");
+      navigate("/home");
     } catch (error) {
       console.log(error);
       toast.error(error?.data?.msg || error.error);

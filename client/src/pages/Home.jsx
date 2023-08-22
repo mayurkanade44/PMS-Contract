@@ -40,7 +40,7 @@ const Home = () => {
       )}
       {data && (
         <>
-          <div className="px-2 my-5">
+          <div className="px-2 my-16 lg:my-5">
             <div className="md:flex items-center justify-between">
               <p className=" text-center  lg:text-2xl font-bold leading-normal text-gray-800">
                 All Contracts
@@ -86,69 +86,71 @@ const Home = () => {
               No Contract Found
             </h6>
           )}
-          <table className="w-full border whitespace-nowrap  dark:border-neutral-500">
-            <thead>
-              <tr className="h-12 w-full text-md leading-none text-gray-600">
-                <th className="font-bold text-left  dark:border-neutral-800 border-2 w-20 px-3">
-                  Contract No
-                </th>
-                <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28 px-3">
-                  Created At
-                </th>
-                <th className="font-bold text-left  dark:border-neutral-800 border-2 px-3">
-                  Bill To Name
-                </th>
-                <th className="font-bold text-left  dark:border-neutral-800 border-2 px-3">
-                  Ship To Name
-                </th>
-                <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28 px-3">
-                  Start Date
-                </th>
-                <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28 px-3">
-                  End Date
-                </th>
-                {user.role !== "Technician" && (
-                  <th className="font-bold text-center  dark:border-neutral-800 border-2 w-40 px-3">
-                    Action
+          <div className="overflow-y-auto my-4">
+            <table className="w-full border whitespace-nowrap  dark:border-neutral-500">
+              <thead>
+                <tr className="h-12 w-full text-md leading-none text-gray-600">
+                  <th className="font-bold text-left  dark:border-neutral-800 border-2 w-20 px-3">
+                    Contract No
                   </th>
-                )}
-              </tr>
-            </thead>
-            <tbody className="w-full">
-              {data.contracts.map((contract) => (
-                <tr
-                  key={contract._id}
-                  className="h-12 text-sm leading-none text-gray-700 border-b dark:border-neutral-500 bg-white hover:bg-gray-100"
-                >
-                  <td className="px-3 border-r font-normal dark:border-neutral-500">
-                    {contract.contractNo} - {contract.type}
-                  </td>
-                  <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
-                    {dateFormat(contract.createdAt)}
-                  </td>
-                  <td className="px-3 border-r font-normal dark:border-neutral-500">
-                    {contract.billToAddress.name}
-                  </td>
-                  <td className="px-3 border-r font-normal dark:border-neutral-500">
-                    {contract.shipToAddress.name}
-                  </td>
-                  <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
-                    {dateFormat(contract.tenure.startDate)}
-                  </td>
-                  <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
-                    {dateFormat(contract.tenure.endDate)}
-                  </td>
+                  <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28 px-3">
+                    Created At
+                  </th>
+                  <th className="font-bold text-left  dark:border-neutral-800 border-2 px-3">
+                    Bill To Name
+                  </th>
+                  <th className="font-bold text-left  dark:border-neutral-800 border-2 px-3">
+                    Ship To Name
+                  </th>
+                  <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28 px-3">
+                    Start Date
+                  </th>
+                  <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28 px-3">
+                    End Date
+                  </th>
                   {user.role !== "Technician" && (
-                    <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
-                      <Link to={`/contract-details/${contract._id}`}>
-                        <Button label="Details" height="py-2" width="w-20" />
-                      </Link>
-                    </td>
+                    <th className="font-bold text-center  dark:border-neutral-800 border-2 w-40 px-3">
+                      Action
+                    </th>
                   )}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="w-full">
+                {data.contracts.map((contract) => (
+                  <tr
+                    key={contract._id}
+                    className="h-12 text-sm leading-none text-gray-700 border-b dark:border-neutral-500 bg-white hover:bg-gray-100"
+                  >
+                    <td className="px-3 border-r font-normal dark:border-neutral-500">
+                      {contract.contractNo} - {contract.type}
+                    </td>
+                    <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
+                      {dateFormat(contract.createdAt)}
+                    </td>
+                    <td className="px-3 border-r font-normal dark:border-neutral-500">
+                      {contract.billToAddress.name}
+                    </td>
+                    <td className="px-3 border-r font-normal dark:border-neutral-500">
+                      {contract.shipToAddress.name}
+                    </td>
+                    <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
+                      {dateFormat(contract.tenure.startDate)}
+                    </td>
+                    <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
+                      {dateFormat(contract.tenure.endDate)}
+                    </td>
+                    {user.role !== "Technician" && (
+                      <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
+                        <Link to={`/contract-details/${contract._id}`}>
+                          <Button label="Details" height="py-2" width="w-20" />
+                        </Link>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           {pages.length > 1 && (
             <nav>
               <ul className="list-style-none flex justify-center mt-2">
