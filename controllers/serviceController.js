@@ -214,6 +214,14 @@ export const sendContract = async (req, res) => {
     if (contract.softCopy && contract.sendMail)
       return res.status(200).json({ msg: "Contract already sent" });
 
+    const servicesFreq = [];
+    contract.services.map((item) =>
+      servicesFreq.push({
+        frequency: item.frequency,
+        name: item.services.map((ser) => ser.label).join(", "),
+      })
+    );
+
     if (!contract.softCopy) {
       const template = fs.readFileSync("./tmp/contractTemp.docx");
 
@@ -234,6 +242,7 @@ export const sendContract = async (req, res) => {
           shipToAddress: contract.shipToAddress.address,
           shipToCity: contract.shipToAddress.city,
           shipToPincode: contract.shipToAddress.pincode,
+          services: servicesFreq,
           contactName: contract.billToContact[0].name,
           contactNumber: contract.billToContact[0].number,
           date: moment().format("DD/MM/YYYY"),

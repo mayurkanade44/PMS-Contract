@@ -85,6 +85,10 @@ const ContractDetails = () => {
     }
   };
 
+  const contractDownload = (contract) => {
+    saveAs(contract.softCopy, contract.contractNo);
+  };
+
   return (
     <div>
       {contractLoading || deleteLoading || deactiveLoading || reportLoading ? (
@@ -96,9 +100,19 @@ const ContractDetails = () => {
         <div className="py-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
             <div>
-              <h1 className="text-3xl font-bold text-center">
-                Contract Number: {contract.contractNo}
-              </h1>
+              <div className="flex justify-around">
+                <h1 className="text-3xl font-bold text-center">
+                  Contract Number: {contract.contractNo}
+                </h1>
+                {contract.softCopy && (
+                  <Button
+                    label="Download"
+                    color="bg-green-600"
+                    handleClick={() => contractDownload(contract)}
+                  />
+                )}
+              </div>
+
               <h2 className="text-2xl font-semibold text-center mt-5 mb-2">
                 Bill To Details
               </h2>
