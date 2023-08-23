@@ -1,5 +1,6 @@
 import Admin from "../models/adminModel.js";
 import Contract from "../models/contractModel.js";
+import Service from "../models/serviceModel.js";
 import { capitalLetter } from "../utils/helper.js";
 
 export const createContract = async (req, res) => {
@@ -75,6 +76,7 @@ export const deleteContract = async (req, res) => {
     const contract = await Contract.findById(id);
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
 
+    await Service.deleteMany({ contract: id });
     await Contract.deleteOne({ _id: id });
 
     return res.json({ msg: "Contract has been deleted" });
