@@ -60,12 +60,12 @@ const Navbar = () => {
               } `}
             >
               <div className="flex w-full sm:w-auto items-center sm:items-stretch justify-end sm:justify-center">
-                <div className="flex items-center py-3">
+                {/* <div className="flex items-center py-3">
                   <img src={logo} className="w-24 mr-5" alt="logo" />
                   <h2 className="hidden sm:block text-xl text-gray-700 font-bold leading-normal pl-3">
                     Pest Management & Services
                   </h2>
-                </div>
+                </div> */}
               </div>
               {user && (
                 <div className="flex mr-8">

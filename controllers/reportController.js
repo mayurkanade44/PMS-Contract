@@ -286,3 +286,27 @@ export const dailyServices = async (req, res) => {
     res.status(500).json({ msg: "Server error, try again later" });
   }
 };
+
+export const allStats = async (req, res) => {
+  try {
+    const services = await Service.find();
+    const allMonths = moment.monthsShort();
+    const year = moment().format("YY");
+    const obj = new Map();
+
+    services.map((item) =>
+      item.serviceMonths.map((month) => obj.set(month, obj.get(month) + 1 || 0))
+    );
+
+    const dataSheet = {};
+    allMonths.map((item) => {
+      const month = `${item} ${year}`;
+      dataSheet[month] = obj.get(month) || 0;
+    });
+
+    return res.json(dataSheet);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};

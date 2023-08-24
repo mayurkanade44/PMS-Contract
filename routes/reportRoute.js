@@ -3,6 +3,7 @@ const router = express.Router();
 
 import {
   addServiceData,
+  allStats,
   clientReport,
   dailyServices,
   generateReport,
@@ -31,5 +32,6 @@ router.get(
   authorizeUser("Admin", "Back Office"),
   dailyServices
 );
+router.get("/allStats", authenticateUser, allStats);
 
 export default router;
