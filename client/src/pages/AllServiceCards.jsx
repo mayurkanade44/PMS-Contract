@@ -268,7 +268,7 @@ const AllServiceCards = () => {
                           label="Edit"
                           width="w-20"
                         />
-                        {user.role !== "Technician" && (
+                        {user.role === "Admin" && (
                           <Button
                             handleClick={() =>
                               setOpenDelete({ state: true, id: service._id })

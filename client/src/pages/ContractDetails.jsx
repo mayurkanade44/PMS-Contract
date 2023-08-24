@@ -136,17 +136,19 @@ const ContractDetails = () => {
                 <Link to={`/contract/${contract._id}`}>
                   <Button label="Edit" color="bg-gray-600" />
                 </Link>
-                <Button
-                  color="bg-pink-600"
-                  handleClick={() => setOpenDeactive(true)}
-                  label={contract.active ? "Deactive" : "Active"}
-                />
                 {user.role === "Admin" && (
-                  <Button
-                    color="bg-red-600"
-                    label="Delete"
-                    handleClick={() => setOpenDelete(true)}
-                  />
+                  <>
+                    <Button
+                      color="bg-pink-600"
+                      handleClick={() => setOpenDeactive(true)}
+                      label={contract.active ? "Deactive" : "Active"}
+                    />
+                    <Button
+                      color="bg-red-600"
+                      label="Delete"
+                      handleClick={() => setOpenDelete(true)}
+                    />
+                  </>
                 )}
 
                 <DeactiveModal
