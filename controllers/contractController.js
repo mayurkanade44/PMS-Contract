@@ -115,6 +115,8 @@ export const getAllContracts = async (req, res) => {
         { contractNo: { $regex: search, $options: "i" } },
         { "shipToAddress.name": { $regex: search, $options: "i" } },
         { "billToAddress.name": { $regex: search, $options: "i" } },
+        { "billToContact.number": { $regex: search, $options: "i" } },
+        { "shipToContact.number": { $regex: search, $options: "i" } },
       ],
     };
   }

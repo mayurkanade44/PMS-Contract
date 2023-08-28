@@ -5,6 +5,7 @@ const AdminSchema = new mongoose.Schema({
   sales: { type: Object },
   serviceName: { type: Object },
   notificationFile: { type: String },
+  contractCounter: { type: Number },
 });
 
 export default mongoose.model("Admin", AdminSchema);

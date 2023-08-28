@@ -1,16 +1,19 @@
 import { AlertMessage, Button, Loading } from "../components";
 import { AiOutlineSearch, AiOutlineClose } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGetAllContractsQuery } from "../redux/contractSlice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { dateFormat } from "../utils/functionHelper";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { removeContractDetails } from "../redux/allSlice";
 
 const Home = () => {
   const [search, setSearch] = useState("");
   const [tempSearch, setTempSearch] = useState("");
   const [page, setPage] = useState(1);
   const { user } = useSelector((store) => store.all);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     data,
@@ -27,6 +30,11 @@ const Home = () => {
   const clearSearch = () => {
     setTempSearch("");
     setSearch("");
+  };
+
+  const redirectNewContract = () => {
+    dispatch(removeContractDetails());
+    navigate("/contract/new");
   };
 
   const pages = Array.from({ length: data?.pages }, (_, index) => index + 1);
@@ -70,13 +78,14 @@ const Home = () => {
               </form>
               <div className="flex items-end justify-around mt-4 md:mt-0 md:ml-3 lg:ml-0">
                 {user.role !== "Technician" && (
-                  <Link to="/contract/new">
-                    <button className="inline-flex mx-1.5 items-start justify-start px-4 py-3 bg-cyan-500 hover:bg-cyan-600 rounded">
-                      <p className="text-sm font-medium leading-none text-white">
-                        Add New Contract
-                      </p>
-                    </button>
-                  </Link>
+                  <button
+                    onClick={redirectNewContract}
+                    className="inline-flex mx-1.5 items-start justify-start px-4 py-3 bg-cyan-500 hover:bg-cyan-600 rounded"
+                  >
+                    <p className="text-sm font-medium leading-none text-white">
+                      Add New Contract
+                    </p>
+                  </button>
                 )}
               </div>
             </div>
