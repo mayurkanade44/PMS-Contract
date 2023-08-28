@@ -8,6 +8,7 @@ const ReportSchema = new mongoose.Schema(
     serviceComment: { type: String, required: true },
     serviceStatus: { type: String, required: true },
     serviceDate: { type: Date, required: true },
+    serviceBy: { type: String, required: true },
     image: [String],
     service: {
       type: mongoose.Schema.Types.ObjectId,
@@ -18,6 +19,11 @@ const ReportSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "Contract",
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     },
   },
   { timestamps: true }

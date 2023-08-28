@@ -17,7 +17,7 @@ export const addServiceData = async (req, res) => {
 
     const serviceExist = await Service.findById(serviceId);
     if (!serviceExist)
-      return res.status(404).json({ msg: "Contract not found, contact admin" });
+      return res.status(404).json({ msg: "Service not found, contact admin" });
 
     const imageLinks = [];
     if (req.files) {
@@ -39,6 +39,8 @@ export const addServiceData = async (req, res) => {
 
     req.body.image = imageLinks;
     req.body.serviceDate = new Date(req.body.serviceDate);
+    req.body.serviceBy = req.user.name;
+    req.body.user = req.user._id;
 
     const tempEmails = new Set();
     contractExist.billToContact.map(
@@ -112,6 +114,7 @@ export const generateReport = async (req, res) => {
         { header: "Service Status", key: "serviceStatus" },
         { header: "Service Date", key: "serviceDate" },
         { header: "Technician Comment", key: "serviceComment" },
+        { header: "Technician Name", key: "serviceBy" },
         { header: "Image 1", key: "image1" },
         { header: "Image 2", key: "image2" },
         { header: "Image 3", key: "image3" },
@@ -125,6 +128,7 @@ export const generateReport = async (req, res) => {
           serviceStatus: item.serviceStatus,
           serviceDate: item.serviceDate,
           serviceComment: item.serviceComment,
+          serviceBy: item.serviceBy,
           image1:
             (item.image.length >= 1 && {
               text: "Download",
