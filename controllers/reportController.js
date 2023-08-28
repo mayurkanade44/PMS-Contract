@@ -277,7 +277,7 @@ export const dailyServices = async (req, res) => {
       serviceDates: { $in: date },
     }).populate({
       path: "contract",
-      select: "contractNo active billToAddress preferred",
+      select: "contractNo shipToAddress",
     });
 
     return res.json(services);

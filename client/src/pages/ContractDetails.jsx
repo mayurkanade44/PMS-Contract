@@ -150,7 +150,6 @@ const ContractDetails = () => {
                     />
                   </>
                 )}
-
                 <DeactiveModal
                   open={openDeactive}
                   close={() => setOpenDeactive(false)}

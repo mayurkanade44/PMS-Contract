@@ -97,7 +97,7 @@ const Dashboard = () => {
                 <table className="min-w-full border text-sm font-light dark:border-neutral-500">
                   <thead className="border-b font-medium dark:border-neutral-800 border-2">
                     <tr>
-                      <th className="border-r lg:w-60 px-2 py-1 dark:border-neutral-800 border-2">
+                      <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
                         Contract Number
                       </th>
                       <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
@@ -117,16 +117,16 @@ const Dashboard = () => {
                         className="border-b dark:border-neutral-500"
                         key={service._id}
                       >
-                        <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
+                        <td className="border-r w-20 px-2 py-1 font-normal dark:border-neutral-500">
                           {service.contract.contractNo}
                         </td>
                         <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
-                          {service.contract.shipToAddress.name}
+                          {service.contract.shipToAddress.name} 
                         </td>
                         <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
                           {service.services.map((item) => item.label + ", ")}
                         </td>
-                        <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
+                        <td className="border-r w-20 px-2 py-1 font-normal dark:border-neutral-500">
                           {service.frequency}
                         </td>
                       </tr>
