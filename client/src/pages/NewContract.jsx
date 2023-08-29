@@ -11,12 +11,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { preferredTime, contractEnd, contractTypes } from "../utils/dataHelper";
 
-const salesPerson = [
-  { value: "Mayur", label: "Mayur" },
-  { value: "Pranit", label: "Pranit" },
-];
-
-const Contract = () => {
+const NewContract = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { contractDetails } = useSelector((store) => store.all);
@@ -101,8 +96,8 @@ const Contract = () => {
     data.tenure.endDate = new Date(
       date.getFullYear(),
       date.getMonth() + data.tenure.months,
-      date.getDate()
-    );
+      date.getDate() - 1
+    ).setHours(5, 30, 0);
     data.serviceStartDate = new Date(data.serviceStartDate);
 
     try {
@@ -337,7 +332,7 @@ const Contract = () => {
               </div>
               <div>
                 <InputRow
-                  label="1. Contact Name"
+                  label="Contact Name"
                   placeholder="Contact Name"
                   id="billToContact.0.name"
                   errors={errors}
@@ -375,7 +370,7 @@ const Contract = () => {
               <div>
                 <InputRow
                   required={false}
-                  placeholder="Alternate contact Name"
+                  placeholder="Alternate name"
                   id="billToContact.1.name"
                   errors={errors}
                   register={register}
@@ -384,7 +379,7 @@ const Contract = () => {
               <div>
                 <InputRow
                   required={false}
-                  placeholder="Contact number"
+                  placeholder="Alternate number"
                   id="billToContact.1.number"
                   errors={errors}
                   register={register}
@@ -392,7 +387,7 @@ const Contract = () => {
               </div>
               <div>
                 <InputRow
-                  placeholder="Contact email id"
+                  placeholder="Alternate email"
                   id="billToContact.1.email"
                   errors={errors}
                   register={register}
@@ -484,7 +479,7 @@ const Contract = () => {
               </div>
               <div>
                 <InputRow
-                  label="1. Contact Name"
+                  label="Contact Name"
                   placeholder="Contact Name"
                   id="shipToContact.0.name"
                   errors={errors}
@@ -522,7 +517,7 @@ const Contract = () => {
               <div>
                 <InputRow
                   required={false}
-                  placeholder="Alternate contact Name"
+                  placeholder="Alternate name"
                   id="shipToContact.1.name"
                   errors={errors}
                   register={register}
@@ -531,7 +526,7 @@ const Contract = () => {
               <div>
                 <InputRow
                   required={false}
-                  placeholder="Contact number"
+                  placeholder="Alternate number"
                   id="shipToContact.1.number"
                   errors={errors}
                   register={register}
@@ -539,7 +534,7 @@ const Contract = () => {
               </div>
               <div>
                 <InputRow
-                  placeholder="Contact email id"
+                  placeholder="Alternate email"
                   id="shipToContact.1.email"
                   errors={errors}
                   register={register}
@@ -562,4 +557,4 @@ const Contract = () => {
     </>
   );
 };
-export default Contract;
+export default NewContract;

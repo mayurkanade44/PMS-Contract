@@ -1,4 +1,4 @@
-import Contract from "./Contract";
+import NewContract from "./NewContract";
 import ContractDetails from "./ContractDetails";
 import Login from "./Login";
 import Register from "./Register";
@@ -12,7 +12,7 @@ import ClientReport from "./ClientReport";
 export {
   Login,
   Register,
-  Contract,
+  NewContract,
   ContractDetails,
   Dashboard,
   AllServiceCards,

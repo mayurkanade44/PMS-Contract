@@ -13,11 +13,11 @@ import {
   Admin,
   AllServiceCards,
   ClientReport,
-  Contract,
   ContractDetails,
   Dashboard,
   Home,
   Login,
+  NewContract,
   Register,
   ServiceCard,
 } from "./pages";
@@ -44,7 +44,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/contract/:id" element={<Contract />} />
+          <Route path="/contract/:id" element={<NewContract />} />
           <Route path="/contract-details/:id" element={<ContractDetails />} />
           <Route
             path="/contract/:id/service-cards"
