@@ -13,6 +13,7 @@ import Select from "react-select";
 import {
   useAddCardMutation,
   useDeleteCardMutation,
+  useDigitalContractMutation,
   useSendContractMutation,
   useUpdateCardMutation,
 } from "../redux/serviceSlice";
@@ -44,16 +45,18 @@ const AllServiceCards = () => {
   } = useGetSingleContractQuery(id);
 
   const [addCard, { isLoading: addCardLoading }] = useAddCardMutation();
-  const [updateCard, { isLoading: updateLoading }] = useUpdateCardMutation();
+  const [updateCard] = useUpdateCardMutation();
   const [deleteCard, { isLoading: deleteCardLoading }] =
     useDeleteCardMutation();
+  const [digitalContract, { isLoading: digitalContractLoading }] =
+    useDigitalContractMutation();
   const [sendContract, { isLoading: createCardLoading }] =
     useSendContractMutation();
   const { data: adminValues, isLoading: valueLoading } = useGetAllValuesQuery();
 
   const {
     register,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     reset,
     setValue,
@@ -90,7 +93,6 @@ const AllServiceCards = () => {
   };
 
   const handleDelete = async () => {
-    console.log(openDelete.id);
     try {
       const res = await deleteCard(openDelete.id).unwrap();
       toast.success(res.msg);
@@ -104,7 +106,12 @@ const AllServiceCards = () => {
 
   const handleSendContract = async () => {
     try {
-      const res = await sendContract(id).unwrap();
+      let res;
+      if (!contractDetails?.softCopy) {
+        res = await digitalContract(id).unwrap();
+      } else {
+        res = await sendContract(id).unwrap();
+      }
       refetch();
       toast.success(res.msg);
     } catch (error) {
@@ -133,6 +140,7 @@ const AllServiceCards = () => {
       deleteCardLoading ||
       edit.loading ||
       createCardLoading ||
+      digitalContractLoading ||
       isFetching ? (
         <Loading />
       ) : error ? (
@@ -292,10 +300,16 @@ const AllServiceCards = () => {
               </tbody>
             </table>
             <Button
-              label="Send Contract"
-              width="w-32"
+              label={
+                !contractDetails.softCopy
+                  ? "Create Digital Contract"
+                  : !contractDetails.sendMail
+                  ? "Send Contract"
+                  : "Contract Already Sent"
+              }
+              width="w-48"
               height="py-2"
-              color="bg-green-600"
+              color={contractDetails.sendMail ? "bg-gray-600" : "bg-green-600"}
               handleClick={() => handleSendContract()}
               disabled={
                 !contractDetails.services?.length || contractDetails.sendMail

@@ -4,7 +4,7 @@ export const serviceSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     addCard: builder.mutation({
       query: (data) => ({
-        url: "/api/service/add-card",
+        url: "/api/service/addCard",
         method: "POST",
         body: data,
       }),
@@ -24,7 +24,14 @@ export const serviceSlice = apiSlice.injectEndpoints({
     }),
     sendContract: builder.mutation({
       query: (id) => ({
-        url: `/api/service/send-contract/${id}`,
+        url: `/api/service/sendContract/${id}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Contract"],
+    }),
+    digitalContract: builder.mutation({
+      query: (id) => ({
+        url: `/api/service/digitalContract/${id}`,
         method: "PUT",
       }),
       invalidatesTags: ["Contract"],
@@ -41,6 +48,7 @@ export const {
   useAddCardMutation,
   useDeleteCardMutation,
   useUpdateCardMutation,
+  useDigitalContractMutation,
   useSendContractMutation,
   useSingleCardQuery,
 } = serviceSlice;

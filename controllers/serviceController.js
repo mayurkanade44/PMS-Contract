@@ -206,13 +206,14 @@ export const deleteCard = async (req, res) => {
   }
 };
 
-export const sendContract = async (req, res) => {
+export const createDigitalContract = async (req, res) => {
   const { id: contractId } = req.params;
   try {
     const contract = await Contract.findById(contractId).populate("services");
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
-    if (contract.softCopy && contract.sendMail)
-      return res.status(200).json({ msg: "Contract already sent" });
+
+    if (contract.softCopy)
+      return res.status(200).json({ msg: "Contract already created" });
 
     const servicesFreq = [];
     contract.services.map((item) =>
@@ -222,52 +223,72 @@ export const sendContract = async (req, res) => {
       })
     );
 
-    if (!contract.softCopy) {
-      const template = fs.readFileSync("./tmp/contractTemp.docx");
+    //create contract word file
+    const template = fs.readFileSync("./tmp/contractTemp.docx");
 
-      const buffer = await createReport({
-        cmdDelimiter: ["{", "}"],
-        template,
+    const buffer = await createReport({
+      cmdDelimiter: ["{", "}"],
+      template,
 
-        additionalJsContext: {
-          contractNo: contract.contractNo,
-          type: contract.type === "NC" ? "New Contract" : "Renewal Contract",
-          sales: contract.sales,
-          startDate: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
-          endDate: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
-          billToName: contract.billToAddress.name,
-          billToAddress: contract.billToAddress.address,
-          billToCity: contract.billToAddress.city,
-          billToPincode: contract.billToAddress.pincode,
-          shipToAddress: contract.shipToAddress.address,
-          shipToCity: contract.shipToAddress.city,
-          shipToPincode: contract.shipToAddress.pincode,
-          services: servicesFreq,
-          contactName: contract.billToContact[0].name,
-          contactNumber: contract.billToContact[0].number,
-          date: moment().format("DD/MM/YYYY"),
-          billingFrequency: contract.billingFrequency,
-        },
-      });
+      additionalJsContext: {
+        contractNo: contract.contractNo,
+        type: contract.type === "NC" ? "New Contract" : "Renewal Contract",
+        sales: contract.sales,
+        startDate: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
+        endDate: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
+        billToName: contract.billToAddress.name,
+        billToAddress: contract.billToAddress.address,
+        billToCity: contract.billToAddress.city,
+        billToPincode: contract.billToAddress.pincode,
+        shipToAddress: contract.shipToAddress.address,
+        shipToCity: contract.shipToAddress.city,
+        shipToPincode: contract.shipToAddress.pincode,
+        services: servicesFreq,
+        contactName: contract.billToContact[0].name,
+        contactNumber: contract.billToContact[0].number,
+        date: moment().format("DD/MM/YYYY"),
+        billingFrequency: contract.billingFrequency,
+      },
+    });
 
-      const contractName = contract.contractNo.replace(/\//g, "-");
-      const filePath = `./tmp/${contractName}.docx`;
-      fs.writeFileSync(filePath, buffer);
-      const link = await uploadFile({ filePath });
-      if (!link)
-        return res.status(400).json({ msg: "Upload error, try again later" });
+    const contractName = contract.contractNo.replace(/\//g, "-");
+    const filePath = `./tmp/${contractName}.docx`;
+    fs.writeFileSync(filePath, buffer);
+    const link = await uploadFile({ filePath });
+    if (!link)
+      return res.status(400).json({ msg: "Upload error, try again later" });
 
-      contract.softCopy = link;
-      await contract.save();
-    }
+    contract.softCopy = link;
+    await contract.save();
+
+    return res.status(201).json({ msg: "Digital contract created" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const sendContract = async (req, res) => {
+  const { id: contractId } = req.params;
+  try {
+    const contract = await Contract.findById(contractId).populate("services");
+    if (!contract) return res.status(404).json({ msg: "Contract not found" });
+    if (contract.softCopy && contract.sendMail)
+      return res.status(200).json({ msg: "Contract already sent" });
 
     if (contract.softCopy && !contract.sendMail) {
       const allServices = [];
-      contract.services.map((item) => {
-        item.services.map(
-          (s) => !allServices.includes(s.label) && allServices.push(s.label)
-        );
-      });
+      for (let serviceCards of contract.services) {
+        let serviceName = "";
+        for (let service of serviceCards.services) {
+          serviceName += `${service.label}, `;
+        }
+        allServices.push({
+          name: serviceName,
+          frequency: serviceCards.frequency.label || serviceCards.frequency,
+          dates: serviceCards.serviceDates.join(", "),
+        });
+      }
 
       const tempEmails = new Set();
       contract.billToContact.map(
@@ -297,7 +318,7 @@ export const sendContract = async (req, res) => {
         contractNo: contract.contractNo,
         start: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
         end: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
-        service: allServices.join(", "),
+        service: allServices,
       };
 
       const mailSent = await sendEmail({

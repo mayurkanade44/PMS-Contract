@@ -1,6 +1,7 @@
 import express from "express";
 import {
   addCard,
+  createDigitalContract,
   deleteCard,
   getSingleCard,
   sendContract,
@@ -9,9 +10,12 @@ import {
 import { authorizeUser } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
-router.route("/add-card").post(authorizeUser("Admin", "Back Office"), addCard);
+router.route("/addCard").post(authorizeUser("Admin", "Back Office"), addCard);
 router
-  .route("/send-contract/:id")
+  .route("/digitalContract/:id")
+  .put(authorizeUser("Admin", "Back Office"), createDigitalContract);
+router
+  .route("/sendContract/:id")
   .put(authorizeUser("Admin", "Back Office"), sendContract);
 router
   .route("/:id")
