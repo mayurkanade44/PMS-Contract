@@ -94,7 +94,7 @@ const ServiceCard = () => {
                   htmlFor="images"
                   className="text-md font-medium leading-6 mr-2 text-gray-900"
                 >
-                  Service Images*{" "}
+                  Job Images*{" "}
                   <span className="text-sm font-normal">
                     (max 3 images allowed)
                   </span>
@@ -109,7 +109,7 @@ const ServiceCard = () => {
               </div>
               <div>
                 <InputRow
-                  label="Service Date"
+                  label="Job Date"
                   id="serviceDate"
                   errors={errors}
                   register={register}
@@ -126,7 +126,7 @@ const ServiceCard = () => {
                   rules={{ required: "Type is required" }}
                   render={({ field: { onChange, value, ref } }) => (
                     <InputSelect
-                      label="Service Type"
+                      label="Job Type"
                       options={serviceType}
                       onChange={onChange}
                       value={value}
@@ -145,7 +145,7 @@ const ServiceCard = () => {
                   rules={{ required: "Status is required" }}
                   render={({ field: { onChange, value, ref } }) => (
                     <InputSelect
-                      label="Service Status"
+                      label="Job Status"
                       options={serviceStatus}
                       onChange={onChange}
                       value={value}
@@ -164,7 +164,7 @@ const ServiceCard = () => {
                   rules={{ required: "Comment is required" }}
                   render={({ field: { onChange, value, ref } }) => (
                     <InputSelect
-                      label="Service Comment"
+                      label="Operator Comment"
                       options={adminValues?.comments}
                       onChange={onChange}
                       value={value}

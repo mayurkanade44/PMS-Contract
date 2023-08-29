@@ -114,7 +114,7 @@ const ContractDetails = () => {
               </div>
 
               <h2 className="text-2xl font-semibold text-center mt-5 mb-2">
-                Bill To Details
+                Billing Address
               </h2>
               <h3 className="text-xl my-1">
                 Name - {contract.billToAddress.name}
@@ -171,7 +171,7 @@ const ContractDetails = () => {
                 />
               </div>
               <h2 className="text-2xl font-semibold text-center mt-5 mb-2">
-                Ship To Details
+                Service Address
               </h2>
               <h3 className="text-xl my-1">
                 Name - {contract.shipToAddress.name}

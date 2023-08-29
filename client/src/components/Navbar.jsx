@@ -61,7 +61,7 @@ const Navbar = () => {
             >
               <div className="flex w-full sm:w-auto items-center sm:items-stretch justify-end sm:justify-center">
                 <div className="flex items-center py-3">
-                  <img src={logo} className="w-24 mr-5" alt="logo" />
+                  <img src={logo} className="w-24" alt="logo" />
                   <h2 className="hidden sm:block text-xl text-gray-700 font-bold leading-normal pl-3">
                     Pest Management & Services
                   </h2>
@@ -99,16 +99,14 @@ const Navbar = () => {
                         {profile && (
                           <ul className="p-2 w-24 border-r bg-white absolute rounded right-0 shadow top-0 mt-8 border-2 border-black ">
                             <li className="cursor-pointer  text-gray-600 text-sm leading-3 tracking-normal hover:font-semibold">
-                              <div className="flex items-center justify-center text-red-500">
-                                <AiOutlineLogout className="h-4 w-4" />
-                                <button
-                                  onClick={handleLogout}
-                                  type="button"
-                                  className="ml-2"
-                                >
-                                  Log Out
-                                </button>
-                              </div>
+                              <button
+                                onClick={handleLogout}
+                                type="button"
+                                className="flex items-center justify-center text-red-500"
+                              >
+                                <AiOutlineLogout className="h-4 w-4 mr-1" />
+                                Log Out
+                              </button>
                             </li>
                           </ul>
                         )}
