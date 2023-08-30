@@ -232,41 +232,59 @@ export const serviceNotification = async (req, res) => {
 export const sendServiceNotification = async (req, res) => {
   try {
     const file = await Admin.findById("64e1d5a78fbf8a07b23a0b99");
-    if (file.notificationFile === "No File")
-      return res.status(404).json({ msg: "Fle not found" });
-
     const fileName = moment().add(7, "days").format("DD-MM-YYYY");
-    const result = await axios.get(file.notificationFile, {
-      responseType: "arraybuffer",
-    });
-    const base64File = Buffer.from(result.data, "binary").toString("base64");
 
-    const attachObj = [
-      {
-        content: base64File,
-        filename: `${fileName}.xlsx`,
-        type: `application/xlsx`,
-        disposition: "attachment",
-      },
-    ];
+    if (file.notificationFile === "No File") {
+      const mailSent = await sendEmail({
+        emailList: ["exteam.epcorn@gmail.com", "dummy.systemtest@gmail.com"],
+        attachObj: [],
+        templateId: "d-80c1a47b2e014671aa2f536409ee4504",
+        dynamicData: {
+          date: fileName,
+          description: `There are no services schedule on ${fileName} `,
+        },
+      });
 
-    const mailSent = await sendEmail({
-      emailList: ["exteam.epcorn@gmail.com"],
-      attachObj,
-      templateId: "d-80c1a47b2e014671aa2f536409ee4504",
-      dynamicData: { date: fileName },
-    });
+      if (!mailSent)
+        return res.status(400).json({ msg: "Email not sent, try again later" });
 
-    if (!mailSent)
-      return res.status(400).json({ msg: "Email not sent, try again later" });
+      return res.status(200).json({ msg: "Email Sent" });
+    } else {
+      const result = await axios.get(file.notificationFile, {
+        responseType: "arraybuffer",
+      });
+      const base64File = Buffer.from(result.data, "binary").toString("base64");
 
-    await Admin.findOneAndUpdate(
-      { _id: "64e1d5a78fbf8a07b23a0b99" },
-      { notificationFile: "No File" },
-      { runValidators: true, new: true }
-    );
+      const attachObj = [
+        {
+          content: base64File,
+          filename: `${fileName}.xlsx`,
+          type: `application/xlsx`,
+          disposition: "attachment",
+        },
+      ];
 
-    return res.status(200).json({ msg: "Email Sent" });
+      const mailSent = await sendEmail({
+        emailList: ["exteam.epcorn@gmail.com", "dummy.systemtest@gmail.com"],
+        attachObj,
+        templateId: "d-80c1a47b2e014671aa2f536409ee4504",
+        dynamicData: {
+          date: fileName,
+          description: `Please find the attachment of services schedule on ${fileName}`,
+        },
+      });
+
+      if (!mailSent)
+        return res.status(400).json({ msg: "Email not sent, try again later" });
+
+      await Admin.findOneAndUpdate(
+        { _id: "64e1d5a78fbf8a07b23a0b99" },
+        { notificationFile: "No File" },
+        { runValidators: true, new: true }
+      );
+
+      return res.status(200).json({ msg: "Attachment Email Sent" });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
