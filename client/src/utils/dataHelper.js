@@ -25,6 +25,7 @@ export const contractTypes = [
 
 export const allFrequency = [
   { value: "Single", label: "Single" },
+  { value: "2 Times In A Week", label: "2 Times In A Week" },
   { value: "Weekly", label: "Weekly" },
   { value: "2 Times In A Month", label: "2 Times In A Month" },
   { value: "Monthly", label: "Monthly" },

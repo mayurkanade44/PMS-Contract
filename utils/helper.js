@@ -27,10 +27,11 @@ export const capitalLetter = (phrase) => {
 
 export const serviceDue = ({ frequency, serviceStart, diffDays }) => {
   const serviceDates = [];
-  const serviceMonths = [];
+  const months = new Set();
   let frequencyDays;
 
   if (frequency === "Single") frequencyDays = 365;
+  else if (frequency === "2 Times In A Week") frequencyDays = 7;
   else if (frequency === "Weekly") frequencyDays = 7;
   else if (frequency === "2 Times In A Month") frequencyDays = 15;
   else if (frequency === "Monthly") frequencyDays = 30;
@@ -38,19 +39,26 @@ export const serviceDue = ({ frequency, serviceStart, diffDays }) => {
 
   const end = Math.floor(diffDays / frequencyDays);
 
-  for (let i = 0; i < end; i++) {
-    serviceDates.push(moment(serviceStart).format("DD/MM/YYYY"));
+  if (frequency === "2 Times In A Week") {
+    for (let i = 0; i < end * 2; i++) {
+      serviceDates.push(moment(serviceStart).format("DD/MM/YYYY"));
+      months.add(moment(serviceStart).format("MMM YY"));
 
-    if (!serviceMonths.includes(moment(serviceStart).format("MMM YY"))) {
-      serviceMonths.push(moment(serviceStart).format("MMM YY"));
+      if (moment(serviceStart).format("dddd") === "Tuesday")
+        serviceStart = moment(serviceStart).add(3, "Days");
+      else serviceStart = moment(serviceStart).add(4, "Days");
     }
+  } else {
+    for (let i = 0; i < end; i++) {
+      serviceDates.push(moment(serviceStart).format("DD/MM/YYYY"));
 
-    serviceStart = new Date(
-      serviceStart.getFullYear(),
-      serviceStart.getMonth(),
-      serviceStart.getDate() + frequencyDays
-    );
+      months.add(moment(serviceStart).format("MMM YY"));
+
+      serviceStart = moment(serviceStart).add(frequencyDays, "Days");
+    }
   }
+
+  const serviceMonths = [...months];
 
   return { serviceMonths, serviceDates };
 };
