@@ -11,7 +11,7 @@ import axios from "axios";
 let cardId = null;
 
 export const addCard = async (req, res) => {
-  const { frequency, id } = req.body;
+  const { frequency, id, serviceStartDate } = req.body;
   try {
     const contract = await Contract.findById(id).populate("services");
     if (!contract || !contract.active)
@@ -24,8 +24,9 @@ export const addCard = async (req, res) => {
 
     const due = serviceDue({
       frequency,
-      serviceStart: contract.serviceStartDate,
+      serviceStartDate,
       diffDays,
+      endDate: contract.tenure.endDate,
     });
 
     cardId = null;
@@ -37,6 +38,7 @@ export const addCard = async (req, res) => {
       treatmentLocation: req.body.treatmentLocation,
       contract: id,
       services: req.body.services,
+      serviceStartDate,
     });
 
     cardId = service._id;

@@ -222,7 +222,7 @@ export const serviceNotification = async (req, res) => {
       { runValidators: true, new: true }
     );
 
-    return res.status(200).json({ msg: "Notification File generated" });
+    return res.status(200).json({ msg: "Notification File Generated" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

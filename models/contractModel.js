@@ -10,7 +10,6 @@ const ContractSchema = new mongoose.Schema(
       endDate: { type: Date, required: true },
       months: { type: Number, required: true },
     },
-    serviceStartDate: { type: Date, required: true },
     billingFrequency: { type: String, required: true },
     preferred: {
       day: String,
@@ -21,7 +20,7 @@ const ContractSchema = new mongoose.Schema(
       address: String,
       nearBy: String,
       city: String,
-      pincode: Number,
+      pincode: String,
     },
     billToContact: [
       {
@@ -35,7 +34,7 @@ const ContractSchema = new mongoose.Schema(
       address: String,
       nearBy: String,
       city: String,
-      pincode: Number,
+      pincode: String,
     },
     shipToContact: [
       {

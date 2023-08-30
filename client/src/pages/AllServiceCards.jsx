@@ -66,6 +66,7 @@ const AllServiceCards = () => {
       id: id,
       area: "",
       frequency: "Single",
+      serviceStartDate: new Date().toISOString().slice(0, 10),
       treatmentLocation: "",
       serviceCardId: "",
     },
@@ -126,6 +127,10 @@ const AllServiceCards = () => {
     setValue("area", data.area);
     setValue("treatmentLocation", data.treatmentLocation);
     setValue("serviceCardId", data._id);
+    setValue(
+      "serviceStartDate",
+      new Date(data.serviceStartDate).toISOString().slice(0, 10)
+    );
     setSelectedOption(data.services);
 
     setTimeout(() => {
@@ -147,7 +152,7 @@ const AllServiceCards = () => {
         <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
         <div className="my-5">
-          <div className="md:flex justify-between">
+          <div className="md:flex justify-around">
             <h2 className="text-2xl font-semibold">
               Contract Number - {contractDetails.contractNo}
             </h2>
@@ -157,16 +162,13 @@ const AllServiceCards = () => {
             <h2 className="text-2xl font-semibold">
               End Date - {dateFormat(contractDetails.tenure.endDate)}
             </h2>
-            <h2 className="text-2xl font-semibold">
-              Service Start - {dateFormat(contractDetails.serviceStartDate)}
-            </h2>
           </div>
           <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
           <form
             onSubmit={handleSubmit(submit)}
             className="grid grid-cols-12 gap-x-5 gap-y-3 my-4"
           >
-            <div className="col-span-6 md:col-span-4 lg:col-span-3">
+            <div className="col-span-6 md:col-span-4">
               <label className="block text-md font-medium leading-6 text-gray-900">
                 Select Service
                 <span className="text-red-500 required-dot ml-0.5">*</span>
@@ -181,7 +183,7 @@ const AllServiceCards = () => {
                 required
               />
             </div>
-            <div className="col-span-6 md:col-span-4 lg:col-span-2">
+            <div className="col-span-6 md:col-span-4 lg:col-span-3">
               <Controller
                 name="frequency"
                 control={control}
@@ -199,6 +201,16 @@ const AllServiceCards = () => {
               <p className="text-xs text-red-500 -bottom-4 pl-1">
                 {errors.frequency?.message}
               </p>
+            </div>
+            <div className="col-span-8 md:col-span-4 lg:col-span-2">
+              <InputRow
+                label="Service Start Date"
+                message="Service start date is required"
+                id="serviceStartDate"
+                errors={errors}
+                register={register}
+                type="date"
+              />
             </div>
             <div className="col-span-8 md:col-span-4 lg:col-span-2">
               <InputRow
@@ -233,7 +245,7 @@ const AllServiceCards = () => {
                 </p>
               </div>
             </div>
-            <div className="col-span-2 flex items-center justify-center">
+            <div className="col-span-2 flex items-center">
               <Button label="Save Card" height="h-10" type="submit" />
             </div>
           </form>

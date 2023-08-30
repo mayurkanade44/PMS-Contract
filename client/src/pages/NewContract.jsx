@@ -39,7 +39,6 @@ const NewContract = () => {
         startDate: new Date().toISOString().slice(0, 10),
         months: 12,
       },
-      serviceStartDate: new Date().toISOString().slice(0, 10),
       preferred: {
         day: "",
         time: "10 am - 12 pm",
@@ -76,10 +75,6 @@ const NewContract = () => {
         "tenure.startDate",
         new Date(contractDetails.tenure.startDate).toISOString().slice(0, 10)
       );
-      setValue(
-        "serviceStartDate",
-        new Date(contractDetails.serviceStartDate).toISOString().slice(0, 10)
-      );
     }
   }, []);
 
@@ -92,13 +87,11 @@ const NewContract = () => {
     data.contractNo =
       data.contractNo.trim()[0].toUpperCase() + data.contractNo.slice(1);
     const date = new Date(data.tenure.startDate);
-    data.tenure.startDate = date;
     data.tenure.endDate = new Date(
       date.getFullYear(),
       date.getMonth() + data.tenure.months,
       date.getDate() - 1
     ).setHours(5, 30, 0);
-    data.serviceStartDate = new Date(data.serviceStartDate);
 
     try {
       let res;
@@ -216,16 +209,7 @@ const NewContract = () => {
               {errors.endDate?.message}
             </p>
           </div>
-          <div className="col-span-8 md:col-span-4 lg:col-span-2">
-            <InputRow
-              label="Service Start Date"
-              message="Service start date is required"
-              id="serviceStartDate"
-              errors={errors}
-              register={register}
-              type="date"
-            />
-          </div>
+
           <div className="col-span-6 md:col-span-4 lg:col-span-2">
             <InputRow
               label="Preferred Day"
