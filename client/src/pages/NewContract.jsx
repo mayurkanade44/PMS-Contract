@@ -246,7 +246,7 @@ const NewContract = () => {
           </div>
           <div className="col-span-12 md:col-span-6">
             <h4 className="text-2xl font-semibold text-center text-blue-600">
-              Bill To Details
+              Billing Details
             </h4>
             <div className="mb-2">
               <InputRow
@@ -384,7 +384,7 @@ const NewContract = () => {
           <div className="col-span-12 md:col-span-6">
             <div className="flex justify-around">
               <h4 className="text-2xl font-semibold text-center text-blue-600">
-                Ship To Details
+                Service Details
               </h4>
               <Button
                 color="bg-gray-600"
@@ -409,7 +409,7 @@ const NewContract = () => {
             </div>
             <div className="mb-2">
               <InputRow
-                label="Shipping Address"
+                label="Service Address"
                 message="Address is required"
                 placeholder="Enter full address of shipping"
                 id="shipToAddress.address"

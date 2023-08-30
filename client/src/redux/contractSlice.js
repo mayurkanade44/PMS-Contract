@@ -8,14 +8,14 @@ export const contractSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Contract"],
+      invalidatesTags: ["Contracts"],
     }),
     getSingleContract: builder.query({
       query: (id) => ({
         url: `/api/contract/singleContract/${id}`,
       }),
       providesTags: ["Contract"],
-      keepUnusedDataFor: 5,
+      keepUnusedDataFor: 10,
     }),
     updateContract: builder.mutation({
       query: ({ id, data }) => ({
@@ -23,14 +23,14 @@ export const contractSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Contract"],
+      invalidatesTags: ["Contract", "Contracts"],
     }),
     deleteContract: builder.mutation({
       query: (id) => ({
         url: `/api/contract/singleContract/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Contract"],
+      invalidatesTags: ["Contracts"],
     }),
     deactiveContract: builder.mutation({
       query: (id) => ({
@@ -44,7 +44,7 @@ export const contractSlice = apiSlice.injectEndpoints({
         url: `/api/contract`,
         params: { search, page },
       }),
-      providesTags: ["Contract"],
+      providesTags: ["Contracts"],
       keepUnusedDataFor: 10,
     }),
     getAllValues: builder.query({
@@ -62,5 +62,5 @@ export const {
   useDeleteContractMutation,
   useDeactiveContractMutation,
   useGetAllContractsQuery,
-  useGetAllValuesQuery
+  useGetAllValuesQuery,
 } = contractSlice;

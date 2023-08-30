@@ -3,9 +3,11 @@ export const contractEnd = [
   { value: 3, label: "3 Months" },
   { value: 6, label: "6 Months" },
   { value: 12, label: "1 Year" },
+  { value: 24, label: "2 Years" },
   { value: 36, label: "3 Years" },
+  { value: 48, label: "4 Years" },
   { value: 60, label: "5 Years" },
-  { value: "Onwards", label: "Onwards" },
+  { value: 120, label: "10 Years" },
 ];
 
 export const preferredTime = [
