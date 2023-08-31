@@ -1,5 +1,9 @@
-import { useAllStatsQuery, useDailyServicesQuery } from "../redux/reportSlice";
-import { AlertMessage, Button, Loading } from "../components";
+import {
+  useAllStatsQuery,
+  useDailyServicesQuery,
+  useMonthlyServiceMutation,
+} from "../redux/reportSlice";
+import { AlertMessage, Button, InputSelect, Loading } from "../components";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,18 +15,22 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { saveAs } from "file-saver";
 
 const Dashboard = () => {
-  const [showGraph, setShowGraph] = useState(false);
+  const [show, setShow] = useState("Today's Schedule");
   const [allData, setAllData] = useState({ label: [], value: [] });
+  const [month, setMonth] = useState("");
 
   const {
     data: dailyServices,
     isLoading: dailyLoading,
     error,
   } = useDailyServicesQuery();
-
   const { data: stats, isLoading: statsLoading } = useAllStatsQuery();
+  const [monthlyService, { isLoading: monthlyLoading }] =
+    useMonthlyServiceMutation();
 
   ChartJS.register(
     CategoryScale,
@@ -63,9 +71,23 @@ const Dashboard = () => {
     ],
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!month) return toast.error("Please select month");
+
+    try {
+      const res = await monthlyService({ month }).unwrap();
+      toast.success(res.msg);
+      if (res.link) saveAs(res.link, `${month}_Services`);
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.msg || error.error);
+    }
+  };
+
   return (
-    <div className="my-5">
-      {dailyLoading || statsLoading ? (
+    <div className="my-20 lg:my-5">
+      {dailyLoading || statsLoading || monthlyLoading ? (
         <Loading />
       ) : (
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
@@ -76,17 +98,21 @@ const Dashboard = () => {
             <Button
               label="Today's Schedule"
               width="w-40"
-              handleClick={() => setShowGraph(false)}
+              handleClick={() => setShow("Today's Schedule")}
+            />
+            <Button
+              label="Monthly Schedule"
+              color="bg-gray-600"
+              width="w-40"
+              handleClick={() => setShow("Monthly Schedule")}
             />
             <Button
               label="Bar Graph"
-              color="bg-pink-300"
-              handleClick={() => setShowGraph(true)}
+              color="bg-pink-400"
+              handleClick={() => setShow("Bar Graph")}
             />
           </div>
-          {showGraph ? (
-            <Bar options={options} data={data} />
-          ) : (
+          {show === "Today's Schedule" ? (
             <>
               <h2 className="text-center text-lg font-semibold mb-4">
                 {dailyServices.length < 1
@@ -121,7 +147,7 @@ const Dashboard = () => {
                           {service.contract.contractNo}
                         </td>
                         <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
-                          {service.contract.shipToAddress.name} 
+                          {service.contract.shipToAddress.name}
                         </td>
                         <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
                           {service.services.map((item) => item.label + ", ")}
@@ -135,6 +161,23 @@ const Dashboard = () => {
                 </table>
               </div>
             </>
+          ) : show === "Monthly Schedule" ? (
+            <div className="flex justify-center">
+              <form onSubmit={handleSubmit} className="flex">
+                <label className="w-28 text-md font-medium leading-6 text-gray-900">
+                  Select Month:
+                </label>
+                <input
+                  type="month"
+                  value={month}
+                  onChange={(e) => setMonth(e.target.value)}
+                  className="mr-3 px-1 w-40 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black"
+                />
+                <Button label="Generate" color="bg-green-600" type="submit" />
+              </form>
+            </div>
+          ) : (
+            <Bar options={options} data={data} />
           )}
         </>
       )}

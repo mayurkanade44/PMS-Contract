@@ -7,6 +7,7 @@ import {
   clientReport,
   dailyServices,
   generateReport,
+  monthlyServiceDue,
   sendServiceNotification,
   serviceNotification,
 } from "../controllers/reportController.js";
@@ -26,6 +27,12 @@ router.get("/clientReport/:id", clientReport);
 
 router.get("/serviceDue", serviceNotification);
 router.get("/serviceDueMail", sendServiceNotification);
+router.post(
+  "/monthlyServices",
+  authenticateUser,
+  authorizeUser("Admin", "Back Office"),
+  monthlyServiceDue
+);
 router.get(
   "/dailyServices",
   authenticateUser,

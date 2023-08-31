@@ -31,6 +31,13 @@ export const reportSlice = apiSlice.injectEndpoints({
         url: "/api/report/allStats",
       }),
     }),
+    monthlyService: builder.mutation({
+      query: ({ data }) => ({
+        url: "/api/report/monthlyServices",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -40,4 +47,5 @@ export const {
   useGetClientReportQuery,
   useDailyServicesQuery,
   useAllStatsQuery,
+  useMonthlyServiceMutation,
 } = reportSlice;

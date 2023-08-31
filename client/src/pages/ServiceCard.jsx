@@ -10,7 +10,6 @@ import {
 } from "../components";
 import { toast } from "react-toastify";
 import {
-  serviceComment,
   serviceStatus,
   serviceType,
 } from "../utils/dataHelper";
@@ -28,10 +27,9 @@ const ServiceCard = () => {
 
   const {
     register,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     reset,
-    setValue,
     control,
   } = useForm({
     defaultValues: {

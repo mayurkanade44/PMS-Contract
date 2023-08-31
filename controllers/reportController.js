@@ -265,7 +265,11 @@ export const sendServiceNotification = async (req, res) => {
       ];
 
       const mailSent = await sendEmail({
-        emailList: ["exteam.epcorn@gmail.com", "dummy.systemtest@gmail.com"],
+        emailList: [
+          "exteam.epcorn@gmail.com",
+          "dummy.systemtest@gmail.com",
+          "livesm25@gmail.com",
+        ],
         attachObj,
         templateId: "d-80c1a47b2e014671aa2f536409ee4504",
         dynamicData: {
@@ -327,6 +331,54 @@ export const allStats = async (req, res) => {
     });
 
     return res.json(dataSheet);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const monthlyServiceDue = async (req, res) => {
+  try {
+    const month = moment(req.body.month).format("MMM YY");
+    const services = await Service.find({
+      serviceMonths: { $in: [month] },
+    }).populate({
+      path: "contract",
+      select: "contractNo shipToAddress active",
+    });
+
+    if (!services.length) return res.status(404).json({ msg: "No data found" });
+
+    const workbook = new exceljs.Workbook();
+    let worksheet = workbook.addWorksheet("Sheet1");
+
+    worksheet.columns = [
+      { header: "Contract Number", key: "contract" },
+      { header: "Contract Status", key: "status" },
+      { header: "Service Name", key: "serviceName" },
+      { header: "Frequency", key: "frequency" },
+      { header: "Clinet Name", key: "name" },
+      { header: "Service Address", key: "address" },
+    ];
+
+    for (let service of services) {
+      if (service.contract) {
+        worksheet.addRow({
+          contract: service.contract.contractNo,
+          status: service.contract.active ? "Active" : "Deactive",
+          serviceName: service.services.map((item) => item.label).join(", "),
+          frequency: service.frequency,
+          name: service.contract.shipToAddress.name,
+          address: `${service.contract.shipToAddress.address}, ${service.contract.shipToAddress.city} - ${service.contract.shipToAddress.pincode}`,
+        });
+      }
+    }
+    const filePath = `./tmp/${month} serviceDue.xlsx`;
+    await workbook.xlsx.writeFile(filePath);
+    const link = await uploadFile({ filePath });
+    if (!link) return res.status(400).json({ msg: "File generation error" });
+
+    return res.status(200).json({ link });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
