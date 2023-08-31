@@ -57,7 +57,13 @@ export const serviceDue = ({
     }
   } else {
     for (let i = 0; i < end; i++) {
-      serviceDates.push(moment(serviceStartDate).format("DD/MM/YYYY"));
+      if (moment(serviceStartDate).format("dddd") === "Sunday") {
+        serviceDates.push(
+          moment(serviceStartDate).add(1, "Day").format("DD/MM/YYYY")
+        );
+      } else {
+        serviceDates.push(moment(serviceStartDate).format("DD/MM/YYYY"));
+      }
 
       months.add(moment(serviceStartDate).format("MMM YY"));
 

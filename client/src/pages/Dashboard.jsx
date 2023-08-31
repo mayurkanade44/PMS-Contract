@@ -171,7 +171,7 @@ const Dashboard = () => {
                   type="month"
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
-                  className="mr-3 px-1 w-40 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black"
+                  className="mr-3 px-1 w-44 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black"
                 />
                 <Button label="Generate" color="bg-green-600" type="submit" />
               </form>

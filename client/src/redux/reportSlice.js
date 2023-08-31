@@ -32,7 +32,7 @@ export const reportSlice = apiSlice.injectEndpoints({
       }),
     }),
     monthlyService: builder.mutation({
-      query: ({ data }) => ({
+      query: (data) => ({
         url: "/api/report/monthlyServices",
         method: "POST",
         body: data,
