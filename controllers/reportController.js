@@ -321,7 +321,7 @@ export const allStats = async (req, res) => {
     const obj = new Map();
 
     services.map((item) =>
-      item.serviceMonths.map((month) => obj.set(month, obj.get(month) + 1 || 0))
+      item.serviceMonths.map((month) => obj.set(month, obj.get(month) + 1 || 1))
     );
 
     const dataSheet = {};

@@ -23,7 +23,7 @@ const AdminTable = ({ th, data, handleDelete }) => {
               <Button
                 label="Delete"
                 color="bg-red-600"
-                width='w-20'
+                width="w-20"
                 handleClick={() => handleDelete(item.id)}
               />
             </td>
