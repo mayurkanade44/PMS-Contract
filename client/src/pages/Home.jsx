@@ -16,7 +16,7 @@ const Home = () => {
   const { user } = useSelector((store) => store.all);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const [logout] = useLogoutMutation();
   const {
     data,
@@ -26,8 +26,7 @@ const Home = () => {
   } = useGetAllContractsQuery({ search, page });
 
   useEffect(() => {
-    if (error) {
-      error.status === 401;
+    if (error && error.status === 401) {
       async () => {
         await logout();
         dispatch(removeCredentials());

@@ -29,8 +29,7 @@ const ServiceCard = () => {
   const [logout] = useLogoutMutation();
 
   useEffect(() => {
-    if (error) {
-      error.status === 401;
+    if (error && error.status === 401) {
       async () => {
         await logout();
         dispatch(removeCredentials());
