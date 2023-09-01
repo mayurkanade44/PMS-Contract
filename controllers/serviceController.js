@@ -4,7 +4,7 @@ import moment from "moment";
 import { createCanvas, loadImage } from "canvas";
 import QRCode from "qrcode";
 import fs from "fs";
-import { sendEmail, serviceDue, uploadFile } from "../utils/helper.js";
+import { sendEmail, serviceDates, uploadFile } from "../utils/helper.js";
 import { createReport } from "docx-templates";
 import axios from "axios";
 
@@ -17,16 +17,10 @@ export const addCard = async (req, res) => {
     if (!contract || !contract.active)
       return res.status(404).json({ msg: "Contract not found" });
 
-    const diffDays = moment(contract.tenure.endDate).diff(
-      moment(contract.tenure.startDate),
-      "days"
-    );
-
-    const due = serviceDue({
+    const due = serviceDates({
       frequency,
       serviceStartDate,
-      diffDays,
-      endDate: contract.tenure.endDate,
+      contract: contract.tenure,
     });
 
     cardId = null;
@@ -166,7 +160,7 @@ const qrCodeGenerator = async (link, contractNo, serviceName) => {
 };
 
 export const updateCard = async (req, res) => {
-  const { id, frequency, serviceCardId } = req.body;
+  const { id, frequency, serviceCardId, serviceStartDate } = req.body;
   try {
     const service = await Service.findById(serviceCardId);
     if (!service)
@@ -176,10 +170,14 @@ export const updateCard = async (req, res) => {
     if (!contract || !contract.active)
       return res.status(404).json({ msg: "Contract not found" });
 
-    if (frequency !== service.frequency) {
-      const due = serviceDue({
+    if (
+      frequency !== service.frequency ||
+      serviceStartDate !== service.serviceStartDate
+    ) {
+      const due = serviceDates({
         frequency,
-        serviceStart: contract.serviceStartDate,
+        serviceStartDate,
+        contract: contract.tenure,
       });
 
       req.body.serviceMonths = due.serviceMonths;

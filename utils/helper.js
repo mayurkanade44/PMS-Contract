@@ -25,51 +25,71 @@ export const capitalLetter = (phrase) => {
     .join(" ");
 };
 
-export const serviceDue = ({
-  frequency,
-  serviceStartDate,
-  diffDays,
-  endDate,
-}) => {
+export const serviceDates = ({ frequency, serviceStartDate, contract }) => {
   const serviceDates = [];
   const months = new Set();
-  let frequencyDays;
+  let serviceDate = serviceStartDate.first;
+  let frequencyDays = 365,
+    add = "Days",
+    end = 1;
 
-  if (frequency === "Single") frequencyDays = 365;
-  else if (frequency === "2 Times In A Week") frequencyDays = 7;
-  else if (frequency === "Weekly") frequencyDays = 7;
-  else if (frequency === "2 Times In A Month") frequencyDays = 15;
-  else if (frequency === "Monthly") frequencyDays = 30;
-  else if (frequency === "Quarterly") frequencyDays = 90;
+  const diffDays = moment(contract.endDate).diff(
+    moment(contract.startDate),
+    "days"
+  );
+  const endDate = contract.endDate;
 
-  const end = Math.floor(diffDays / frequencyDays);
+  if (frequency === "2 Times In A Week" || frequency === "Weekly") {
+    frequencyDays = 7;
+    end = Math.floor(diffDays / frequencyDays);
+  } else if (frequency === "2 Times In A Month") {
+    frequencyDays = 15;
+    end = Math.floor(diffDays / frequencyDays);
+  } else if (frequency === "Monthly") {
+    frequencyDays = 1;
+    add = "Months";
+    end = Math.floor(diffDays / 30);
+  } else if (frequency === "Quarterly") {
+    frequencyDays = 3;
+    add = "Months";
+    end = Math.floor(diffDays / 90);
+  }
 
   if (frequency === "2 Times In A Week") {
-    for (let i = 0; i < end * 2; i++) {
-      serviceDates.push(moment(serviceStartDate).format("DD/MM/YYYY"));
-      months.add(moment(serviceStartDate).format("MMM YY"));
+    const first = Math.abs(
+      moment(serviceDate).diff(moment(serviceStartDate.second), "days")
+    );
+    const nextDay = moment(serviceDate).add(7, "days");
+    const second = Math.abs(
+      moment(serviceStartDate.second).diff(nextDay, "days")
+    );
 
-      if (moment(serviceStartDate).format("dddd") === "Tuesday")
-        serviceStartDate = moment(serviceStartDate).add(3, "Days");
-      else serviceStartDate = moment(serviceStartDate).add(4, "Days");
+    end = end * 2;
+    while (moment(serviceDate).isBefore(moment(endDate)) && end > 0) {
+      serviceDates.push(moment(serviceDate).format("DD/MM/YYYY"));
 
-      if (moment(serviceStartDate).isAfter(endDate)) break;
+      serviceDate = moment(serviceDate).add(first, "days");
+      end -= 1;
+      if (moment(serviceDate).isAfter(endDate) || end === 0) break;
+
+      serviceDates.push(moment(serviceDate).format("DD/MM/YYYY"));
+      serviceDate = moment(serviceDate).add(second, "days");
+      end -= 1;
+      if (moment(serviceDate).isAfter(endDate) || end === 0) break;
     }
   } else {
-    for (let i = 0; i < end; i++) {
-      if (moment(serviceStartDate).format("dddd") === "Sunday") {
+    while (moment(serviceDate).isBefore(moment(endDate)) && end > 0) {
+      if (moment(serviceDate).format("dddd") === "Sunday") {
         serviceDates.push(
-          moment(serviceStartDate).add(1, "Day").format("DD/MM/YYYY")
+          moment(serviceDate).add(1, "Day").format("DD/MM/YYYY")
         );
       } else {
-        serviceDates.push(moment(serviceStartDate).format("DD/MM/YYYY"));
+        serviceDates.push(moment(serviceDate).format("DD/MM/YYYY"));
       }
 
-      months.add(moment(serviceStartDate).format("MMM YY"));
-
-      serviceStartDate = moment(serviceStartDate).add(frequencyDays, "Days");
-
-      if (moment(serviceStartDate).isAfter(endDate)) break;
+      months.add(moment(serviceDate).format("MMM YY"));
+      serviceDate = moment(serviceDate).add(frequencyDays, add);
+      end -= 1;
     }
   }
 

@@ -60,17 +60,23 @@ const AllServiceCards = () => {
     handleSubmit,
     reset,
     setValue,
+    watch,
     control,
   } = useForm({
     defaultValues: {
       id: id,
       area: "",
       frequency: "Single",
-      serviceStartDate: new Date().toISOString().slice(0, 10),
+      serviceStartDate: {
+        first: new Date().toISOString().slice(0, 10),
+        second: "",
+      },
       treatmentLocation: "",
       serviceCardId: "",
     },
   });
+
+  const watchFrequency = watch("frequency");
 
   const submit = async (data) => {
     data.services = selectedOption;
@@ -128,8 +134,12 @@ const AllServiceCards = () => {
     setValue("treatmentLocation", data.treatmentLocation);
     setValue("serviceCardId", data._id);
     setValue(
-      "serviceStartDate",
-      new Date(data.serviceStartDate).toISOString().slice(0, 10)
+      "serviceStartDate.first",
+      new Date(data.serviceStartDate.first).toISOString().slice(0, 10)
+    );
+    setValue(
+      "serviceStartDate.second",
+      new Date(data.serviceStartDate.second).toISOString().slice(0, 10)
     );
     setSelectedOption(data.services);
 
@@ -206,11 +216,23 @@ const AllServiceCards = () => {
               <InputRow
                 label="Service Start Date"
                 message="Service start date is required"
-                id="serviceStartDate"
+                id="serviceStartDate.first"
                 errors={errors}
                 register={register}
                 type="date"
               />
+            </div>
+            <div className="col-span-8 md:col-span-4 lg:col-span-2">
+              {watchFrequency === "2 Times In A Week" && (
+                <InputRow
+                  label="Second Service Date"
+                  message="Service start date is required"
+                  id="serviceStartDate.second"
+                  errors={errors}
+                  register={register}
+                  type="date"
+                />
+              )}
             </div>
             <div className="col-span-8 md:col-span-4 lg:col-span-2">
               <InputRow
