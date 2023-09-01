@@ -1,19 +1,31 @@
+import moment from "moment";
 import Admin from "../models/adminModel.js";
 import Contract from "../models/contractModel.js";
 import Service from "../models/serviceModel.js";
 import { capitalLetter } from "../utils/helper.js";
 
 export const createContract = async (req, res) => {
-  const { contractNo, type } = req.body;
+  const { type } = req.body;
   try {
-    const contractExists = await Contract.findOne({ contractNo });
-    if (contractExists && type === "NC")
-      return res.status(400).json({ msg: "Contract number already exists" });
+    const admin = await Admin.findById("64f18ca753fd882e99cbfd1b");
 
     req.body.billToAddress.name = capitalLetter(req.body.billToAddress.name);
     req.body.shipToAddress.name = capitalLetter(req.body.shipToAddress.name);
     req.body.preferred.day = capitalLetter(req.body.preferred.day);
 
+    let count = admin.contractCounter + 1;
+    let contractNo = `PMS-${type}/${moment().format("YY")}/${count}`;
+    let contractExists = await Contract.findOne({ contractNo });
+    while (contractExists) {
+      count += 1;
+      contractNo = `PMS-${type}/${moment().format("YY")}/${count}`;
+      contractExists = await Contract.findOne({ contractNo });
+    }
+
+    admin.contractCounter = count;
+    await admin.save();
+
+    req.body.contractNo = contractNo;
     const newContract = await Contract.create(req.body);
 
     return res
@@ -43,16 +55,16 @@ export const getContract = async (req, res) => {
 };
 
 export const updateContract = async (req, res) => {
-  const { contractNo, type } = req.body;
+  const { type } = req.body;
   const { id } = req.params;
   try {
     const contract = await Contract.findById(id);
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
 
-    if (contract.type !== type || contract.contractNo !== contractNo)
+    if (contract.type !== type)
       return res
         .status(400)
-        .json({ msg: "Contract Number/Type change not allowed" });
+        .json({ msg: "Contract Type change not allowed" });
 
     req.body.billToAddress.name = capitalLetter(req.body.billToAddress.name);
     req.body.shipToAddress.name = capitalLetter(req.body.shipToAddress.name);

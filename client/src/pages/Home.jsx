@@ -145,7 +145,7 @@ const Home = () => {
                     className="h-12 text-sm leading-none text-gray-700 border-b dark:border-neutral-500 bg-white hover:bg-gray-100"
                   >
                     <td className="px-3 border-r font-normal dark:border-neutral-500">
-                      {contract.contractNo} - {contract.type}
+                      {contract.contractNo}
                     </td>
                     <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
                       {dateFormat(contract.createdAt)}

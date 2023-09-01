@@ -32,7 +32,6 @@ const NewContract = () => {
     control,
   } = useForm({
     defaultValues: contractDetails || {
-      contractNo: "",
       type: "NC",
       sales: "",
       tenure: {
@@ -84,8 +83,6 @@ const NewContract = () => {
   };
 
   const submit = async (data) => {
-    data.contractNo =
-      data.contractNo.trim()[0].toUpperCase() + data.contractNo.slice(1);
     const date = new Date(data.tenure.startDate);
     data.tenure.endDate = new Date(
       date.getFullYear(),
@@ -117,19 +114,6 @@ const NewContract = () => {
       )}
       <form onSubmit={handleSubmit(submit)} className="my-4">
         <div className="grid grid-cols-12 gap-x-5 gap-y-2 mb-2">
-          <div className="col-span-6 md:col-span-4 lg:col-span-3">
-            <InputRow
-              label="Contract Number"
-              message="Contract number is required"
-              placeholder="A/44"
-              id="contractNo"
-              errors={errors}
-              register={register}
-            />
-            <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.contractNo && "Contract number is required"}
-            </p>
-          </div>
           <div className="col-span-6 md:col-span-4 lg:col-span-2">
             <Controller
               name="type"
