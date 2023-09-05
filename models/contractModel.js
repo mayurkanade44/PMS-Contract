@@ -15,34 +15,24 @@ const ContractSchema = new mongoose.Schema(
       day: String,
       time: String,
     },
-    billToAddress: {
+    billToDetails: {
       name: String,
       address: String,
       nearBy: String,
+      area: String,
       city: String,
       pincode: String,
+      contact: [Object],
     },
-    billToContact: [
-      {
-        name: String,
-        number: String,
-        email: String,
-      },
-    ],
-    shipToAddress: {
+    shipToDetails: {
       name: String,
       address: String,
       nearBy: String,
+      area: String,
       city: String,
       pincode: String,
+      contact: [Object],
     },
-    shipToContact: [
-      {
-        name: String,
-        number: String,
-        email: String,
-      },
-    ],
     sendMail: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     softCopy: { type: String },

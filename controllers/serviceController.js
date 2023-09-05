@@ -76,12 +76,12 @@ export const addCard = async (req, res) => {
         day: contract.preferred.day,
         time: contract.preferred.time,
         card: contract.services?.length + 1 || 1,
-        name: contract.shipToAddress.name,
-        address: contract.shipToAddress.address,
-        city: contract.shipToAddress.city,
-        nearBy: contract.shipToAddress.nearBy,
-        pincode: contract.shipToAddress.pincode,
-        shipToContact: contract.shipToContact,
+        name: contract.shipToDetails.name,
+        address: contract.shipToDetails.address,
+        city: contract.shipToDetails.city,
+        nearBy: contract.shipToDetails.nearBy,
+        pincode: contract.shipToDetails.pincode,
+        shipToContact: contract.shipToDetails.contact,
         serviceDue: service.serviceMonths,
         service: service.services,
         frequency: service.frequency,
@@ -236,16 +236,16 @@ export const createDigitalContract = async (req, res) => {
         sales: contract.sales,
         startDate: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
         endDate: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
-        billToName: contract.billToAddress.name,
-        billToAddress: contract.billToAddress.address,
-        billToCity: contract.billToAddress.city,
-        billToPincode: contract.billToAddress.pincode,
-        shipToAddress: contract.shipToAddress.address,
-        shipToCity: contract.shipToAddress.city,
-        shipToPincode: contract.shipToAddress.pincode,
+        billToName: contract.billToDetails.name,
+        billToAddress: contract.billToDetails.address,
+        billToCity: contract.billToDetails.city,
+        billToPincode: contract.billToDetails.pincode,
+        shipToAddress: contract.shipToDetails.address,
+        shipToCity: contract.shipToDetails.city,
+        shipToPincode: contract.shipToDetails.pincode,
         services: servicesFreq,
-        contactName: contract.billToContact[0].name,
-        contactNumber: contract.billToContact[0].number,
+        contactName: contract.billToDetails.contact[0].name,
+        contactNumber: contract.billToDetails.contact[0].number,
         date: moment().format("DD/MM/YYYY"),
         billingFrequency: contract.billingFrequency,
       },
@@ -291,10 +291,10 @@ export const sendContract = async (req, res) => {
       }
 
       const tempEmails = new Set();
-      contract.billToContact.map(
+      contract.billToDetails.contact.map(
         (item) => item.email && tempEmails.add(item.email)
       );
-      contract.shipToContact.map(
+      contract.shipToDetails.contact.map(
         (item) => item.email && tempEmails.add(item.email)
       );
       const emailList = [...tempEmails];

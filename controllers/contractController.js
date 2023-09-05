@@ -9,8 +9,8 @@ export const createContract = async (req, res) => {
   try {
     const admin = await Admin.findById("64f18ca753fd882e99cbfd1b");
 
-    req.body.billToAddress.name = capitalLetter(req.body.billToAddress.name);
-    req.body.shipToAddress.name = capitalLetter(req.body.shipToAddress.name);
+    req.body.billToDetails.name = capitalLetter(req.body.billToDetails.name);
+    req.body.shipToDetails.name = capitalLetter(req.body.shipToDetails.name);
     req.body.preferred.day = capitalLetter(req.body.preferred.day);
 
     let count = admin.contractCounter + 1;
@@ -66,8 +66,8 @@ export const updateContract = async (req, res) => {
         .status(400)
         .json({ msg: "Contract Type change not allowed" });
 
-    req.body.billToAddress.name = capitalLetter(req.body.billToAddress.name);
-    req.body.shipToAddress.name = capitalLetter(req.body.shipToAddress.name);
+    req.body.billToDetails.name = capitalLetter(req.body.billToDetails.name);
+    req.body.shipToDetails.name = capitalLetter(req.body.shipToDetails.name);
     req.body.preferred.day = capitalLetter(req.body.preferred.day);
 
     await Contract.findByIdAndUpdate(id, req.body, {
@@ -125,8 +125,8 @@ export const getAllContracts = async (req, res) => {
     query = {
       $or: [
         { contractNo: { $regex: search, $options: "i" } },
-        { "shipToAddress.name": { $regex: search, $options: "i" } },
-        { "billToAddress.name": { $regex: search, $options: "i" } },
+        { "shipToDetails.name": { $regex: search, $options: "i" } },
+        { "billToDetails.name": { $regex: search, $options: "i" } },
         { "billToContact.number": { $regex: search, $options: "i" } },
         { "shipToContact.number": { $regex: search, $options: "i" } },
       ],

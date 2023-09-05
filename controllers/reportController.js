@@ -53,10 +53,10 @@ export const addServiceData = async (req, res) => {
     req.body.user = req.user._id;
 
     const tempEmails = new Set();
-    contractExist.billToContact.map(
+    contractExist.billToDetails.contact.map(
       (item) => item.email && tempEmails.add(item.email)
     );
-    contractExist.shipToContact.map(
+    contractExist.shipToDetails.contact.map(
       (item) => item.email && tempEmails.add(item.email)
     );
     const emailList = [...tempEmails];
@@ -78,7 +78,7 @@ export const addServiceData = async (req, res) => {
 
     const dynamicData = {
       contractNo: req.body.contractNo,
-      shipToAddress: `${contractExist.shipToAddress.address} ${contractExist.shipToAddress.city} - ${contractExist.shipToAddress.pincode}`,
+      shipToAddress: `${contractExist.shipToDetails.address} ${contractExist.shipToDetails.city} - ${contractExist.shipToDetails.pincode}`,
       serviceName: req.body.serviceName,
       serviceType: req.body.serviceType,
       serviceDate: moment(req.body.serviceDate).format("DD/MM/YYYY"),
@@ -221,7 +221,7 @@ export const serviceNotification = async (req, res) => {
       serviceDates: { $in: date },
     }).populate({
       path: "contract",
-      select: "contractNo active billToAddress shipToAddress",
+      select: "contractNo active billToDetails shipToDetails",
       match: { active: true },
     });
 
@@ -243,7 +243,7 @@ export const serviceNotification = async (req, res) => {
           contract: service.contract.contractNo,
           serviceName: service.services.map((item) => item.label).join(", "),
           frequency: service.frequency,
-          name: service.contract.shipToAddress.name,
+          name: service.contract.shipToDetails.name,
         });
       }
     }
@@ -338,7 +338,7 @@ export const dailyServices = async (req, res) => {
       serviceDates: { $in: date },
     }).populate({
       path: "contract",
-      select: "contractNo shipToAddress",
+      select: "contractNo shipToDetails",
     });
 
     return res.json(services);
@@ -379,7 +379,7 @@ export const monthlyServiceDue = async (req, res) => {
       serviceMonths: { $in: [month] },
     }).populate({
       path: "contract",
-      select: "contractNo shipToAddress active",
+      select: "contractNo shipToDetails active",
     });
 
     if (!services.length) return res.status(404).json({ msg: "No data found" });
@@ -403,8 +403,8 @@ export const monthlyServiceDue = async (req, res) => {
           status: service.contract.active ? "Active" : "Deactive",
           serviceName: service.services.map((item) => item.label).join(", "),
           frequency: service.frequency,
-          name: service.contract.shipToAddress.name,
-          address: `${service.contract.shipToAddress.address}, ${service.contract.shipToAddress.city} - ${service.contract.shipToAddress.pincode}`,
+          name: service.contract.shipToDetails.name,
+          address: `${service.contract.shipToDetails.address}, ${service.contract.shipToDetails.city} - ${service.contract.shipToDetails.pincode}`,
         });
       }
     }
