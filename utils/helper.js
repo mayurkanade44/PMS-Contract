@@ -67,6 +67,7 @@ export const serviceDates = ({ frequency, serviceStartDate, contract }) => {
     end = end * 2;
     while (moment(serviceDate).isBefore(moment(endDate)) && end > 0) {
       serviceDates.push(moment(serviceDate).format("DD/MM/YYYY"));
+      months.add(moment(serviceDate).format("MMM YY"));
 
       serviceDate = moment(serviceDate).add(first, "days");
       end -= 1;

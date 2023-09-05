@@ -17,6 +17,10 @@ export const addCard = async (req, res) => {
     if (!contract || !contract.active)
       return res.status(404).json({ msg: "Contract not found" });
 
+    const contractPeriod = `${moment(contract.tenure.startDate).format(
+      "DD/MM/YYYY"
+    )} To ${moment(contract.tenure.endDate).format("DD/MM/YYYY")}`;
+
     const due = serviceDates({
       frequency,
       serviceStartDate,
@@ -71,21 +75,24 @@ export const addCard = async (req, res) => {
 
       additionalJsContext: {
         contractNo: contract.contractNo,
-        type: contract.type,
         sales: contract.sales,
         card: contract.services?.length + 1 || 1,
         name: contract.shipToDetails.name,
         address: contract.shipToDetails.address,
         city: contract.shipToDetails.city,
         nearBy: contract.shipToDetails.nearBy,
+        area: contract.shipToDetails.area,
         pincode: contract.shipToDetails.pincode,
-        shipToContact: contract.shipToDetails.contact,
+        contact1: contract.shipToDetails.contact[0],
+        contact2: contract.shipToDetails.contact[1],
         serviceDue: service.serviceMonths,
         service: service.services,
         frequency: service.frequency,
         location: service.treatmentLocation,
         area: service.area,
         billingFrequency: contract.billingFrequency,
+        contractPeriod: contractPeriod,
+        instruction: "Test",
         url: "12",
         qrCode: async (url12) => {
           const dataUrl = cardQrCode;

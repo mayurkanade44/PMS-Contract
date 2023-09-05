@@ -137,10 +137,13 @@ const AllServiceCards = () => {
       "serviceStartDate.first",
       new Date(data.serviceStartDate.first).toISOString().slice(0, 10)
     );
-    setValue(
-      "serviceStartDate.second",
-      new Date(data.serviceStartDate.second).toISOString().slice(0, 10)
-    );
+    if (data.serviceStartDate.second) {
+      setValue(
+        "serviceStartDate.second",
+        new Date(data.serviceStartDate.second).toISOString().slice(0, 10)
+      );
+    }
+
     setSelectedOption(data.services);
 
     setTimeout(() => {
