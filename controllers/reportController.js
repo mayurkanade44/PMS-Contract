@@ -217,15 +217,35 @@ export const serviceNotification = async (req, res) => {
   try {
     const date = moment().add(7, "days").format("DD/MM/YYYY");
 
+    const emailList = [
+      "contact@pestmanagements.in",
+      "solution@pestmanagements.in",
+    ];
+
     const services = await Service.find({
       serviceDates: { $in: date },
     }).populate({
       path: "contract",
-      select: "contractNo active billToDetails shipToDetails",
+      select: "contractNo active shipToDetails",
       match: { active: true },
     });
 
-    if (!services.length) return res.status(404).json({ msg: "No data found" });
+    if (!services.length) {
+      const mailSent = await sendEmail({
+        emailList: emailList,
+        attachObj: [],
+        templateId: "d-80c1a47b2e014671aa2f536409ee4504",
+        dynamicData: {
+          date: date,
+          description: `No services schedule on ${date}`,
+        },
+      });
+
+      if (!mailSent) {
+        console.log("Email not sent");
+      }
+      return res.status(404).json({ msg: `No services schedule on ${date}` });
+    }
 
     const workbook = new exceljs.Workbook();
     let worksheet = workbook.addWorksheet("Sheet1");
@@ -234,7 +254,11 @@ export const serviceNotification = async (req, res) => {
       { header: "Contract Number", key: "contract" },
       { header: "Service Name", key: "serviceName" },
       { header: "Frequency", key: "frequency" },
-      { header: "Ship To Name", key: "name" },
+      { header: "Client Name", key: "name" },
+      { header: "Service Address", key: "address" },
+      { header: "Service Area", key: "area" },
+      { header: "Service City", key: "city" },
+      { header: "Pincode", key: "pincode" },
     ];
 
     for (let service of services) {
@@ -244,6 +268,10 @@ export const serviceNotification = async (req, res) => {
           serviceName: service.services.map((item) => item.label).join(", "),
           frequency: service.frequency,
           name: service.contract.shipToDetails.name,
+          address: service.contract.shipToDetails.address,
+          area: service.contract.shipToDetails.area,
+          city: service.contract.shipToDetails.city,
+          pincode: service.contract.shipToDetails.pincode,
         });
       }
     }
@@ -251,79 +279,33 @@ export const serviceNotification = async (req, res) => {
     await workbook.xlsx.writeFile(filePath);
     const link = await uploadFile({ filePath });
 
-    await Admin.findOneAndUpdate(
-      { _id: "64e1d5a78fbf8a07b23a0b99" },
-      { notificationFile: link },
-      { runValidators: true, new: true }
-    );
+    const result = await axios.get(link, {
+      responseType: "arraybuffer",
+    });
+    const base64File = Buffer.from(result.data, "binary").toString("base64");
 
-    return res.status(200).json({ msg: "Notification File Generated" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: "Server error, try again later" });
-  }
-};
+    const attachObj = [
+      {
+        content: base64File,
+        filename: `${date}.xlsx`,
+        type: `application/xlsx`,
+        disposition: "attachment",
+      },
+    ];
 
-export const sendServiceNotification = async (req, res) => {
-  try {
-    const file = await Admin.findById("64e1d5a78fbf8a07b23a0b99");
-    const fileName = moment().add(7, "days").format("DD-MM-YYYY");
+    const mailSent = await sendEmail({
+      emailList: emailList,
+      attachObj,
+      templateId: "d-80c1a47b2e014671aa2f536409ee4504",
+      dynamicData: {
+        date: date,
+        description: `Please find the attachment of services schedule on ${date}`,
+      },
+    });
 
-    if (file.notificationFile === "No File") {
-      const mailSent = await sendEmail({
-        emailList: ["exteam.epcorn@gmail.com", "dummy.systemtest@gmail.com"],
-        attachObj: [],
-        templateId: "d-80c1a47b2e014671aa2f536409ee4504",
-        dynamicData: {
-          date: fileName,
-          description: `There are no services schedule on ${fileName} `,
-        },
-      });
+    if (!mailSent) console.log("Email not sent");
 
-      if (!mailSent)
-        return res.status(400).json({ msg: "Email not sent, try again later" });
-
-      return res.status(200).json({ msg: "Email Sent" });
-    } else {
-      const result = await axios.get(file.notificationFile, {
-        responseType: "arraybuffer",
-      });
-      const base64File = Buffer.from(result.data, "binary").toString("base64");
-
-      const attachObj = [
-        {
-          content: base64File,
-          filename: `${fileName}.xlsx`,
-          type: `application/xlsx`,
-          disposition: "attachment",
-        },
-      ];
-
-      const mailSent = await sendEmail({
-        emailList: [
-          "exteam.epcorn@gmail.com",
-          "dummy.systemtest@gmail.com",
-          "livesm25@gmail.com",
-        ],
-        attachObj,
-        templateId: "d-80c1a47b2e014671aa2f536409ee4504",
-        dynamicData: {
-          date: fileName,
-          description: `Please find the attachment of services schedule on ${fileName}`,
-        },
-      });
-
-      if (!mailSent)
-        return res.status(400).json({ msg: "Email not sent, try again later" });
-
-      await Admin.findOneAndUpdate(
-        { _id: "64e1d5a78fbf8a07b23a0b99" },
-        { notificationFile: "No File" },
-        { runValidators: true, new: true }
-      );
-
-      return res.status(200).json({ msg: "Attachment Email Sent" });
-    }
+    return res.status(200).json({ msg: "Service due file generated", link });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

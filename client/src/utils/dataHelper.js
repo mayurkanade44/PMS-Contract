@@ -7,6 +7,7 @@ export const contractEnd = [
   { value: 36, label: "3 Years" },
   { value: 48, label: "4 Years" },
   { value: 60, label: "5 Years" },
+  { value: 72, label: "6 Years" },
   { value: 120, label: "10 Years" },
 ];
 
@@ -57,5 +58,3 @@ export const userRoles = [
   { value: "Back Office", label: "Back Office" },
   { value: "Admin", label: "Admin" },
 ];
-
-
