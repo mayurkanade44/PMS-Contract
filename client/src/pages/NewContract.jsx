@@ -43,28 +43,30 @@ const NewContract = () => {
         time: "10 am - 12 pm",
       },
       billingFrequency: "",
-      billToAddress: {
+      billToDetails: {
         name: "",
         address: "",
         nearBy: "",
+        area: "",
         city: "",
         pincode: "",
+        contact: [
+          { name: "", number: "", email: "" },
+          { name: "", number: "", email: "" },
+        ],
       },
-      shipToAddress: {
+      shipToDetails: {
         name: "",
         address: "",
         nearBy: "",
+        area: "",
         city: "",
         pincode: "",
+        contact: [
+          { name: "", number: "", email: "" },
+          { name: "", number: "", email: "" },
+        ],
       },
-      billToContact: [
-        { name: "", number: "", email: "" },
-        { name: "", number: "", email: "" },
-      ],
-      shipToContact: [
-        { name: "", number: "", email: "" },
-        { name: "", number: "", email: "" },
-      ],
     },
   });
 
@@ -78,8 +80,8 @@ const NewContract = () => {
   }, []);
 
   const handleCopyDetails = () => {
-    setValue("shipToAddress", getValues("billToAddress"));
-    setValue("shipToContact", getValues("billToContact"));
+    setValue("shipToDetails", getValues("billToDetails"));
+    // setValue("shipToContact", getValues("billToContact"));
   };
 
   const submit = async (data) => {
@@ -112,7 +114,7 @@ const NewContract = () => {
       {(newContractLoading || updateContractLoading || isLoading) && (
         <Loading />
       )}
-      <form onSubmit={handleSubmit(submit)} className="my-4">
+      <form onSubmit={handleSubmit(submit)} className="mb-3">
         <div className="grid grid-cols-12 gap-x-5 gap-y-2 mb-2">
           <div className="col-span-6 md:col-span-4 lg:col-span-2">
             <Controller
@@ -150,7 +152,6 @@ const NewContract = () => {
           <div className="col-span-6 md:col-span-4 lg:col-span-3">
             <InputRow
               label="Billing Frequency"
-              message="Billing frequency is required"
               placeholder="Full payment"
               id="billingFrequency"
               errors={errors}
@@ -197,7 +198,6 @@ const NewContract = () => {
           <div className="col-span-6 md:col-span-4 lg:col-span-2">
             <InputRow
               label="Preferred Day"
-              message="Preferred day is required"
               placeholder="Monday"
               id="preferred.day"
               errors={errors}
@@ -235,111 +235,130 @@ const NewContract = () => {
             <div className="mb-2">
               <InputRow
                 label="Full Name"
-                message="Name is required"
                 placeholder="Enter full name of billing"
-                id="billToAddress.name"
+                id="billToDetails.name"
                 errors={errors}
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.billToAddress?.name && "Billing name is required"}
+                {errors.billToDetails?.name && "Billing name is required"}
               </p>
             </div>
-            <div className="mb-2">
-              <InputRow
-                label="Billing Address"
-                message="Address is required"
-                placeholder="Enter full address of billing"
-                id="billToAddress.address"
-                errors={errors}
-                register={register}
-              />
-              <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.billToAddress?.address && "Billing address is required"}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1 mb-1">
+              <div className="col-span-2">
+                <label
+                  htmlFor="billingAddress"
+                  className="block text-md font-medium leading-6 text-gray-900 mb-0.5"
+                >
+                  Billing Address
+                  <span className="text-red-500 required-dot ml-0.5">*</span>
+                </label>
+                <textarea
+                  {...register("billToDetails.address", {
+                    required: "Billing address is required",
+                  })}
+                  id="billToDetails.address"
+                  name="billToDetails.address"
+                  rows={2}
+                  className="block w-full px-2 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black"
+                />
+                <p className="text-xs text-red-500 pl-1">
+                  {errors.billToDetails?.address?.message}
+                </p>
+              </div>
               <div>
                 <InputRow
                   label="Near By Place"
-                  message="Landmark is required"
                   placeholder="Enter landmark"
-                  id="billToAddress.nearBy"
+                  id="billToDetails.nearBy"
                   errors={errors}
                   register={register}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.billToAddress?.nearBy && "Landmark is required"}
+                  {errors.billToDetails?.nearBy && "Landmark is required"}
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1">
+              <div>
+                <InputRow
+                  label="Area"
+                  placeholder="Enter area"
+                  id="billToDetails.area"
+                  errors={errors}
+                  register={register}
+                />
+                <p className="text-xs text-red-500 -bottom-4 pl-1">
+                  {errors.billToDetails?.area && "Area is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   label="City"
-                  message="City name is required"
                   placeholder="Enter city"
-                  id="billToAddress.city"
+                  id="billToDetails.city"
                   errors={errors}
                   register={register}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.billToAddress?.city && "City is required"}
+                  {errors.billToDetails?.city && "City is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   label="Pincode"
-                  message="Area pincode is required"
-                  placeholder="Enter area pincode"
-                  id="billToAddress.pincode"
+                  placeholder="Enter pincode"
+                  id="billToDetails.pincode"
                   errors={errors}
                   register={register}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.billToAddress?.pincode && "Pincode is required"}
+                  {errors.billToDetails?.pincode && "Pincode is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   label="Contact Name"
                   placeholder="Contact Name"
-                  id="billToContact.0.name"
+                  id="billToDetails.contact.0.name"
                   errors={errors}
                   register={register}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.billToContact && "Contact name is required"}
+                  {errors.billToDetails?.contact && "Contact name is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   label="Contact Number"
                   placeholder="Contact number"
-                  id="billToContact.0.number"
+                  id="billToDetails.contact.0.number"
                   errors={errors}
                   register={register}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.billToContact && "Contact number is required"}
+                  {errors.billToDetails?.contact &&
+                    "Contact number is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   label="Contact Email"
                   placeholder="Contact email id"
-                  id="billToContact.0.email"
+                  id="billToDetails.contact.0.email"
                   errors={errors}
                   register={register}
                   type="email"
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.billToContact && "Contact email is required"}
+                  {errors.billToDetails?.contact && "Contact email is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   required={false}
                   placeholder="Alternate name"
-                  id="billToContact.1.name"
+                  id="billToDetails.contact.1.name"
                   errors={errors}
                   register={register}
                 />
@@ -348,7 +367,7 @@ const NewContract = () => {
                 <InputRow
                   required={false}
                   placeholder="Alternate number"
-                  id="billToContact.1.number"
+                  id="billToDetails.contact.1.number"
                   errors={errors}
                   register={register}
                 />
@@ -356,7 +375,7 @@ const NewContract = () => {
               <div>
                 <InputRow
                   placeholder="Alternate email"
-                  id="billToContact.1.email"
+                  id="billToDetails.contact.1.email"
                   errors={errors}
                   register={register}
                   type="email"
@@ -381,112 +400,130 @@ const NewContract = () => {
             <div className="mb-2">
               <InputRow
                 label="Full Name"
-                message="Name is required"
                 placeholder="Enter full name of shipping"
-                id="shipToAddress.name"
+                id="shipToDetails.name"
                 errors={errors}
                 register={register}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.shipToAddress?.name && "Shipping name is required"}
+                {errors.shipToDetails?.name && "Shipping name is required"}
               </p>
             </div>
-            <div className="mb-2">
-              <InputRow
-                label="Service Address"
-                message="Address is required"
-                placeholder="Enter full address of shipping"
-                id="shipToAddress.address"
-                errors={errors}
-                register={register}
-              />
-              <p className="text-xs text-red-500 -bottom-4 pl-1">
-                {errors.shipToAddress?.address &&
-                  "Shipping address is required"}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1 mb-1">
+              <div className="col-span-2">
+                <label
+                  htmlFor="billingAddress"
+                  className="block text-md font-medium leading-6 text-gray-900 mb-0.5"
+                >
+                  Service Address
+                  <span className="text-red-500 required-dot ml-0.5">*</span>
+                </label>
+                <textarea
+                  {...register("shipToDetails.address", {
+                    required: "Service address is required",
+                  })}
+                  id="shipToDetails.address"
+                  name="shipToDetails.address"
+                  rows={2}
+                  className="block w-full px-2 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black"
+                />
+                <p className="text-xs text-red-500 pl-1">
+                  {errors.shipToDetails?.address?.message}
+                </p>
+              </div>
               <div>
                 <InputRow
                   label="Near By Place"
-                  message="Landmark is required"
                   placeholder="Enter landmark"
-                  id="shipToAddress.nearBy"
+                  id="shipToDetails.nearBy"
                   errors={errors}
                   register={register}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.shipToAddress?.nearBy && "Landmark is required"}
+                  {errors.shipToDetails?.nearBy && "Landmark is required"}
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1">
+              <div>
+                <InputRow
+                  label="Area"
+                  placeholder="Enter area"
+                  id="shipToDetails.area"
+                  errors={errors}
+                  register={register}
+                />
+                <p className="text-xs text-red-500 -bottom-4 pl-1">
+                  {errors.shipToDetails?.area && "Area is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   label="City"
-                  message="City name is required"
                   placeholder="Enter city"
-                  id="shipToAddress.city"
+                  id="shipToDetails.city"
                   errors={errors}
                   register={register}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.shipToAddress?.city && "City is required"}
+                  {errors.shipToDetails?.city && "City is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   label="Pincode"
-                  message="Area pincode is required"
-                  placeholder="Enter area pincode"
-                  id="shipToAddress.pincode"
+                  placeholder="Enter pincode"
+                  id="shipToDetails.pincode"
                   errors={errors}
                   register={register}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.shipToAddress?.pincode && "Pincode is required"}
+                  {errors.shipToDetails?.pincode && "Pincode is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   label="Contact Name"
                   placeholder="Contact Name"
-                  id="shipToContact.0.name"
+                  id="shipToDetails.contact.0.name"
                   errors={errors}
                   register={register}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.shipToContact && "Contact name is required"}
+                  {errors.shipToDetails?.contact && "Contact name is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   label="Contact Number"
                   placeholder="Contact number"
-                  id="shipToContact.0.number"
+                  id="shipToDetails.contact.0.number"
                   errors={errors}
                   register={register}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.shipToContact && "Contact number is required"}
+                  {errors.shipToDetails?.contact &&
+                    "Contact number is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   label="Contact Email"
                   placeholder="Contact email id"
-                  id="shipToContact.0.email"
+                  id="shipToDetails.contact.0.email"
                   errors={errors}
                   register={register}
                   type="email"
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.shipToContact && "Contact email is required"}
+                  {errors.shipToDetails?.contact && "Contact email is required"}
                 </p>
               </div>
               <div>
                 <InputRow
                   required={false}
                   placeholder="Alternate name"
-                  id="shipToContact.1.name"
+                  id="shipToDetails.contact.1.name"
                   errors={errors}
                   register={register}
                 />
@@ -495,7 +532,7 @@ const NewContract = () => {
                 <InputRow
                   required={false}
                   placeholder="Alternate number"
-                  id="shipToContact.1.number"
+                  id="shipToDetails.contact.1.number"
                   errors={errors}
                   register={register}
                 />
@@ -503,7 +540,7 @@ const NewContract = () => {
               <div>
                 <InputRow
                   placeholder="Alternate email"
-                  id="shipToContact.1.email"
+                  id="shipToDetails.contact.1.email"
                   errors={errors}
                   register={register}
                   type="email"

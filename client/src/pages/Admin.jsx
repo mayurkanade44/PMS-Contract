@@ -106,7 +106,7 @@ const Admin = () => {
   };
 
   return (
-    <div className="py-14 lg:py-0">
+    <div className="pb-10">
       {isLoading ||
       deleteValueLoading ||
       addValueLoading ||

@@ -151,10 +151,10 @@ const Home = () => {
                       {dateFormat(contract.createdAt)}
                     </td>
                     <td className="px-3 border-r font-normal dark:border-neutral-500">
-                      {contract.billToAddress.name}
+                      {contract.billToDetails.name}
                     </td>
                     <td className="px-3 border-r font-normal dark:border-neutral-500">
-                      {contract.shipToAddress.name}
+                      {contract.shipToDetails.name}
                     </td>
                     <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
                       {dateFormat(contract.tenure.startDate)}

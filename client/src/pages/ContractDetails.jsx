@@ -117,16 +117,17 @@ const ContractDetails = () => {
                 Billing Address
               </h2>
               <h3 className="text-xl my-1">
-                Name - {contract.billToAddress.name}
+                Name - {contract.billToDetails.name}
               </h3>
               <h3 className="text-xl my-1">
-                Address - {contract.billToAddress.address},{" "}
-                {contract.billToAddress.city} - {contract.billToAddress.pincode}
+                Address - {contract.billToDetails.address},
+                {contract.billToDetails.area},{contract.billToDetails.city} -{" "}
+                {contract.billToDetails.pincode}
               </h3>
               <h3 className="text-xl my-1">
                 Preferred - {contract.preferred.day} & {contract.preferred.time}
               </h3>
-              <ContactTable contacts={contract.billToContact} />
+              <ContactTable contacts={contract.billToDetails.contact} />
             </div>
             <div>
               <div className="hidden md:flex justify-around">
@@ -174,16 +175,17 @@ const ContractDetails = () => {
                 Service Address
               </h2>
               <h3 className="text-xl my-1">
-                Name - {contract.shipToAddress.name}
+                Name - {contract.shipToDetails.name}
               </h3>
               <h3 className="text-xl my-1">
-                Address - {contract.shipToAddress.address},{" "}
-                {contract.shipToAddress.city} - {contract.shipToAddress.pincode}
+                Address - {contract.shipToDetails.address},
+                {contract.shipToDetails.area}, {contract.shipToDetails.city} -{" "}
+                {contract.shipToDetails.pincode}
               </h3>
               <h3 className="text-xl my-1">
                 Preferred - {contract.preferred.day} & {contract.preferred.time}
               </h3>
-              <ContactTable contacts={contract.shipToContact} />
+              <ContactTable contacts={contract.shipToDetails.contact} />
             </div>
           </div>
           <hr className="h-px mt-4 border-0 dark:bg-gray-800" />

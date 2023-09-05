@@ -147,7 +147,7 @@ const Dashboard = () => {
                           {service.contract.contractNo}
                         </td>
                         <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
-                          {service.contract.shipToAddress.name}
+                          {service.contract.shipToDetails.name}
                         </td>
                         <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
                           {service.services.map((item) => item.label + ", ")}

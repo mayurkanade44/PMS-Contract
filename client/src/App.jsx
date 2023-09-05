@@ -18,7 +18,6 @@ import {
   Home,
   Login,
   NewContract,
-  Register,
   ServiceCard,
 } from "./pages";
 
@@ -41,7 +40,6 @@ function App() {
         <Route path="/report/:id" element={<ClientReport />} />
 
         <Route path="" element={<ProtectedRoute />}>
-          <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contract/:id" element={<NewContract />} />
@@ -55,7 +53,6 @@ function App() {
 
         <Route path="" element={<ProtectedRoute admin={true} />}>
           <Route path="/admin" element={<Admin />} />
-          <Route path="/register" element={<Register />} />
         </Route>
       </Route>
     )
