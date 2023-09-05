@@ -11,10 +11,6 @@ const ContractSchema = new mongoose.Schema(
       months: { type: Number, required: true },
     },
     billingFrequency: { type: String, required: true },
-    preferred: {
-      day: String,
-      time: String,
-    },
     billToDetails: {
       name: String,
       address: String,

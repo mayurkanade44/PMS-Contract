@@ -7,9 +7,9 @@ import {
   useUpdateContractMutation,
 } from "../redux/contractSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { preferredTime, contractEnd, contractTypes } from "../utils/dataHelper";
+import { contractEnd, contractTypes } from "../utils/dataHelper";
 
 const NewContract = () => {
   const { id } = useParams();
@@ -37,10 +37,6 @@ const NewContract = () => {
       tenure: {
         startDate: new Date().toISOString().slice(0, 10),
         months: 12,
-      },
-      preferred: {
-        day: "",
-        time: "10 am - 12 pm",
       },
       billingFrequency: "",
       billToDetails: {
@@ -114,7 +110,7 @@ const NewContract = () => {
       {(newContractLoading || updateContractLoading || isLoading) && (
         <Loading />
       )}
-      <form onSubmit={handleSubmit(submit)} className="mb-3">
+      <form onSubmit={handleSubmit(submit)} className="my-3">
         <div className="grid grid-cols-12 gap-x-5 gap-y-2 mb-2">
           <div className="col-span-6 md:col-span-4 lg:col-span-2">
             <Controller
@@ -131,6 +127,36 @@ const NewContract = () => {
             />
           </div>
           <div className="col-span-8 md:col-span-4 lg:col-span-2">
+            <InputRow
+              label="Contract Start Date"
+              id="tenure.startDate"
+              errors={errors}
+              register={register}
+              type="date"
+            />
+            <p className="text-xs text-red-500 -bottom-4 pl-1">
+              {errors.tenure?.startDate && "Contract Start date is required"}
+            </p>
+          </div>
+          <div className="col-span-8 md:col-span-4 lg:col-span-2">
+            <Controller
+              name="tenure.months"
+              control={control}
+              rules={{ required: "Contract end date is required" }}
+              render={({ field: { onChange, value, ref } }) => (
+                <InputSelect
+                  label="Contract End"
+                  options={contractEnd}
+                  onChange={onChange}
+                  value={value}
+                />
+              )}
+            />
+            <p className="text-xs text-red-500 -bottom-4 pl-1">
+              {errors.endDate?.message}
+            </p>
+          </div>
+          <div className="col-span-8 md:col-span-4 lg:col-span-3">
             <Controller
               name="sales"
               control={control}
@@ -164,70 +190,6 @@ const NewContract = () => {
         </div>
         <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
         <div className="grid grid-cols-12 gap-x-5 gap-y-2 mb-3">
-          <div className="col-span-8 md:col-span-4 lg:col-span-2">
-            <InputRow
-              label="Contract Start Date"
-              id="tenure.startDate"
-              errors={errors}
-              register={register}
-              type="date"
-            />
-            <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.tenure?.startDate && "Contract Start date is required"}
-            </p>
-          </div>
-          <div className="col-span-8 md:col-span-4 lg:col-span-2">
-            <Controller
-              name="tenure.months"
-              control={control}
-              rules={{ required: "Contract end date is required" }}
-              render={({ field: { onChange, value, ref } }) => (
-                <InputSelect
-                  label="Contract End"
-                  options={contractEnd}
-                  onChange={onChange}
-                  value={value}
-                />
-              )}
-            />
-            <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.endDate?.message}
-            </p>
-          </div>
-
-          <div className="col-span-6 md:col-span-4 lg:col-span-2">
-            <InputRow
-              label="Preferred Day"
-              placeholder="Monday"
-              id="preferred.day"
-              errors={errors}
-              register={register}
-            />
-            <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.preferred?.day && "Preferred day is required"}
-            </p>
-          </div>
-          <div className="col-span-8 md:col-span-4 lg:col-span-2">
-            <Controller
-              name="preferred.time"
-              control={control}
-              rules={{ required: "Preferred time is required" }}
-              render={({ field: { onChange, value, ref } }) => (
-                <InputSelect
-                  label="Preferred Time"
-                  options={preferredTime}
-                  onChange={onChange}
-                  value={value}
-                />
-              )}
-            />
-            <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.preferred?.time?.message}
-            </p>
-          </div>
-          <div className="col-span-12">
-            <hr className="h-px mt-2 border-0 dark:bg-gray-700" />
-          </div>
           <div className="col-span-12 md:col-span-6">
             <h4 className="text-2xl font-semibold text-center text-blue-600">
               Billing Details

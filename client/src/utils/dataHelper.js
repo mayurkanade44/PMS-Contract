@@ -11,16 +11,6 @@ export const contractEnd = [
   { value: 120, label: "10 Years" },
 ];
 
-export const preferredTime = [
-  { value: "10 am - 12 pm", label: "10 am - 12 pm" },
-  { value: "12 am - 2 pm", label: "12 am - 2 pm" },
-  { value: "2 pm - 4 pm", label: "2 pm - 4 pm" },
-  { value: "4 pm - 6 pm", label: "4 pm - 6 pm" },
-  { value: "Night", label: "Night" },
-  { value: "Anytime", label: "Anytime" },
-  { value: "To Confirm", label: "To Confirm" },
-];
-
 export const contractTypes = [
   { value: "NC", label: "New Contract" },
   { value: "RC", label: "Renew Contract" },

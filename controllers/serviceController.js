@@ -73,8 +73,6 @@ export const addCard = async (req, res) => {
         contractNo: contract.contractNo,
         type: contract.type,
         sales: contract.sales,
-        day: contract.preferred.day,
-        time: contract.preferred.time,
         card: contract.services?.length + 1 || 1,
         name: contract.shipToDetails.name,
         address: contract.shipToDetails.address,

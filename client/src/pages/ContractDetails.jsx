@@ -124,9 +124,6 @@ const ContractDetails = () => {
                 {contract.billToDetails.area},{contract.billToDetails.city} -{" "}
                 {contract.billToDetails.pincode}
               </h3>
-              <h3 className="text-xl my-1">
-                Preferred - {contract.preferred.day} & {contract.preferred.time}
-              </h3>
               <ContactTable contacts={contract.billToDetails.contact} />
             </div>
             <div>
@@ -181,9 +178,6 @@ const ContractDetails = () => {
                 Address - {contract.shipToDetails.address},
                 {contract.shipToDetails.area}, {contract.shipToDetails.city} -{" "}
                 {contract.shipToDetails.pincode}
-              </h3>
-              <h3 className="text-xl my-1">
-                Preferred - {contract.preferred.day} & {contract.preferred.time}
               </h3>
               <ContactTable contacts={contract.shipToDetails.contact} />
             </div>
