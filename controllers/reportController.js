@@ -7,6 +7,16 @@ import exceljs from "exceljs";
 import moment from "moment";
 import Admin from "../models/adminModel.js";
 import axios from "axios";
+import SibApiV3Sdk from "@getbrevo/brevo";
+
+// let defaultClient = SibApiV3Sdk.ApiClient.instance;
+
+// let apiKey = defaultClient.authentications["api-key"];
+// apiKey.apiKey = process.env.BREVO_API_KEY;
+
+// let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+// let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
 export const addServiceData = async (req, res) => {
   const { contract: contractId, service: serviceId } = req.body;
@@ -77,6 +87,31 @@ export const addServiceData = async (req, res) => {
     };
 
     await Report.create(req.body);
+
+    // sendSmtpEmail.sender = { name: "Epcorn", email: "exteam.epcorn@gmail.com" };
+    // sendSmtpEmail.to = [
+    //   { email: "noreply.epcorn@gmail.com", name: "Jane Doe" },
+    // ];
+    // sendSmtpEmail.params = {
+    //   contractNo: "K/12",
+    // };
+    // sendSmtpEmail.templateId = 1;
+    // sendSmtpEmail.attachmentUrl = [
+    //   {
+    //     url: "https://res.cloudinary.com/epcorn/image/upload/v1690795034/signature/Screenshot_2023-07-31_144131_agwhab.png", // Should be publicly available and shouldn't be a local file
+    //     name: "myAttachment.png",
+    //   },
+    // ];
+    // apiInstance.sendTransacEmail(sendSmtpEmail).then(
+    //   function (data) {
+    //     console.log(
+    //       "API called successfully. Returned data: " + JSON.stringify(data)
+    //     );
+    //   },
+    //   function (error) {
+    //     console.error(error);
+    //   }
+    // );
 
     const mailSent = await sendEmail({
       emailList,

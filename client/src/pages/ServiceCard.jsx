@@ -10,7 +10,7 @@ import {
 } from "../components";
 import { toast } from "react-toastify";
 import { serviceStatus, serviceType } from "../utils/dataHelper";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAddReportDataMutation } from "../redux/reportSlice";
 import { useGetAllValuesQuery } from "../redux/contractSlice";
 import { useLogoutMutation } from "../redux/userSlice";
