@@ -24,7 +24,7 @@ const ServiceTable = ({ th, data, handleButton1, handleButton3 }) => {
         <tbody>
           {data.services?.map((service) => (
             <tr className="border-b dark:border-neutral-500" key={service._id}>
-              <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
+              <td className="border-r w-44 px-2 py-1 font-normal dark:border-neutral-500">
                 {service.services.map((item) => item.label + ", ")}
               </td>
               <td className="border-r w-24 px-2 py-1 font-normal dark:border-neutral-500">
@@ -36,7 +36,7 @@ const ServiceTable = ({ th, data, handleButton1, handleButton3 }) => {
               <td className="text-left border-r px-2 py-1 font-normal dark:border-neutral-500">
                 {service.serviceMonths?.join(", ")}
               </td>
-              <td className="border-r w-[325px] px-1 gap-1 py-1 font-normal dark:border-neutral-500">
+              <td className="border-r w-[260px] px-1 gap-1 py-1 font-normal dark:border-neutral-500">
                 <button
                   type="button"
                   disabled={service.card ? false : true}
@@ -68,7 +68,7 @@ const ServiceTable = ({ th, data, handleButton1, handleButton3 }) => {
                   onClick={() => handleButton3(service._id)}
                   className="text-white font-semibold mx-1 items-start justify-start px-2 py-2 bg-orange-500 disabled:bg-green-500 disabled:cursor-not-allowed rounded"
                 >
-                  Generate Report
+                  Report
                 </button>
               </td>
               <td className="text-left w-20 border-r px-2 py-1 font-normal dark:border-neutral-500">

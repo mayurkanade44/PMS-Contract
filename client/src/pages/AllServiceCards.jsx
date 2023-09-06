@@ -81,9 +81,7 @@ const AllServiceCards = () => {
 
   const submit = async (data) => {
     data.services = selectedOption;
-    if (typeof data.dates === "string") {
-      data.serviceDates = data.dates.split(",");
-    } else data.serviceDates = data.dates;
+    data.serviceDates = data.dates.split(", ");
 
     let res;
     try {
@@ -137,7 +135,7 @@ const AllServiceCards = () => {
     setValue("area", data.area);
     setValue("treatmentLocation", data.treatmentLocation);
     setValue("serviceCardId", data._id);
-    setValue("dates", data.serviceDates);
+    setValue("dates", data.serviceDates.join(", "));
     setValue(
       "serviceStartDate.first",
       new Date(data.serviceStartDate.first).toISOString().slice(0, 10)

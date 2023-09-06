@@ -138,59 +138,48 @@ export const generateReport = async (req, res) => {
     });
     if (!report.length) return res.status(400).json({ msg: "No data found" });
 
-    if (report.length) {
-      const workbook = new exceljs.Workbook();
-      let worksheet = workbook.addWorksheet("Sheet1");
+    const workbook = new exceljs.Workbook();
+    await workbook.xlsx.readFile("./tmp/report.xlsx");
+    let worksheet = workbook.getWorksheet("Sheet1");
 
-      worksheet.columns = [
-        { header: "Contract Number", key: "contractNo" },
-        { header: "Service Name", key: "serviceName" },
-        { header: "Service Type", key: "serviceType" },
-        { header: "Service Status", key: "serviceStatus" },
-        { header: "Service Date", key: "serviceDate" },
-        { header: "Technician Comment", key: "serviceComment" },
-        { header: "Technician Name", key: "serviceBy" },
-        { header: "Image 1", key: "image1" },
-        { header: "Image 2", key: "image2" },
-        { header: "Image 3", key: "image3" },
-      ];
-
-      report.map((item) => {
-        worksheet.addRow({
-          contractNo: item.contractNo,
-          serviceName: item.serviceName,
-          serviceType: item.serviceType,
-          serviceStatus: item.serviceStatus,
-          serviceDate: item.serviceDate,
-          serviceComment: item.serviceComment,
-          serviceBy: item.serviceBy,
-          image1:
-            (item.image.length >= 1 && {
-              text: "Download",
-              hyperlink: item.image[0],
-            }) ||
-            "No Image",
-          image2:
-            (item.image.length >= 2 && {
-              text: "Download",
-              hyperlink: item.image[1],
-            }) ||
-            "No Image",
-          image3:
-            (item.image.length >= 3 && {
-              text: "Download",
-              hyperlink: item.image[2],
-            }) ||
-            "No Image",
-        });
-      });
-
-      const filePath = "./tmp/serviceReport.xlsx";
-      await workbook.xlsx.writeFile(filePath);
-      const link = await uploadFile({ filePath });
-
-      return res.status(201).json({ msg: "Report Generated", link });
+    for (let i = 0; i < report.length; i++) {
+      let row = worksheet.getRow(i + 3);
+      let item = report[i];
+      row.getCell(1).value = item.contractNo;
+      row.getCell(1).alignment = { vertical: "middle", horizontal: "middle" };
+      row.getCell(2).value = item.serviceName;
+      row.getCell(3).value = item.serviceType;
+      row.getCell(4).value = item.serviceStatus;
+      row.getCell(5).value = item.serviceDate;
+      row.getCell(6).value = item.serviceComment;
+      row.getCell(7).value = item.serviceBy;
+      row.getCell(8).value =
+        (item.image.length >= 1 && {
+          text: "Download",
+          hyperlink: item.image[0],
+        }) ||
+        "No Image";
+      row.getCell(9).value =
+        (item.image.length >= 2 && {
+          text: "Download",
+          hyperlink: item.image[1],
+        }) ||
+        "No Image";
+      row.getCell(10).value =
+        (item.image.length >= 3 && {
+          text: "Download",
+          hyperlink: item.image[2],
+        }) ||
+        "No Image";
+      row.alignment = { vertical: "middle", horizontal: "middle" };
+      row.commit();
     }
+
+    const filePath = "./tmp/serviceReport.xlsx";
+    await workbook.xlsx.writeFile(filePath);
+    const link = await uploadFile({ filePath });
+
+    return res.status(201).json({ msg: "Report Generated", link });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
