@@ -73,6 +73,7 @@ const AllServiceCards = () => {
       },
       treatmentLocation: "",
       serviceCardId: "",
+      dates: "",
     },
   });
 
@@ -80,6 +81,9 @@ const AllServiceCards = () => {
 
   const submit = async (data) => {
     data.services = selectedOption;
+    if (typeof data.dates === "string") {
+      data.serviceDates = data.dates.split(",");
+    } else data.serviceDates = data.dates;
 
     let res;
     try {
@@ -133,6 +137,7 @@ const AllServiceCards = () => {
     setValue("area", data.area);
     setValue("treatmentLocation", data.treatmentLocation);
     setValue("serviceCardId", data._id);
+    setValue("dates", data.serviceDates);
     setValue(
       "serviceStartDate.first",
       new Date(data.serviceStartDate.first).toISOString().slice(0, 10)
@@ -149,6 +154,12 @@ const AllServiceCards = () => {
     setTimeout(() => {
       setEdit((prev) => ({ ...prev, loading: false }));
     }, 500);
+  };
+
+  const handleCancelEdit = () => {
+    setEdit({ status: false, loading: false });
+    reset();
+    setSelectedOption([]);
   };
 
   return (
@@ -270,9 +281,43 @@ const AllServiceCards = () => {
                 </p>
               </div>
             </div>
-            <div className="col-span-2 flex items-center">
+            {edit.status && (
+              <div className="col-span-8 md:col-span-10 lg:col-span-10">
+                <label
+                  htmlFor="treatmentLocation"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Service Dates *
+                </label>
+                <div className="mt-0.5">
+                  <textarea
+                    {...register("dates", {
+                      required: "Treatment location required",
+                    })}
+                    id="dates"
+                    name="dates"
+                    rows={8}
+                    className="block w-full rounded-md border-0 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                  />
+                  <p className="text-xs text-red-500 -bottom-4 pl-1">
+                    {errors.treatmentLocation?.message}
+                  </p>
+                </div>
+              </div>
+            )}
+            <div className="col-span-1 flex items-center">
               <Button label="Save Card" height="h-10" type="submit" />
             </div>
+            {edit.status && (
+              <div className="col-span-1 flex items-center">
+                <Button
+                  label="Cancel"
+                  height="h-10"
+                  color="bg-black"
+                  handleClick={handleCancelEdit}
+                />
+              </div>
+            )}
           </form>
           <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
           <div className="overflow-y-auto">

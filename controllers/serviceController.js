@@ -177,7 +177,8 @@ export const updateCard = async (req, res) => {
 
     if (
       frequency !== service.frequency ||
-      serviceStartDate !== service.serviceStartDate
+      serviceStartDate.first !== service.serviceStartDate.first ||
+      serviceStartDate.second !== service.serviceStartDate.second
     ) {
       const due = serviceDates({
         frequency,
