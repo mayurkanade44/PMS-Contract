@@ -226,6 +226,8 @@ export const createDigitalContract = async (req, res) => {
       servicesFreq.push({
         frequency: item.frequency,
         name: item.services.map((ser) => ser.label).join(", "),
+        area: item.area,
+        location: item.treatmentLocation,
       })
     );
 
@@ -238,7 +240,6 @@ export const createDigitalContract = async (req, res) => {
 
       additionalJsContext: {
         contractNo: contract.contractNo,
-        type: contract.type === "NC" ? "New Contract" : "Renewal Contract",
         sales: contract.sales,
         startDate: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
         endDate: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
@@ -252,6 +253,7 @@ export const createDigitalContract = async (req, res) => {
         services: servicesFreq,
         contactName: contract.billToDetails.contact[0].name,
         contactNumber: contract.billToDetails.contact[0].number,
+        contactEmail: contract.billToDetails.contact[0].email,
         date: moment().format("DD/MM/YYYY"),
         billingFrequency: contract.billingFrequency,
       },

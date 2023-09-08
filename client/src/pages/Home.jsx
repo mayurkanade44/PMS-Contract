@@ -34,7 +34,7 @@ const Home = () => {
       navigate("/");
       toast.error("Unauthorized! Logging Out");
     }
-  }, [error]);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
