@@ -32,12 +32,21 @@ const ContractSchema = new mongoose.Schema(
     sendMail: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     softCopy: { type: String },
+    quarterlyMonths: [String],
+    quarterlyReport: { type: String },
   },
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );
 
 ContractSchema.virtual("services", {
   ref: "Service",
+  localField: "_id",
+  foreignField: "contract",
+  justOne: false,
+});
+
+ContractSchema.virtual("reports", {
+  ref: "Report",
   localField: "_id",
   foreignField: "contract",
   justOne: false,

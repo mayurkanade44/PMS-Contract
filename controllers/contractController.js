@@ -11,7 +11,6 @@ export const createContract = async (req, res) => {
 
     req.body.billToDetails.name = capitalLetter(req.body.billToDetails.name);
     req.body.shipToDetails.name = capitalLetter(req.body.shipToDetails.name);
-   
 
     let count = admin.contractCounter + 1;
     let contractNo = `PMS-${type}/${moment().format("YY")}/${count}`;
@@ -25,6 +24,14 @@ export const createContract = async (req, res) => {
     admin.contractCounter = count;
     await admin.save();
 
+    const quarterlyMonths = [];
+    let quarterlyMonth = req.body.tenure.startDate;
+    while (moment(quarterlyMonth).isBefore(req.body.tenure.endDate)) {
+      quarterlyMonth = moment(quarterlyMonth).add(3, "months");
+      quarterlyMonths.push(moment(quarterlyMonth).format("MMM YY"));
+    }
+
+    req.body.quarterlyMonths = quarterlyMonths;
     req.body.contractNo = contractNo;
     const newContract = await Contract.create(req.body);
 
@@ -62,13 +69,10 @@ export const updateContract = async (req, res) => {
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
 
     if (contract.type !== type)
-      return res
-        .status(400)
-        .json({ msg: "Contract Type change not allowed" });
+      return res.status(400).json({ msg: "Contract Type change not allowed" });
 
     req.body.billToDetails.name = capitalLetter(req.body.billToDetails.name);
     req.body.shipToDetails.name = capitalLetter(req.body.shipToDetails.name);
-   
 
     await Contract.findByIdAndUpdate(id, req.body, {
       new: true,

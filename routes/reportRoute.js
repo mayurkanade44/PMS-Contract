@@ -8,6 +8,7 @@ import {
   dailyServices,
   generateReport,
   monthlyServiceDue,
+  quarterlyReport,
   serviceNotification,
 } from "../controllers/reportController.js";
 import {
@@ -24,6 +25,7 @@ router.post(
 );
 router.get("/clientReport/:id", clientReport);
 router.get("/serviceDue", serviceNotification);
+router.get("/quarterlyReport", quarterlyReport);
 
 router.post(
   "/monthlyServices",

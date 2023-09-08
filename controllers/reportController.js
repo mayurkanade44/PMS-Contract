@@ -146,7 +146,6 @@ export const generateReport = async (req, res) => {
       let row = worksheet.getRow(i + 3);
       let item = report[i];
       row.getCell(1).value = item.contractNo;
-      row.getCell(1).alignment = { vertical: "middle", horizontal: "middle" };
       row.getCell(2).value = item.serviceName;
       row.getCell(3).value = item.serviceType;
       row.getCell(4).value = item.serviceStatus;
@@ -171,7 +170,6 @@ export const generateReport = async (req, res) => {
           hyperlink: item.image[2],
         }) ||
         "No Image";
-      row.alignment = { vertical: "middle", horizontal: "middle" };
       row.commit();
     }
 
@@ -385,6 +383,70 @@ export const monthlyServiceDue = async (req, res) => {
     if (!link) return res.status(400).json({ msg: "File generation error" });
 
     return res.status(200).json({ link });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const quarterlyReport = async (req, res) => {
+  try {
+    const date = new Date();
+    const quarter = new Date(
+      date.getFullYear(),
+      date.getMonth() - 3,
+      date.getDate()
+    );
+    const month = moment().format("MMM YY");
+
+    const reportData = await Contract.find({
+      quarterlyMonths: { $in: [month] },
+    })
+      .populate({
+        path: "reports",
+        match: {
+          serviceDate: {
+            $gte: quarter,
+            $lte: date,
+          },
+        },
+      })
+      .select("reports quarterlyMonths");
+
+    for (let data of reportData) {
+      if (data.reports.length) {
+        const workbook = new exceljs.Workbook();
+        await workbook.xlsx.readFile("./tmp/quarterlyReport.xlsx");
+        let worksheet = workbook.getWorksheet("Sheet1");
+
+        for (let i = 0; i < data.reports.length; i++) {
+          let row = worksheet.getRow(i + 4);
+          let item = data.reports[i];
+          row.getCell(1).value = item.contractNo;
+          row.getCell(2).value = item.serviceName;
+          row.getCell(3).value = item.serviceType;
+          row.getCell(4).value = item.serviceStatus;
+          row.getCell(5).value = item.serviceDate;
+          row.getCell(6).value = item.serviceComment;
+          row.getCell(7).value = item.serviceBy;
+          row.commit();
+        }
+
+        const contractNo = data.reports[0].contractNo.replace(/\//g, "-");
+
+        const filePath = `./tmp/${contractNo}_Quarterly_Service_Report.xlsx`;
+        await workbook.xlsx.writeFile(filePath);
+        const link = await uploadFile({ filePath });
+        if (link)
+          await Contract.findByIdAndUpdate(
+            data._id,
+            { quarterlyReport: link },
+            { runValidators: true, new: true }
+          );
+      }
+    }
+
+    return res.status(200).json(reportData);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
