@@ -33,7 +33,7 @@ const ContractSchema = new mongoose.Schema(
     active: { type: Boolean, default: true },
     softCopy: { type: String },
     quarterlyMonths: [String],
-    quarterlyReport: { type: String },
+    quarterlyReport: { type: String, default: null },
   },
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );

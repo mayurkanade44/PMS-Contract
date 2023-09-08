@@ -446,7 +446,71 @@ export const quarterlyReport = async (req, res) => {
       }
     }
 
-    return res.status(200).json(reportData);
+    return res.status(200).json({ msg: "Report generated" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const sendQuarterlyReport = async (req, res) => {
+  try {
+    const reports = await Contract.find({
+      quarterlyReport: { $ne: null },
+      active: true,
+    });
+
+    if (!reports.length)
+      return res.status(400).json({ msg: "No report found" });
+
+    for (let report of reports) {
+      const tempEmails = new Set();
+      report.billToDetails.contact.map(
+        (item) => item.email && tempEmails.add(item.email)
+      );
+      report.shipToDetails.contact.map(
+        (item) => item.email && tempEmails.add(item.email)
+      );
+      const emailList = [...tempEmails];
+
+      const fileName = `${report.contractNo.replace(
+        /\//g,
+        "-"
+      )}_Quarterly_Service_Report`;
+      const result = await axios.get(report.quarterlyReport, {
+        responseType: "arraybuffer",
+      });
+      const base64File = Buffer.from(result.data, "binary").toString("base64");
+
+      const attachObj = [
+        {
+          content: base64File,
+          filename: `${fileName}.xlsx`,
+          type: `application/xlsx`,
+          disposition: "attachment",
+        },
+      ];
+
+      const dynamicData = {
+        contractNo: report.contractNo,
+      };
+
+      const mailSent = await sendEmail({
+        emailList,
+        attachObj,
+        templateId: "d-ebf14fa28bf5478ea134f97af409b1b7",
+        dynamicData,
+      });
+      if (mailSent) {
+        await Contract.findByIdAndUpdate(
+          report._id,
+          { quarterlyReport: null },
+          { new: true, runValidators: true }
+        );
+      }
+    }
+
+    res.status(200).json({ msg: "Report sent" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
