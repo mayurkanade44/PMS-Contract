@@ -3,6 +3,8 @@ import {
   addAdminValue,
   addUser,
   deleteAdminValue,
+  deleteCard,
+  deleteContract,
   deleteUser,
   getAllUsers,
   getAllValues,
@@ -16,5 +18,7 @@ router
   .get(getAllValues);
 
 router.route("/user").get(getAllUsers).delete(deleteUser).post(addUser);
+router.delete("/singleContract/:id", deleteContract);
+router.delete("/singleCard/:id", deleteCard);
 
 export default router;

@@ -12,11 +12,11 @@ import {
 import Select from "react-select";
 import {
   useAddCardMutation,
-  useDeleteCardMutation,
   useDigitalContractMutation,
   useSendContractMutation,
   useUpdateCardMutation,
 } from "../redux/serviceSlice";
+import { useDeleteCardMutation } from "../redux/adminSlice";
 import { toast } from "react-toastify";
 import {
   useGetAllValuesQuery,

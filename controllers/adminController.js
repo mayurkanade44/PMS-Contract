@@ -90,3 +90,29 @@ export const addUser = async (req, res) => {
     res.status(500).json({ msg: "Server error, try again later" });
   }
 };
+
+export const deleteContract = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const contract = await Contract.findById(id);
+    if (!contract) return res.status(404).json({ msg: "Contract not found" });
+
+    await Service.deleteMany({ contract: id });
+    await Contract.deleteOne({ _id: id });
+
+    return res.json({ msg: "Contract has been deleted" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const deleteCard = async (req, res) => {
+  try {
+    await Service.findByIdAndDelete(req.params.id);
+    return res.json({ msg: "Service card has been deleted" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};

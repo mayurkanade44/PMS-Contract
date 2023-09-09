@@ -54,7 +54,7 @@ const Home = () => {
                 All Contracts
               </p>
               <form onSubmit={handleSearch} className="flex items-center">
-                <div className="flex items-center px-1 bg-white border md:w-52 lg:w-80 rounded border-gray-200 mr-3">
+                <div className="flex items-center px-1 bg-white border md:w-52 lg:w-80 rounded border-gray-300 mr-3">
                   <AiOutlineSearch />
                   <input
                     type="text"

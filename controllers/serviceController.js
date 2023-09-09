@@ -202,16 +202,6 @@ export const updateCard = async (req, res) => {
   }
 };
 
-export const deleteCard = async (req, res) => {
-  try {
-    await Service.findByIdAndDelete(req.params.id);
-    return res.json({ msg: "Service card has been deleted" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: "Server error, try again later" });
-  }
-};
-
 export const createDigitalContract = async (req, res) => {
   const { id: contractId } = req.params;
   try {
@@ -330,7 +320,7 @@ export const sendContract = async (req, res) => {
         service: allServices,
       };
       let tempId = "d-ebf14fa28bf5478ea134f97af409b1b7";
-      if(contract.type === 'RC') tempId = "d-646b79acf9e3402799d1cab72c108e72";
+      if (contract.type === "RC") tempId = "d-646b79acf9e3402799d1cab72c108e72";
 
       const mailSent = await sendEmail({
         emailList,

@@ -2,7 +2,6 @@ import express from "express";
 import {
   createContract,
   deactiveContract,
-  deleteContract,
   getAllContracts,
   getAllValues,
   getContract,
@@ -20,8 +19,8 @@ router.get("/getAllValues", getAllValues);
 router
   .route("/singleContract/:id")
   .get(authorizeUser("Admin", "Back Office"), getContract)
-  .put(authorizeUser("Admin", "Back Office"), updateContract)
-  .delete(authorizeUser("Admin"), deleteContract);
+  .put(authorizeUser("Admin", "Back Office"), updateContract);
+
 router.put(
   "/deactive/:id",
   authorizeUser("Admin", "Back Office"),

@@ -2,7 +2,6 @@ import express from "express";
 import {
   addCard,
   createDigitalContract,
-  deleteCard,
   getSingleCard,
   sendContract,
   updateCard,
@@ -20,7 +19,6 @@ router
 router
   .route("/:id")
   .put(authorizeUser("Admin", "Back Office"), updateCard)
-  .delete(authorizeUser("Admin"), deleteCard)
   .get(getSingleCard);
 
 export default router;

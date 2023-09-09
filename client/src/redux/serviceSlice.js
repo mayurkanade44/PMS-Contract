@@ -16,12 +16,6 @@ export const serviceSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    deleteCard: builder.mutation({
-      query: (id) => ({
-        url: `/api/service/${id}`,
-        method: "DELETE",
-      }),
-    }),
     sendContract: builder.mutation({
       query: (id) => ({
         url: `/api/service/sendContract/${id}`,
@@ -46,7 +40,6 @@ export const serviceSlice = apiSlice.injectEndpoints({
 
 export const {
   useAddCardMutation,
-  useDeleteCardMutation,
   useUpdateCardMutation,
   useDigitalContractMutation,
   useSendContractMutation,
