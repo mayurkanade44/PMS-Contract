@@ -2,12 +2,10 @@ import { AlertMessage, Button, Loading } from "../components";
 import { AiOutlineSearch, AiOutlineClose } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { useGetAllContractsQuery } from "../redux/contractSlice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { dateFormat } from "../utils/functionHelper";
 import { useDispatch, useSelector } from "react-redux";
 import { removeContractDetails, removeCredentials } from "../redux/allSlice";
-import { useLogoutMutation } from "../redux/userSlice";
-import { toast } from "react-toastify";
 
 const Home = () => {
   const [search, setSearch] = useState("");
@@ -17,24 +15,12 @@ const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [logout] = useLogoutMutation();
   const {
     data,
     isLoading: contractsLoading,
     isFetching,
     error,
   } = useGetAllContractsQuery({ search, page });
-
-  useEffect(() => {
-    if (error && error.status === 401) {
-      async () => {
-        await logout();
-        dispatch(removeCredentials());
-      };
-      navigate("/");
-      toast.error("Unauthorized! Logging Out");
-    }
-  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useSingleCardQuery } from "../redux/serviceSlice";
 import { useForm, Controller } from "react-hook-form";
 import {
@@ -10,34 +10,17 @@ import {
 } from "../components";
 import { toast } from "react-toastify";
 import { serviceStatus, serviceType } from "../utils/dataHelper";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAddReportDataMutation } from "../redux/reportSlice";
 import { useGetAllValuesQuery } from "../redux/contractSlice";
-import { useLogoutMutation } from "../redux/userSlice";
-import { useDispatch } from "react-redux";
-import { removeCredentials } from "../redux/allSlice";
 
 const ServiceCard = () => {
   const [images, setImages] = useState([]);
   const { id } = useParams();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const { data: adminValues, isLoading: adminLoading } = useGetAllValuesQuery();
   const { data, isLoading: cardLoading, error } = useSingleCardQuery(id);
   const [addReportData, { isLoading: addLoading }] = useAddReportDataMutation();
-  const [logout] = useLogoutMutation();
-
-  useEffect(() => {
-    if (error && error.status === 401) {
-      async () => {
-        await logout();
-        dispatch(removeCredentials());
-      };
-      navigate("/");
-      toast.error("Unauthorized! Logging Out");
-    }
-  }, [error]);
 
   const {
     register,
