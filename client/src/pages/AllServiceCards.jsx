@@ -389,7 +389,13 @@ const AllServiceCards = () => {
               }
               width="w-48"
               height="py-2"
-              color={contractDetails.sendMail ? "bg-gray-600" : "bg-green-600"}
+              color={
+                !contractDetails.softCopy
+                  ? "bg-green-600"
+                  : !contractDetails.sendMail
+                  ? "bg-blue-600"
+                  : "bg-gray-600"
+              }
               handleClick={() => handleSendContract()}
               disabled={
                 !contractDetails.services?.length || contractDetails.sendMail

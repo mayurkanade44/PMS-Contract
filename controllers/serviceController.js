@@ -323,16 +323,19 @@ export const sendContract = async (req, res) => {
       ];
 
       const dynamicData = {
+        name: contract.billToDetails.name,
         contractNo: contract.contractNo,
         start: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
         end: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
         service: allServices,
       };
+      let tempId = "d-ebf14fa28bf5478ea134f97af409b1b7";
+      if(contract.type === 'RC') tempId = "d-646b79acf9e3402799d1cab72c108e72";
 
       const mailSent = await sendEmail({
         emailList,
         attachObj,
-        templateId: "d-ebf14fa28bf5478ea134f97af409b1b7",
+        templateId: tempId,
         dynamicData,
       });
 
