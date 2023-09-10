@@ -3,6 +3,7 @@ import { useGetClientReportQuery } from "../redux/reportSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Loading } from "../components";
 import { useSelector } from "react-redux";
+import logo from "../assets/logo1.png";
 
 const ClientReport = () => {
   const { id } = useParams();
@@ -29,8 +30,11 @@ const ClientReport = () => {
           <h2 className="text-red-500 font-medium">No Service Data Found</h2>
         )
       )}
+      <div className="flex justify-center my-5">
+        <img src={logo} className="w-64 h-28" />
+      </div>
       {show ? (
-        <div className="flex justify-center items-center mt-20">
+        <div className="flex justify-center items-center">
           <Button
             label="Show My Service Report"
             width="w-52"
@@ -43,10 +47,10 @@ const ClientReport = () => {
         <>
           {report && (
             <div>
-              <h1 className="text-xl font-semibold text-center">
+              <h1 className="lg:text-2xl font-bold text-center">
                 Contract Number : {report[0].contractNo}
               </h1>
-              <h1 className="text-xl font-semibold text-center">
+              <h1 className="lg:text-2xl font-bold text-center">
                 Service Name : {report[0].serviceName}
               </h1>
               <div className="overflow-y-auto my-4">

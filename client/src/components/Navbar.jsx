@@ -41,6 +41,7 @@ const Navbar = () => {
     try {
       await logout().unwrap();
       toast.success("Logout successfully");
+      setShow(!show);
       dispatch(removeCredentials());
       navigate("/");
     } catch (error) {
@@ -51,24 +52,24 @@ const Navbar = () => {
 
   return (
     <div className="bg-gray-200 h-full w-full mb-16 lg:mb-2">
-      <nav className="bg-white shadow xl:block hidden">
-        <div className="mx-auto container px-1 py-2 xl:py-0">
+      <nav className="bg-white shadow lg:block hidden">
+        <div className="mx-auto container lg:pl-10 xl:px-0  py-2 lg:py-0">
           <div
             className={`flex items-center ${
               user ? "justify-between" : "justify-center"
             } `}
           >
             <div className="flex w-full sm:w-auto items-center sm:items-stretch justify-end sm:justify-center">
-              {/* <div className="flex items-center py-3">
-                  <img src={logo} className="w-24" alt="logo" />
-                  <h2 className="hidden sm:block text-xl text-gray-700 font-bold leading-normal pl-3">
-                    Pest Management & Services
-                  </h2>
-                </div> */}
+              <div className="flex items-center py-3">
+                <img src={logo} className="w-24" alt="logo" />
+                <h2 className="hidden sm:block text-xl text-gray-700 font-bold leading-normal pl-3">
+                  Pest Management & Services
+                </h2>
+              </div>
             </div>
             {user && (
               <div className="flex mr-8">
-                <div className="hidden xl:flex mr-10">
+                <div className="hidden lg:flex lg:mr-5 xl:mr-10">
                   {navData.map((nav) => (
                     <Link
                       key={nav.name}
@@ -89,7 +90,7 @@ const Navbar = () => {
                     </Link>
                   )}
                 </div>
-                <div className="hidden xl:flex items-center">
+                <div className="hidden lg:flex items-center">
                   <div className="relative">
                     <div
                       className="flex items-center relative"
@@ -121,16 +122,9 @@ const Navbar = () => {
         </div>
       </nav>
       <nav>
-        <div className="py-2 px-6 w-full border flex xl:hidden justify-between items-center bg-white fixed top-0 z-40">
-          <div className="flex items-center">
+        {user ? (
+          <div className="py-2 px-6 w-full border flex lg:hidden justify-between items-center bg-white fixed top-0 z-40">
             <img src={logo} className="w-24" alt="logo" />
-            {!user && (
-              <span className="ml-5 text-lg font-medium">
-                Pest Management & Services
-              </span>
-            )}
-          </div>
-          {user && (
             <div className="flex items-center">
               <div className="relative mr-4 text-blue-500 font-semibold">
                 {user.name}
@@ -143,8 +137,12 @@ const Navbar = () => {
                 {!show && <AiOutlineMenuUnfold className="w-6 h-6" />}
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <span className="py-2 font-medium text-lg px-6 w-full border flex lg:hidden justify-center items-center bg-white fixed top-0 z-40">
+            Pest Management & Services
+          </span>
+        )}
         {/*Mobile responsive sidebar*/}
         <div
           className={
@@ -179,7 +177,11 @@ const Navbar = () => {
                   <ul>
                     {navData.map((nav) => (
                       <li key={nav.name} className="text-gray-800 pt-5">
-                        <Link to={nav.link} className="flex items-center">
+                        <Link
+                          to={nav.link}
+                          onClick={() => setShow(!show)}
+                          className="flex items-center"
+                        >
                           {nav.icon}
                           <span className="ml-3">{nav.name}</span>
                         </Link>
@@ -193,18 +195,16 @@ const Navbar = () => {
                         </Link>
                       </li>
                     )}
-                    <Link to="/admin" className="cursor-pointer">
-                      <li className="text-gray-800 pt-4">
-                        <button
-                          onClick={handleLogout}
-                          type="button"
-                          className="flex items-center text-red-500"
-                        >
-                          <AiOutlineLogout className="mr-4 h-5 w-5" />
-                          Logout
-                        </button>
-                      </li>
-                    </Link>
+                    <li className="text-gray-800 pt-4">
+                      <button
+                        onClick={handleLogout}
+                        type="button"
+                        className="flex items-center text-red-500"
+                      >
+                        <AiOutlineLogout className="mr-4 h-5 w-5" />
+                        Logout
+                      </button>
+                    </li>
                   </ul>
                 </div>
               </div>
