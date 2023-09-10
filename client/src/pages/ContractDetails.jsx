@@ -101,7 +101,7 @@ const ContractDetails = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
             <div>
               <div className="flex justify-around">
-                <h1 className="text-3xl font-bold text-center">
+                <h1 className="text-[25px] font-bold text-center">
                   Contract Number: {contract.contractNo}
                 </h1>
                 {contract.softCopy && (

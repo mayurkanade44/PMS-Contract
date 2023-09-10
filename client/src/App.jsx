@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Navbar, ProtectedRoute } from "./components";
 import {
   Admin,
-  AllServiceCards,
+  NewServiceCard,
   ClientReport,
   ContractDetails,
   Dashboard,
@@ -46,7 +46,7 @@ function App() {
           <Route path="/contract-details/:id" element={<ContractDetails />} />
           <Route
             path="/contract/:id/service-cards"
-            element={<AllServiceCards />}
+            element={<NewServiceCard />}
           />
           <Route path="/service-card/:id" element={<ServiceCard />} />
         </Route>

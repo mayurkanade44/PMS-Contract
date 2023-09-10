@@ -37,6 +37,7 @@ export const addCard = async (req, res) => {
       contract: id,
       services: req.body.services,
       serviceStartDate,
+      instruction: req.body.instruction,
     });
 
     cardId = service._id;
@@ -92,7 +93,7 @@ export const addCard = async (req, res) => {
         area: service.area,
         billingFrequency: contract.billingFrequency,
         contractPeriod: contractPeriod,
-        instruction: "Test",
+        instruction: service.instruction,
         url: "12",
         qrCode: async (url12) => {
           const dataUrl = cardQrCode;

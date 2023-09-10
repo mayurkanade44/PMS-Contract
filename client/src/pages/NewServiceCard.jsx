@@ -26,7 +26,7 @@ import DeleteModal from "../components/Modals/DeleteModal";
 import { dateFormat } from "../utils/functionHelper";
 import { useSelector } from "react-redux";
 
-const AllServiceCards = () => {
+const NewServiceCard = () => {
   const [selectedOption, setSelectedOption] = useState([]);
   const [edit, setEdit] = useState({
     status: false,
@@ -74,6 +74,7 @@ const AllServiceCards = () => {
       treatmentLocation: "",
       serviceCardId: "",
       dates: "",
+      instruction: "",
     },
   });
 
@@ -135,6 +136,7 @@ const AllServiceCards = () => {
     setValue("area", data.area);
     setValue("treatmentLocation", data.treatmentLocation);
     setValue("serviceCardId", data._id);
+    setValue("instruction", data.instruction);
     setValue("dates", data.serviceDates.join(", "));
     setValue(
       "serviceStartDate.first",
@@ -279,6 +281,17 @@ const AllServiceCards = () => {
                 </p>
               </div>
             </div>
+            <div className="col-span-8 md:col-span-4 lg:col-span-3">
+              <InputRow
+                label="Instructions"
+                id="instruction"
+                errors={errors}
+                register={register}
+              />
+              <p className="text-xs text-red-500 -bottom-4 pl-1">
+                {errors.instruction && "Instruction is required"}
+              </p>
+            </div>
             {edit.status && (
               <div className="col-span-8 md:col-span-10 lg:col-span-10">
                 <label
@@ -407,4 +420,4 @@ const AllServiceCards = () => {
     </>
   );
 };
-export default AllServiceCards;
+export default NewServiceCard;
