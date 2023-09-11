@@ -7,7 +7,7 @@ import { capitalLetter } from "../utils/helper.js";
 export const createContract = async (req, res) => {
   const { type } = req.body;
   try {
-    const admin = await Admin.findById("64f18ca753fd882e99cbfd1b");
+    const admin = await Admin.findById("64fef7fee25b8a61d21a381e");
 
     req.body.billToDetails.name = capitalLetter(req.body.billToDetails.name);
     req.body.shipToDetails.name = capitalLetter(req.body.shipToDetails.name);

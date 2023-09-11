@@ -27,7 +27,7 @@ export const addServiceData = async (req, res) => {
 
       for (let i = 0; i < images.length; i++) {
         const filePath = images[i].tempFilePath;
-        const link = await uploadFile({ filePath });
+        const link = await uploadFile({ filePath, folder: "images" });
         if (!link)
           return res
             .status(400)
@@ -152,7 +152,7 @@ export const generateReport = async (req, res) => {
 
     const filePath = "./tmp/serviceReport.xlsx";
     await workbook.xlsx.writeFile(filePath);
-    const link = await uploadFile({ filePath });
+    const link = await uploadFile({ filePath, folder:'reports' });
 
     return res.status(201).json({ msg: "Report Generated", link });
   } catch (error) {
@@ -241,7 +241,7 @@ export const serviceNotification = async (req, res) => {
     }
     const filePath = "./tmp/serviceDue.xlsx";
     await workbook.xlsx.writeFile(filePath);
-    const link = await uploadFile({ filePath });
+    const link = await uploadFile({ filePath, folder:'reports' });
 
     const result = await axios.get(link, {
       responseType: "arraybuffer",
@@ -356,7 +356,7 @@ export const monthlyServiceDue = async (req, res) => {
     }
     const filePath = `./tmp/${month} serviceDue.xlsx`;
     await workbook.xlsx.writeFile(filePath);
-    const link = await uploadFile({ filePath });
+    const link = await uploadFile({ filePath, folder:"reports" });
     if (!link) return res.status(400).json({ msg: "File generation error" });
 
     return res.status(200).json({ link });
@@ -413,7 +413,7 @@ export const quarterlyReport = async (req, res) => {
 
         const filePath = `./tmp/${contractNo}_Quarterly_Service_Report.xlsx`;
         await workbook.xlsx.writeFile(filePath);
-        const link = await uploadFile({ filePath });
+        const link = await uploadFile({ filePath, folder: "reports" });
         if (link)
           await Contract.findByIdAndUpdate(
             data._id,

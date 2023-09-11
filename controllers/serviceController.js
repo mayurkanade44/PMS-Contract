@@ -57,7 +57,10 @@ export const addCard = async (req, res) => {
     //upload qr image
     const qrFilePath = "./tmp/cardQR.jpeg";
     fs.writeFileSync(qrFilePath, buf);
-    const qrUrl = await uploadFile({ filePath: qrFilePath });
+    const qrUrl = await uploadFile({
+      filePath: qrFilePath,
+      folder: "contracts",
+    });
     if (!qrUrl) {
       if (cardId) {
         await Service.findByIdAndDelete(cardId);
@@ -107,7 +110,7 @@ export const addCard = async (req, res) => {
     const filename = `${contractName} ${service.frequency}`;
     const filePath = `./tmp/${filename}.docx`;
     fs.writeFileSync(filePath, buffer);
-    const cardUrl = await uploadFile({ filePath });
+    const cardUrl = await uploadFile({ filePath, folder: "contracts" });
     if (!cardUrl) {
       if (cardId) {
         await Service.findByIdAndDelete(cardId);
@@ -253,7 +256,7 @@ export const createDigitalContract = async (req, res) => {
     const contractName = contract.contractNo.replace(/\//g, "-");
     const filePath = `./tmp/${contractName}.docx`;
     fs.writeFileSync(filePath, buffer);
-    const link = await uploadFile({ filePath });
+    const link = await uploadFile({ filePath, folder: "contracts" });
     if (!link)
       return res.status(400).json({ msg: "Upload error, try again later" });
 

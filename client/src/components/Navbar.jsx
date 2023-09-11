@@ -111,7 +111,7 @@ const Navbar = () => {
                         </ul>
                       )}
                       <div className="cursor-pointer mr-5 text-blue-500 font-semibold flex text-lg border-2 border-transparent rounded-full transition duration-150 ease-in-out">
-                        {user.name}
+                        {user.name.split(" ")[0]}
                       </div>
                     </div>
                   </div>
@@ -127,7 +127,7 @@ const Navbar = () => {
             <img src={logo} className="w-24" alt="logo" />
             <div className="flex items-center">
               <div className="relative mr-4 text-blue-500 font-semibold">
-                {user.name}
+                {user.name.split(" ")[0]}
               </div>
               <div
                 id="menu"

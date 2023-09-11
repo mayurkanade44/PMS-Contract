@@ -1,7 +1,6 @@
 import Admin from "../models/adminModel.js";
 import Contract from "../models/contractModel.js";
 import Service from "../models/serviceModel.js";
-import Report from "../models/reportModel.js";
 import User from "../models/userModel.js";
 import { capitalLetter } from "../utils/helper.js";
 
