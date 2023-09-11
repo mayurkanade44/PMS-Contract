@@ -120,7 +120,7 @@ export const generateReport = async (req, res) => {
     let worksheet = workbook.getWorksheet("Sheet1");
 
     for (let i = 0; i < report.length; i++) {
-      let row = worksheet.getRow(i + 3);
+      let row = worksheet.getRow(i + 4);
       let item = report[i];
       row.getCell(1).value = item.contractNo;
       row.getCell(2).value = item.serviceName;
