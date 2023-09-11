@@ -50,7 +50,7 @@ export const getContract = async (req, res) => {
     const contract = await Contract.findById(id).populate({
       path: "services",
       select:
-        "frequency area services serviceDates serviceStartDate serviceMonths treatmentLocation card qr",
+        "frequency area services serviceDates serviceStartDate serviceMonths treatmentLocation card qr instruction",
     });
     if (!contract) return res.status(404).json({ msg: "Contract not found" });
 

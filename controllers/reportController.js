@@ -2,21 +2,10 @@ import Report from "../models/reportModel.js";
 import Contract from "../models/contractModel.js";
 import Service from "../models/serviceModel.js";
 import mongoose from "mongoose";
-import { sendEmail, uploadFile } from "../utils/helper.js";
+import { sendBrevoEmail, sendEmail, uploadFile } from "../utils/helper.js";
 import exceljs from "exceljs";
 import moment from "moment";
-import Admin from "../models/adminModel.js";
 import axios from "axios";
-import SibApiV3Sdk from "@getbrevo/brevo";
-
-// let defaultClient = SibApiV3Sdk.ApiClient.instance;
-
-// let apiKey = defaultClient.authentications["api-key"];
-// apiKey.apiKey = process.env.BREVO_API_KEY;
-
-// let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-
-// let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
 export const addServiceData = async (req, res) => {
   const { contract: contractId, service: serviceId } = req.body;
@@ -30,6 +19,7 @@ export const addServiceData = async (req, res) => {
       return res.status(404).json({ msg: "Service not found, contact admin" });
 
     const imageLinks = [];
+    const attachment = [];
     if (req.files) {
       let images = [];
       if (req.files.images.length > 0) images = req.files.images;
@@ -44,6 +34,7 @@ export const addServiceData = async (req, res) => {
             .json({ msg: "Upload error, please try again later" });
 
         imageLinks.push(link);
+        attachment.push({ url: link, name: `image-${i + 1}.jpg` });
       }
     }
 
@@ -52,33 +43,37 @@ export const addServiceData = async (req, res) => {
     req.body.serviceBy = req.user.name;
     req.body.user = req.user._id;
 
-    const tempEmails = new Set();
+    const emailList = [];
     contractExist.billToDetails.contact.map(
-      (item) => item.email && tempEmails.add(item.email)
+      (item) =>
+        item.email &&
+        !emailList.some((i) => i.email === item.email) &&
+        emailList.push({ email: item.email })
     );
     contractExist.shipToDetails.contact.map(
-      (item) => item.email && tempEmails.add(item.email)
+      (item) =>
+        item.email &&
+        !emailList.some((i) => i.email === item.email) &&
+        emailList.push({ email: item.email })
     );
-    const emailList = [...tempEmails];
 
-    const attachObj = [];
-    for (let i = 0; i < imageLinks.length; i++) {
-      const result = await axios.get(imageLinks[i], {
-        responseType: "arraybuffer",
-      });
-      const base64File = Buffer.from(result.data, "binary").toString("base64");
+    // const attachObj = [];
+    // for (let i = 0; i < imageLinks.length; i++) {
+    //   const result = await axios.get(imageLinks[i], {
+    //     responseType: "arraybuffer",
+    //   });
+    //   const base64File = Buffer.from(result.data, "binary").toString("base64");
 
-      attachObj.push({
-        content: base64File,
-        filename: `image-${i + 1}.jpg`,
-        type: `application/jpg`,
-        disposition: "attachment",
-      });
-    }
+    //   attachObj.push({
+    //     content: base64File,
+    //     filename: `image-${i + 1}.jpg`,
+    //     type: `application/jpg`,
+    //     disposition: "attachment",
+    //   });
+    // }
 
     const dynamicData = {
       contractNo: req.body.contractNo,
-      shipToAddress: `${contractExist.shipToDetails.address} ${contractExist.shipToDetails.city} - ${contractExist.shipToDetails.pincode}`,
       serviceName: req.body.serviceName,
       serviceType: req.body.serviceType,
       serviceDate: moment(req.body.serviceDate).format("DD/MM/YYYY"),
@@ -86,42 +81,24 @@ export const addServiceData = async (req, res) => {
       serviceComment: req.body.serviceComment,
     };
 
+    // const mailSent = await sendEmail({
+    //   emailList,
+    //   attachObj,
+    //   templateId: "d-ebb9f0ccce80432dba009696fe455382",
+    //   dynamicData,
+    // });
+
     await Report.create(req.body);
 
-    // sendSmtpEmail.sender = { name: "Epcorn", email: "exteam.epcorn@gmail.com" };
-    // sendSmtpEmail.to = [
-    //   { email: "noreply.epcorn@gmail.com", name: "Jane Doe" },
-    // ];
-    // sendSmtpEmail.params = {
-    //   contractNo: "K/12",
-    // };
-    // sendSmtpEmail.templateId = 1;
-    // sendSmtpEmail.attachmentUrl = [
-    //   {
-    //     url: "https://res.cloudinary.com/epcorn/image/upload/v1690795034/signature/Screenshot_2023-07-31_144131_agwhab.png", // Should be publicly available and shouldn't be a local file
-    //     name: "myAttachment.png",
-    //   },
-    // ];
-    // apiInstance.sendTransacEmail(sendSmtpEmail).then(
-    //   function (data) {
-    //     console.log(
-    //       "API called successfully. Returned data: " + JSON.stringify(data)
-    //     );
-    //   },
-    //   function (error) {
-    //     console.error(error);
-    //   }
-    // );
-
-    const mailSent = await sendEmail({
+    const mailSent = await sendBrevoEmail({
       emailList,
-      attachObj,
-      templateId: "d-ebb9f0ccce80432dba009696fe455382",
+      attachment,
+      templateId: 3,
       dynamicData,
     });
 
     if (!mailSent)
-      return res.status(400).json({ msg: "Email not sent, try again later" });
+      return res.status(400).json({ msg: "Report saved but email not sent" });
 
     res.status(201).json({ msg: "Report submitted & Email Sent" });
   } catch (error) {
