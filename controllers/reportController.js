@@ -217,10 +217,9 @@ export const serviceNotification = async (req, res) => {
         },
       });
 
-      if (!mailSent) {
-        console.log("Email not sent");
-      }
-      return res.status(404).json({ msg: `No services schedule on ${date}` });
+      if (!mailSent) console.log("Email not sent");
+
+      return res.json({ msg: `No services schedule on ${date}` });
     }
 
     const workbook = new exceljs.Workbook();
@@ -291,7 +290,7 @@ export const serviceNotification = async (req, res) => {
       },
     });
 
-    if (!mailSent) return res.status(400).json({ msg: "Email not sent" });
+    if (!mailSent) console.log("Email not sent");
 
     return res.status(200).json({ msg: "Service due file generated", link });
   } catch (error) {
@@ -360,9 +359,9 @@ export const monthlyServiceDue = async (req, res) => {
     worksheet.columns = [
       { header: "Contract Number", key: "contract" },
       { header: "Contract Status", key: "status" },
+      { header: "Clinet Name", key: "name" },
       { header: "Service Name", key: "serviceName" },
       { header: "Frequency", key: "frequency" },
-      { header: "Clinet Name", key: "name" },
       { header: "Service Address", key: "address" },
     ];
 

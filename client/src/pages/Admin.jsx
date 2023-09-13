@@ -336,7 +336,11 @@ const Admin = () => {
                     type="submit"
                   />
                 </form>
-                <AdminTable th="Comments" data={data.comments} />
+                <AdminTable
+                  th="Comments"
+                  data={data.comments}
+                  handleDelete={handleDelete}
+                />
               </div>
             ) : null}
           </div>

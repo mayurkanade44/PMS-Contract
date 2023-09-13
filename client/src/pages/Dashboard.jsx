@@ -2,6 +2,7 @@ import {
   useAllStatsQuery,
   useDailyServicesQuery,
   useMonthlyServiceMutation,
+  useSevenDayServiceDueQuery,
 } from "../redux/reportSlice";
 import { AlertMessage, Button, InputSelect, Loading } from "../components";
 import {
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const [show, setShow] = useState("Today's Schedule");
   const [allData, setAllData] = useState({ label: [], value: [] });
   const [month, setMonth] = useState("");
+  const [skip, setSkip] = useState(true);
 
   const {
     data: dailyServices,
@@ -29,6 +31,11 @@ const Dashboard = () => {
     error,
   } = useDailyServicesQuery();
   const { data: stats, isLoading: statsLoading } = useAllStatsQuery();
+  const {
+    data: dueData,
+    isLoading: dueLoading,
+    error: dueError,
+  } = useSevenDayServiceDueQuery(show, { skip });
   const [monthlyService, { isLoading: monthlyLoading }] =
     useMonthlyServiceMutation();
 
@@ -60,6 +67,15 @@ const Dashboard = () => {
     }
   }, [stats]);
 
+  useEffect(() => {
+    if (dueData) {
+      toast.success(dueData.msg);
+      if (dueData.link) saveAs(dueData.link, `7th_Day_Due_Services`);
+    }
+    if (dueError) toast.error(dueError?.data?.msg);
+    setSkip(true);
+  }, [dueData, dueError]);
+
   const data = {
     labels: allData.label,
     datasets: [
@@ -87,7 +103,7 @@ const Dashboard = () => {
 
   return (
     <div className="my-20 lg:my-5">
-      {dailyLoading || statsLoading || monthlyLoading ? (
+      {dailyLoading || statsLoading || monthlyLoading || dueLoading ? (
         <Loading />
       ) : (
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
@@ -101,15 +117,21 @@ const Dashboard = () => {
               handleClick={() => setShow("Today's Schedule")}
             />
             <Button
+              label="Bar Graph"
+              color="bg-pink-400"
+              handleClick={() => setShow("Bar Graph")}
+            />
+            <Button
               label="Monthly Schedule"
               color="bg-gray-600"
               width="w-40"
               handleClick={() => setShow("Monthly Schedule")}
             />
             <Button
-              label="Bar Graph"
-              color="bg-pink-400"
-              handleClick={() => setShow("Bar Graph")}
+              label="7Day Schedule"
+              color="bg-green-600"
+              width="w-40"
+              handleClick={() => setSkip(false)}
             />
           </div>
           {show === "Today's Schedule" ? (

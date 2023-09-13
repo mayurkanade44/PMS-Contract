@@ -38,6 +38,11 @@ export const reportSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    sevenDayServiceDue: builder.query({
+      query: (id) => ({
+        url: "/api/report/serviceDue",
+      }),
+    }),
   }),
 });
 
@@ -48,4 +53,5 @@ export const {
   useDailyServicesQuery,
   useAllStatsQuery,
   useMonthlyServiceMutation,
+  useSevenDayServiceDueQuery,
 } = reportSlice;
