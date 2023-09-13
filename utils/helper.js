@@ -155,7 +155,10 @@ export const sendBrevoEmail = async ({
     let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-    sendSmtpEmail.sender = { name: "Epcorn", email: "exteam.epcorn@gmail.com" };
+    sendSmtpEmail.sender = {
+      name: "PMS",
+      email: process.env.NO_REPLY_EMAIL,
+    };
     sendSmtpEmail.to = emailList;
     sendSmtpEmail.params = dynamicData;
     sendSmtpEmail.templateId = templateId;

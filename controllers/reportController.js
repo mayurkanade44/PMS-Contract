@@ -6,6 +6,8 @@ import { sendBrevoEmail, sendEmail, uploadFile } from "../utils/helper.js";
 import exceljs from "exceljs";
 import moment from "moment";
 import axios from "axios";
+import fs from "fs";
+import { createReport } from "docx-templates";
 
 export const addServiceData = async (req, res) => {
   const { contract: contractId, service: serviceId } = req.body;
@@ -93,7 +95,7 @@ export const addServiceData = async (req, res) => {
     const mailSent = await sendBrevoEmail({
       emailList,
       attachment,
-      templateId: 3,
+      templateId: 1,
       dynamicData,
     });
 
@@ -152,7 +154,7 @@ export const generateReport = async (req, res) => {
 
     const filePath = "./tmp/serviceReport.xlsx";
     await workbook.xlsx.writeFile(filePath);
-    const link = await uploadFile({ filePath, folder:'reports' });
+    const link = await uploadFile({ filePath, folder: "reports" });
 
     return res.status(201).json({ msg: "Report Generated", link });
   } catch (error) {
@@ -181,10 +183,7 @@ export const serviceNotification = async (req, res) => {
   try {
     const date = moment().add(7, "days").format("DD/MM/YYYY");
 
-    const emailList = [
-      "contact@pestmanagements.in",
-      "solution@pestmanagements.in",
-    ];
+    const emailList = [process.env.REPORT_EMAIL_1, process.env.REPORT_EMAIL_1];
 
     const services = await Service.find({
       serviceDates: { $in: date },
@@ -241,7 +240,7 @@ export const serviceNotification = async (req, res) => {
     }
     const filePath = "./tmp/serviceDue.xlsx";
     await workbook.xlsx.writeFile(filePath);
-    const link = await uploadFile({ filePath, folder:'reports' });
+    const link = await uploadFile({ filePath, folder: "reports" });
 
     const result = await axios.get(link, {
       responseType: "arraybuffer",
@@ -356,7 +355,7 @@ export const monthlyServiceDue = async (req, res) => {
     }
     const filePath = `./tmp/${month} serviceDue.xlsx`;
     await workbook.xlsx.writeFile(filePath);
-    const link = await uploadFile({ filePath, folder:"reports" });
+    const link = await uploadFile({ filePath, folder: "reports" });
     if (!link) return res.status(400).json({ msg: "File generation error" });
 
     return res.status(200).json({ link });
@@ -389,6 +388,9 @@ export const quarterlyReport = async (req, res) => {
         },
       })
       .select("reports quarterlyMonths");
+
+    if (!reportData.length)
+      return res.status(400).json({ msg: "No data found" });
 
     for (let data of reportData) {
       if (data.reports.length) {
@@ -436,48 +438,66 @@ export const sendQuarterlyReport = async (req, res) => {
       quarterlyReport: { $ne: null },
       active: true,
     });
+    const end = moment().format("MMM YY");
+    const start = moment().subtract(3, "months").format("MMM YY");
 
     if (!reports.length)
       return res.status(400).json({ msg: "No report found" });
 
     for (let report of reports) {
-      const tempEmails = new Set();
+      const emailList = [];
       report.billToDetails.contact.map(
-        (item) => item.email && tempEmails.add(item.email)
+        (item) =>
+          item.email &&
+          !emailList.some((i) => i.email === item.email) &&
+          emailList.push({ email: item.email })
       );
       report.shipToDetails.contact.map(
-        (item) => item.email && tempEmails.add(item.email)
+        (item) =>
+          item.email &&
+          !emailList.some((i) => i.email === item.email) &&
+          emailList.push({ email: item.email })
       );
-      const emailList = [...tempEmails];
 
       const fileName = `${report.contractNo.replace(
         /\//g,
         "-"
       )}_Quarterly_Service_Report`;
-      const result = await axios.get(report.quarterlyReport, {
-        responseType: "arraybuffer",
-      });
-      const base64File = Buffer.from(result.data, "binary").toString("base64");
 
-      const attachObj = [
-        {
-          content: base64File,
-          filename: `${fileName}.xlsx`,
-          type: `application/xlsx`,
-          disposition: "attachment",
-        },
-      ];
+      // const result = await axios.get(report.quarterlyReport, {
+      //   responseType: "arraybuffer",
+      // });
+      // const base64File = Buffer.from(result.data, "binary").toString("base64");
+
+      // const attachObj = [
+      //   {
+      //     content: base64File,
+      //     filename: `${fileName}.xlsx`,
+      //     type: `application/xlsx`,
+      //     disposition: "attachment",
+      //   },
+      // ];
 
       const dynamicData = {
         contractNo: report.contractNo,
+        start,
+        end,
       };
 
-      const mailSent = await sendEmail({
+      // const mailSent = await sendEmail({
+      //   emailList,
+      //   attachObj,
+      //   templateId: "d-ebf14fa28bf5478ea134f97af409b1b7",
+      //   dynamicData,
+      // });
+
+      const mailSent = await sendBrevoEmail({
         emailList,
-        attachObj,
-        templateId: "d-ebf14fa28bf5478ea134f97af409b1b7",
+        attachment: [{ url: report.quarterlyReport, name: `${fileName}.xlsx` }],
+        templateId: 4,
         dynamicData,
       });
+
       if (mailSent) {
         await Contract.findByIdAndUpdate(
           report._id,
@@ -488,6 +508,41 @@ export const sendQuarterlyReport = async (req, res) => {
     }
 
     res.status(200).json({ msg: "Report sent" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const quotation = async (req, res) => {
+  try {
+    const data = [
+      {
+        treatmentLocation: "Your office premises",
+        services: [
+          { name: "Green Shield", desc: "Gel will be applied" },
+          { name: "Ratrid", desc: "rodent management" },
+          { name: "Mosquit", desc: "Chemical spray" },
+        ],
+        frequency: "Fortnightly",
+        cost: [{ total: "82,000" }, { total: "8,000" }],
+      },
+    ];
+
+    const template = fs.readFileSync("./tmp/quotation.docx");
+
+    const buffer = await createReport({
+      cmdDelimiter: ["{", "}"],
+      template,
+
+      additionalJsContext: {
+        data,
+      },
+    });
+
+    fs.writeFileSync("./tmp/output.docx", buffer);
+
+    return res.json({ msg: "Report generated" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

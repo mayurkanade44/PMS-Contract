@@ -4,7 +4,12 @@ import moment from "moment";
 import { createCanvas, loadImage } from "canvas";
 import QRCode from "qrcode";
 import fs from "fs";
-import { sendEmail, serviceDates, uploadFile } from "../utils/helper.js";
+import {
+  sendBrevoEmail,
+  sendEmail,
+  serviceDates,
+  uploadFile,
+} from "../utils/helper.js";
 import { createReport } from "docx-templates";
 import axios from "axios";
 
@@ -292,29 +297,34 @@ export const sendContract = async (req, res) => {
         });
       }
 
-      const tempEmails = new Set();
+      const emailList = [];
       contract.billToDetails.contact.map(
-        (item) => item.email && tempEmails.add(item.email)
+        (item) =>
+          item.email &&
+          !emailList.some((i) => i.email === item.email) &&
+          emailList.push({ email: item.email })
       );
       contract.shipToDetails.contact.map(
-        (item) => item.email && tempEmails.add(item.email)
+        (item) =>
+          item.email &&
+          !emailList.some((i) => i.email === item.email) &&
+          emailList.push({ email: item.email })
       );
-      const emailList = [...tempEmails];
 
       const fileName = contract.contractNo.replace(/\//g, "-");
-      const result = await axios.get(contract.softCopy, {
-        responseType: "arraybuffer",
-      });
-      const base64File = Buffer.from(result.data, "binary").toString("base64");
+      // const result = await axios.get(contract.softCopy, {
+      //   responseType: "arraybuffer",
+      // });
+      // const base64File = Buffer.from(result.data, "binary").toString("base64");
 
-      const attachObj = [
-        {
-          content: base64File,
-          filename: `${fileName}.docx`,
-          type: `application/docx`,
-          disposition: "attachment",
-        },
-      ];
+      // const attachObj = [
+      //   {
+      //     content: base64File,
+      //     filename: `${fileName}.docx`,
+      //     type: `application/docx`,
+      //     disposition: "attachment",
+      //   },
+      // ];
 
       const dynamicData = {
         name: contract.billToDetails.name,
@@ -323,14 +333,21 @@ export const sendContract = async (req, res) => {
         end: moment(contract.tenure.endDate).format("DD/MM/YYYY"),
         service: allServices,
       };
-      let tempId = "d-ebf14fa28bf5478ea134f97af409b1b7";
-      if (contract.type === "RC") tempId = "d-646b79acf9e3402799d1cab72c108e72";
+      let templateId = 2;
+      if (contract.type === "RC") templateId = 3;
 
-      const mailSent = await sendEmail({
+      // const mailSent = await sendEmail({
+      //   emailList,
+      //   attachObj,
+      //   templateId: tempId,
+      //   dynamicData,
+      // });
+
+      const mailSent = await sendBrevoEmail({
         emailList,
-        attachObj,
-        templateId: tempId,
         dynamicData,
+        attachment: [{ url: contract.softCopy, name: `${fileName}.docx` }],
+        templateId,
       });
 
       if (!mailSent)
