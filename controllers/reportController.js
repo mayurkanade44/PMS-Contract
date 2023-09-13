@@ -183,7 +183,10 @@ export const serviceNotification = async (req, res) => {
   try {
     const date = moment().add(7, "days").format("DD/MM/YYYY");
 
-    const emailList = [process.env.REPORT_EMAIL_1, process.env.REPORT_EMAIL_1];
+    const emailList = [
+      { email: process.env.REPORT_EMAIL_1 },
+      { email: process.env.REPORT_EMAIL_2 },
+    ];
 
     const services = await Service.find({
       serviceDates: { $in: date },
@@ -194,10 +197,20 @@ export const serviceNotification = async (req, res) => {
     });
 
     if (!services.length) {
-      const mailSent = await sendEmail({
-        emailList: emailList,
-        attachObj: [],
-        templateId: "d-80c1a47b2e014671aa2f536409ee4504",
+      // const mailSent = await sendEmail({
+      //   emailList: emailList,
+      //   attachObj: [],
+      //   templateId: "d-80c1a47b2e014671aa2f536409ee4504",
+      //   dynamicData: {
+      //     date: date,
+      //     description: `No services schedule on ${date}`,
+      //   },
+      // });
+
+      const mailSent = await sendBrevoEmail({
+        emailList,
+        attachment: [],
+        templateId: 5,
         dynamicData: {
           date: date,
           description: `No services schedule on ${date}`,
@@ -222,6 +235,8 @@ export const serviceNotification = async (req, res) => {
       { header: "Service Area", key: "area" },
       { header: "Service City", key: "city" },
       { header: "Pincode", key: "pincode" },
+      { header: "Reschedule Date", key: "date" },
+      { header: "Reschedule Reason", key: "reason" },
     ];
 
     for (let service of services) {
@@ -242,31 +257,41 @@ export const serviceNotification = async (req, res) => {
     await workbook.xlsx.writeFile(filePath);
     const link = await uploadFile({ filePath, folder: "reports" });
 
-    const result = await axios.get(link, {
-      responseType: "arraybuffer",
-    });
-    const base64File = Buffer.from(result.data, "binary").toString("base64");
+    // const result = await axios.get(link, {
+    //   responseType: "arraybuffer",
+    // });
+    // const base64File = Buffer.from(result.data, "binary").toString("base64");
 
-    const attachObj = [
-      {
-        content: base64File,
-        filename: `${date}.xlsx`,
-        type: `application/xlsx`,
-        disposition: "attachment",
-      },
-    ];
+    // const attachObj = [
+    //   {
+    //     content: base64File,
+    //     filename: `${date}.xlsx`,
+    //     type: `application/xlsx`,
+    //     disposition: "attachment",
+    //   },
+    // ];
 
-    const mailSent = await sendEmail({
-      emailList: emailList,
-      attachObj,
-      templateId: "d-80c1a47b2e014671aa2f536409ee4504",
+    // const mailSent = await sendEmail({
+    //   emailList: emailList,
+    //   attachObj,
+    //   templateId: "d-80c1a47b2e014671aa2f536409ee4504",
+    //   dynamicData: {
+    //     date: date,
+    //     description: `Please find the attachment of services schedule on ${date}`,
+    //   },
+    // });
+
+    const mailSent = await sendBrevoEmail({
+      emailList,
+      attachment: [{ url: link, name: `${date}.xlsx` }],
+      templateId: 5,
       dynamicData: {
         date: date,
         description: `Please find the attachment of services schedule on ${date}`,
       },
     });
 
-    if (!mailSent) console.log("Email not sent");
+    if (!mailSent) return res.status(400).json({ msg: "Email not sent" });
 
     return res.status(200).json({ msg: "Service due file generated", link });
   } catch (error) {
