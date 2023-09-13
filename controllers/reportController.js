@@ -76,6 +76,7 @@ export const addServiceData = async (req, res) => {
 
     const dynamicData = {
       contractNo: req.body.contractNo,
+      link: `${process.env.WEBSITE}/report/${serviceId}`,
       serviceName: req.body.serviceName,
       serviceType: req.body.serviceType,
       serviceDate: moment(req.body.serviceDate).format("DD/MM/YYYY"),

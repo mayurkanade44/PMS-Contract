@@ -46,7 +46,7 @@ export const addCard = async (req, res) => {
     });
 
     cardId = service._id;
-    const qrLink = `https://pms-contract.onrender.com/report/${service._id}`;
+    const qrLink = `${process.env.WEBSITE}/report/${service._id}`;
 
     //service qr image creation
     const serviceName = service.services.map((item) => item.label + ",");
