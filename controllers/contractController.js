@@ -115,8 +115,16 @@ export const getAllContracts = async (req, res) => {
         { contractNo: { $regex: search, $options: "i" } },
         { "shipToDetails.name": { $regex: search, $options: "i" } },
         { "billToDetails.name": { $regex: search, $options: "i" } },
-        { "billToContact.number": { $regex: search, $options: "i" } },
-        { "shipToContact.number": { $regex: search, $options: "i" } },
+        {
+          "billToDetails.contact": {
+            $elemMatch: { number: { $regex: search, $options: "i" } },
+          },
+        },
+        {
+          "shipToDetails.contact": {
+            $elemMatch: { number: { $regex: search, $options: "i" } },
+          },
+        },
       ],
     };
   }

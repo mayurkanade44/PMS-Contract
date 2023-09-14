@@ -18,9 +18,11 @@ import {
 } from "../redux/adminSlice";
 import { toast } from "react-toastify";
 import { adminNavbar, userRoles } from "../utils/dataHelper";
+import { useSelector } from "react-redux";
 
 const Admin = () => {
   const [showTable, setShowTable] = useState("All Users");
+  const { user } = useSelector((store) => store.all);
 
   const { data, isLoading, refetch, error } = useGetAdminValueQuery();
   const [addValue, { isLoading: addValueLoading }] = useAddAdminValueMutation();
@@ -235,7 +237,7 @@ const Admin = () => {
                             {item.role}
                           </td>
                           <td className="border-r flex justify-center w-32 px-2 py-1 font-normal dark:border-neutral-500">
-                            {item.role !== "Admin" && (
+                            {item.name !== "Sandeep" && item._id !== user._id && (
                               <Button
                                 label="Delete"
                                 color="bg-red-600"
