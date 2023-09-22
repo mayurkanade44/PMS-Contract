@@ -22,17 +22,17 @@ const ClientReport = () => {
   }, []);
 
   return (
-    <div className="my-16 lg:my-4">
+    <div className="my-20 lg:my-5">
+      <div className="flex justify-center my-5">
+        <img src={logo} className="w-64 h-28" />
+      </div>
       {reportLoading ? (
         <Loading />
       ) : (
         error && (
-          <h2 className="text-red-500 font-medium">No Service Data Found</h2>
+          <h2 className="text-red-500 text-xl font-medium text-center">No Service Data Found</h2>
         )
       )}
-      <div className="flex justify-center my-5">
-        <img src={logo} className="w-64 h-28" />
-      </div>
       {show ? (
         <div className="flex justify-center items-center">
           <Button
