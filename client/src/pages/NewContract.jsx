@@ -290,6 +290,7 @@ const NewContract = () => {
                   {errors.billToDetails?.contact && "Contact name is required"}
                 </p>
               </div>
+              
               <div>
                 <InputRow
                   label="Contact Number"

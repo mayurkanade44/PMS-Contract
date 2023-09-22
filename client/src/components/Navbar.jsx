@@ -9,7 +9,7 @@ import {
   AiOutlineMenuUnfold,
 } from "react-icons/ai";
 import { RiAdminLine } from "react-icons/ri";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo.jpg";
 import { useLogoutMutation } from "../redux/userSlice";
 import { toast } from "react-toastify";
 import { removeCredentials } from "../redux/allSlice";

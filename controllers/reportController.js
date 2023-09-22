@@ -538,38 +538,3 @@ export const sendQuarterlyReport = async (req, res) => {
     res.status(500).json({ msg: "Server error, try again later" });
   }
 };
-
-export const quotation = async (req, res) => {
-  try {
-    const data = [
-      {
-        treatmentLocation: "Your office premises",
-        services: [
-          { name: "Green Shield", desc: "Gel will be applied" },
-          { name: "Ratrid", desc: "rodent management" },
-          { name: "Mosquit", desc: "Chemical spray" },
-        ],
-        frequency: "Fortnightly",
-        cost: [{ total: "82,000" }, { total: "8,000" }],
-      },
-    ];
-
-    const template = fs.readFileSync("./tmp/quotation.docx");
-
-    const buffer = await createReport({
-      cmdDelimiter: ["{", "}"],
-      template,
-
-      additionalJsContext: {
-        data,
-      },
-    });
-
-    fs.writeFileSync("./tmp/output.docx", buffer);
-
-    return res.json({ msg: "Report generated" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: "Server error, try again later" });
-  }
-};

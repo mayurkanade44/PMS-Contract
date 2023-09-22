@@ -9,7 +9,6 @@ import {
   generateReport,
   monthlyServiceDue,
   quarterlyReport,
-  quotation,
   sendQuarterlyReport,
   serviceNotification,
 } from "../controllers/reportController.js";
@@ -43,7 +42,5 @@ router.get(
   dailyServices
 );
 router.get("/allStats", authenticateUser, allStats);
-
-router.get("/quotation", quotation);
 
 export default router;

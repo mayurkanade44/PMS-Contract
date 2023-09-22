@@ -3,7 +3,7 @@ import { useGetClientReportQuery } from "../redux/reportSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Loading } from "../components";
 import { useSelector } from "react-redux";
-import logo from "../assets/logo1.png";
+import logo from "../assets/logo.jpg";
 
 const ClientReport = () => {
   const { id } = useParams();
