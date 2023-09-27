@@ -162,7 +162,7 @@ export const sendBrevoEmail = async ({
     sendSmtpEmail.to = emailList;
     sendSmtpEmail.params = dynamicData;
     sendSmtpEmail.templateId = templateId;
-    sendSmtpEmail.attachment = attachment;
+    if (attachment) sendSmtpEmail.attachment = attachment;
     await apiInstance.sendTransacEmail(sendSmtpEmail);
     return true;
   } catch (error) {

@@ -210,7 +210,6 @@ export const serviceNotification = async (req, res) => {
 
       const mailSent = await sendBrevoEmail({
         emailList,
-        attachment: [],
         templateId: 5,
         dynamicData: {
           date: date,

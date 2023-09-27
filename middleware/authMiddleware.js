@@ -22,6 +22,11 @@ export const authenticateUser = async (req, res, next) => {
 
 export const authorizeUser = (...roles) => {
   return (req, res, next) => {
+    if(!req.user.role) {
+      return res
+        .status(403)
+        .json({ msg: "You don't have permission, please contact admin" });
+    }
     if (!roles.includes(req.user.role)) {
       return res
         .status(403)
