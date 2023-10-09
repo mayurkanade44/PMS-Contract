@@ -187,6 +187,7 @@ export const serviceNotification = async (req, res) => {
     const emailList = [
       { email: process.env.REPORT_EMAIL_1 },
       { email: process.env.REPORT_EMAIL_2 },
+      { email: "exteam.epcorn@gmail.com" },
     ];
 
     const services = await Service.find({
