@@ -33,18 +33,15 @@ const InputSelect = ({
               borderColor: "#CCCCCC",
               borderWidth: "2px",
             }),
-
             valueContainer: (provided, state) => ({
               ...provided,
               height: "31px",
               padding: "0 5px",
             }),
-
             input: (provided, state) => ({
               ...provided,
               margin: "0px",
             }),
-
             indicatorsContainer: (provided, state) => ({
               ...provided,
               height: "31px",
