@@ -24,7 +24,7 @@ const ServiceTable = ({ th, data, handleButton1, handleButton3 }) => {
         <tbody>
           {data.services?.map((service) => (
             <tr className="border-b dark:border-neutral-500" key={service._id}>
-              <td className="border-r w-44 px-2 py-1 font-normal dark:border-neutral-500">
+              <td className="border-r w-72 px-2 py-1 font-normal dark:border-neutral-500">
                 {service.services.map((item) => item.label + ", ")}
               </td>
               <td className="border-r w-24 px-2 py-1 font-normal dark:border-neutral-500">

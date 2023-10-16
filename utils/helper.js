@@ -209,7 +209,7 @@ export const createServiceCard = async ({
         qrCode: async (url12) => {
           const dataUrl = cardQrCode;
           const data = await dataUrl.slice("data:image/png;base64,".length);
-          return { width: 2, height: 2, data, extension: ".png" };
+          return { width: 2.5, height: 2.5, data, extension: ".png" };
         },
       },
     });

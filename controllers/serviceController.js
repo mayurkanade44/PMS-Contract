@@ -170,6 +170,8 @@ export const updateCard = async (req, res) => {
 
       req.body.serviceMonths = due.serviceMonths;
       req.body.serviceDates = due.serviceDates;
+    } else {
+      req.body.serviceMonths = serviceExist.serviceMonths;
     }
 
     const service = req.body;
