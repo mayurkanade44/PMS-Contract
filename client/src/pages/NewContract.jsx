@@ -110,7 +110,7 @@ const NewContract = () => {
       {(newContractLoading || updateContractLoading || isLoading) && (
         <Loading />
       )}
-      <form onSubmit={handleSubmit(submit)} className="my-20 lg:my-4">
+      <form onSubmit={handleSubmit(submit)} className="my-24 lg:my-4">
         <div className="grid grid-cols-12 gap-x-5 gap-y-2 mb-2">
           <div className="col-span-6 md:col-span-4 lg:col-span-2">
             <Controller

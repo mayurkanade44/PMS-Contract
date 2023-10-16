@@ -99,22 +99,22 @@ const Home = () => {
             <table className="w-full border whitespace-nowrap  dark:border-neutral-500">
               <thead>
                 <tr className="h-12 w-full text-md leading-none text-gray-600">
-                  <th className="font-bold text-left  dark:border-neutral-800 border-2 w-20 px-3">
+                  <th className="font-bold text-left dark:border-neutral-800 border-2 w-28 px-3">
                     Contract No
                   </th>
-                  <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28 px-3">
+                  <th className="font-bold text-center dark:border-neutral-800 border-2 w-28 px-3">
                     Created At
                   </th>
-                  <th className="font-bold text-left  dark:border-neutral-800 border-2 px-3">
+                  <th className="font-bold text-left dark:border-neutral-800 border-2 px-3">
                     Bill To Name
                   </th>
-                  <th className="font-bold text-left  dark:border-neutral-800 border-2 px-3">
+                  <th className="font-bold text-left dark:border-neutral-800 border-2 px-3">
                     Ship To Name
                   </th>
-                  <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28 px-3">
+                  <th className="font-bold text-center dark:border-neutral-800 border-2 w-28 px-3">
                     Start Date
                   </th>
-                  <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28 px-3">
+                  <th className="font-bold text-center dark:border-neutral-800 border-2 w-28 px-3">
                     End Date
                   </th>
                   {user.role !== "Technician" && (
@@ -136,10 +136,10 @@ const Home = () => {
                     <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
                       {dateFormat(contract.createdAt)}
                     </td>
-                    <td className="px-3 border-r font-normal dark:border-neutral-500">
+                    <td className="px-3 border-r font-normal md:whitespace-normal dark:border-neutral-500">
                       {contract.billToDetails.name}
                     </td>
-                    <td className="px-3 border-r font-normal dark:border-neutral-500">
+                    <td className="px-3 border-r font-normal md:whitespace-normal dark:border-neutral-500">
                       {contract.shipToDetails.name}
                     </td>
                     <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
@@ -161,7 +161,7 @@ const Home = () => {
             </table>
           </div>
           {pages.length > 1 && (
-            <nav>
+            <nav className="mb-4">
               <ul className="list-style-none flex justify-center mt-2">
                 {pages.map((item) => (
                   <li className="pr-1" key={item}>

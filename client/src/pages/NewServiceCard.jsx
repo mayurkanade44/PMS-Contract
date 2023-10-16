@@ -177,15 +177,15 @@ const NewServiceCard = () => {
       ) : error ? (
         <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       ) : (
-        <div className="my-20 lg:my-5">
+        <div className="mt-24 mb-5 lg:my-5">
           <div className="md:flex justify-around">
-            <h2 className="text-2xl font-semibold">
+            <h2 className="text-lg md:text-2xl font-semibold">
               Contract Number - {contractDetails.contractNo}
             </h2>
-            <h2 className="text-2xl font-semibold">
+            <h2 className="text-lg md:text-2xl font-semibold">
               Start Date - {dateFormat(contractDetails.tenure.startDate)}
             </h2>
-            <h2 className="text-2xl font-semibold">
+            <h2 className="text-lg md:text-2xl font-semibold">
               End Date - {dateFormat(contractDetails.tenure.endDate)}
             </h2>
           </div>

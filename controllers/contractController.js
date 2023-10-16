@@ -138,7 +138,7 @@ export const getAllContracts = async (req, res) => {
       .skip(10 * (pageNumber - 1))
       .limit(10);
 
-    res.json({ contracts, pages: Math.ceil(count / 10) });
+    res.json({ contracts, pages: Math.min(10, Math.ceil(count / 10)) });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

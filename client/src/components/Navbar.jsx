@@ -61,7 +61,7 @@ const Navbar = () => {
           >
             <div className="flex w-full sm:w-auto items-center sm:items-stretch justify-end sm:justify-center">
               <div className="flex items-center">
-                <img src={logo} className="w-24" alt="logo" />
+                <img src={logo} className="w-20" alt="logo" />
                 <h2 className="hidden sm:block text-xl text-gray-700 font-bold leading-normal pl-3">
                   Pest Management & Services
                 </h2>
@@ -124,7 +124,7 @@ const Navbar = () => {
       <nav>
         {user ? (
           <div className="py-2 px-6 w-full border flex lg:hidden justify-between items-center bg-white fixed top-0 z-40">
-            <img src={logo} className="w-24" alt="logo" />
+            <img src={logo} className="w-20" alt="logo" />
             <div className="flex items-center">
               <div className="relative mr-4 text-blue-500 font-semibold">
                 {user.name.split(" ")[0]}

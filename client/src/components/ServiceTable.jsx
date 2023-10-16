@@ -41,7 +41,7 @@ const ServiceTable = ({ th, data, handleButton1, handleButton3 }) => {
                   type="button"
                   disabled={service.card ? false : true}
                   onClick={handleButton1}
-                  className="text-white font-semibold mx-1 items-start justify-start px-2 py-2 bg-green-700 disabled:bg-green-500 disabled:cursor-not-allowed rounded"
+                  className="text-white hover:opacity-80 font-semibold mx-1 items-start justify-start px-2 py-2 bg-green-700 disabled:bg-green-500 disabled:cursor-not-allowed rounded"
                 >
                   <a
                     style={{
@@ -59,14 +59,14 @@ const ServiceTable = ({ th, data, handleButton1, handleButton3 }) => {
                     downloadImage({ url: service.qr, name: "QR Code" })
                   }
                   disabled={service.qr ? false : true}
-                  className="text-white font-semibold mx-1 items-start justify-start px-2 py-2 bg-cyan-700 disabled:bg-cyan-500 disabled:cursor-not-allowed rounded"
+                  className="text-white hover:opacity-80 font-semibold mx-1 my-2 items-start justify-start px-2 py-2 bg-cyan-700 disabled:bg-cyan-500 disabled:cursor-not-allowed rounded"
                 >
                   QR Code
                 </button>
                 <button
                   type="button"
                   onClick={() => handleButton3(service._id)}
-                  className="text-white font-semibold mx-1 items-start justify-start px-2 py-2 bg-orange-500 disabled:bg-green-500 disabled:cursor-not-allowed rounded"
+                  className="text-white hover:opacity-80 font-semibold mx-1 items-start justify-start px-2 py-2 bg-orange-500 disabled:bg-green-500 disabled:cursor-not-allowed rounded"
                 >
                   Report
                 </button>

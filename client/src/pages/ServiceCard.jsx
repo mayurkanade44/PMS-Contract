@@ -74,11 +74,11 @@ const ServiceCard = () => {
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       )}
       {data && (
-        <div className="mt-16 lg:mt-5">
-          <h1 className="text-center text-2xl font-semibold">
+        <div className="mt-24 lg:mt-5">
+          <h1 className="text-center text-lg md:text-2xl font-semibold">
             Contract Number: {data.contractNo}
           </h1>
-          <h1 className="text-center text-2xl font-semibold">
+          <h1 className="text-center text-lg md:text-2xl font-semibold">
             Service: {data.name.join(", ")}
           </h1>
           <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
