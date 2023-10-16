@@ -4,6 +4,8 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import sgMail from "@sendgrid/mail";
 import SibApiV3Sdk from "@getbrevo/brevo";
+import QRCode from "qrcode";
+import { createReport } from "docx-templates";
 
 export const generateToken = (res, userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -165,6 +167,54 @@ export const sendBrevoEmail = async ({
     if (attachment) sendSmtpEmail.attachment = attachment;
     await apiInstance.sendTransacEmail(sendSmtpEmail);
     return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+export const createServiceCard = async ({
+  contract,
+  contractPeriod,
+  cardQrCode,
+  service,
+}) => {
+  try {
+    const template = fs.readFileSync("./tmp/cardTemp.docx");
+
+    const buffer = await createReport({
+      cmdDelimiter: ["{", "}"],
+      template,
+
+      additionalJsContext: {
+        contractNo: contract.contractNo,
+        sales: contract.sales,
+        name: contract.shipToDetails.name,
+        address: contract.shipToDetails.address,
+        city: contract.shipToDetails.city,
+        nearBy: contract.shipToDetails.nearBy,
+        shipArea: contract.shipToDetails.area,
+        pincode: contract.shipToDetails.pincode,
+        contact1: contract.shipToDetails.contact[0],
+        contact2: contract.shipToDetails.contact[1],
+        serviceDue: service.serviceMonths,
+        service: service.services,
+        frequency: service.frequency,
+        location: service.treatmentLocation,
+        area: service.area,
+        billingFrequency: contract.billingFrequency,
+        contractPeriod: contractPeriod,
+        instruction: service.instruction,
+        url: "12",
+        qrCode: async (url12) => {
+          const dataUrl = cardQrCode;
+          const data = await dataUrl.slice("data:image/png;base64,".length);
+          return { width: 2, height: 2, data, extension: ".png" };
+        },
+      },
+    });
+
+    return buffer;
   } catch (error) {
     console.log(error);
     return false;

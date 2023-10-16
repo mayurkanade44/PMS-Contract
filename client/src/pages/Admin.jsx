@@ -237,14 +237,15 @@ const Admin = () => {
                             {item.role}
                           </td>
                           <td className="border-r flex justify-center w-32 px-2 py-1 font-normal dark:border-neutral-500">
-                            {item.name !== "Sandeep" && item._id !== user._id && (
-                              <Button
-                                label="Delete"
-                                color="bg-red-600"
-                                width="w-20"
-                                handleClick={() => handleDelete(item._id)}
-                              />
-                            )}
+                            {item.name !== "Sandeep" &&
+                              item._id !== user._id && (
+                                <Button
+                                  label="Delete"
+                                  color="bg-red-600"
+                                  width="w-20"
+                                  handleClick={() => handleDelete(item._id)}
+                                />
+                              )}
                           </td>
                         </tr>
                       ))}

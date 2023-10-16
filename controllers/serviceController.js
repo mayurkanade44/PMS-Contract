@@ -5,6 +5,7 @@ import { createCanvas, loadImage } from "canvas";
 import QRCode from "qrcode";
 import fs from "fs";
 import {
+  createServiceCard,
   sendBrevoEmail,
   sendEmail,
   serviceDates,
@@ -76,41 +77,13 @@ export const addCard = async (req, res) => {
 
     //service card creation
     const cardQrCode = await QRCode.toDataURL(qrLink);
-    const template = fs.readFileSync("./tmp/cardTemp.docx");
 
-    const buffer = await createReport({
-      cmdDelimiter: ["{", "}"],
-      template,
-
-      additionalJsContext: {
-        contractNo: contract.contractNo,
-        sales: contract.sales,
-        card: contract.services?.length + 1 || 1,
-        name: contract.shipToDetails.name,
-        address: contract.shipToDetails.address,
-        city: contract.shipToDetails.city,
-        nearBy: contract.shipToDetails.nearBy,
-        area: contract.shipToDetails.area,
-        pincode: contract.shipToDetails.pincode,
-        contact1: contract.shipToDetails.contact[0],
-        contact2: contract.shipToDetails.contact[1],
-        serviceDue: service.serviceMonths,
-        service: service.services,
-        frequency: service.frequency,
-        location: service.treatmentLocation,
-        area: service.area,
-        billingFrequency: contract.billingFrequency,
-        contractPeriod: contractPeriod,
-        instruction: service.instruction,
-        url: "12",
-        qrCode: async (url12) => {
-          const dataUrl = cardQrCode;
-          const data = await dataUrl.slice("data:image/png;base64,".length);
-          return { width: 2, height: 2, data, extension: ".png" };
-        },
-      },
+    const buffer = await createServiceCard({
+      contract,
+      service,
+      cardQrCode,
+      contractPeriod,
     });
-
     const contractName = contract.contractNo.replace(/\//g, "-");
     const filename = `${contractName} ${service.frequency}`;
     const filePath = `./tmp/${filename}.docx`;
@@ -176,8 +149,8 @@ const qrCodeGenerator = async (link, contractNo, serviceName) => {
 export const updateCard = async (req, res) => {
   const { id, frequency, serviceCardId, serviceStartDate } = req.body;
   try {
-    const service = await Service.findById(serviceCardId);
-    if (!service)
+    let serviceExist = await Service.findById(serviceCardId);
+    if (!serviceExist)
       return res.status(404).json({ msg: "Service card not found" });
 
     const contract = await Contract.findById(id);
@@ -185,9 +158,9 @@ export const updateCard = async (req, res) => {
       return res.status(404).json({ msg: "Contract not found" });
 
     if (
-      frequency !== service.frequency ||
-      serviceStartDate.first !== service.serviceStartDate.first ||
-      serviceStartDate.second !== service.serviceStartDate.second
+      frequency !== serviceExist.frequency ||
+      serviceStartDate.first !== serviceExist.serviceStartDate.first ||
+      serviceStartDate.second !== serviceExist.serviceStartDate.second
     ) {
       const due = serviceDates({
         frequency,
@@ -199,6 +172,32 @@ export const updateCard = async (req, res) => {
       req.body.serviceDates = due.serviceDates;
     }
 
+    const service = req.body;
+
+    const cardQrCode = await QRCode.toDataURL(
+      `${process.env.WEBSITE}/report/${serviceExist._id}`
+    );
+    const contractPeriod = `${moment(contract.tenure.startDate).format(
+      "DD/MM/YYYY"
+    )} To ${moment(contract.tenure.endDate).format("DD/MM/YYYY")}`;
+
+    const buffer = await createServiceCard({
+      contract,
+      service,
+      contractPeriod,
+      cardQrCode,
+    });
+
+    const contractName = contract.contractNo.replace(/\//g, "-");
+    const filename = `${contractName} ${service.frequency}`;
+    const filePath = `./tmp/${filename}.docx`;
+    fs.writeFileSync(filePath, buffer);
+    const cardUrl = await uploadFile({ filePath, folder: "contracts" });
+    if (!cardUrl) {
+      return res.status(400).json({ msg: "Upload error, trg again later" });
+    }
+
+    req.body.card = cardUrl;
     await Service.findByIdAndUpdate(serviceCardId, req.body, {
       new: true,
       runValidators: true,

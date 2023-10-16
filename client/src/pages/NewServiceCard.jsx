@@ -45,7 +45,7 @@ const NewServiceCard = () => {
   } = useGetSingleContractQuery(id);
 
   const [addCard, { isLoading: addCardLoading }] = useAddCardMutation();
-  const [updateCard] = useUpdateCardMutation();
+  const [updateCard, { isLoading: updateLoading }] = useUpdateCardMutation();
   const [deleteCard, { isLoading: deleteCardLoading }] =
     useDeleteCardMutation();
   const [digitalContract, { isLoading: digitalContractLoading }] =
@@ -167,7 +167,9 @@ const NewServiceCard = () => {
       {isLoading ||
       addCardLoading ||
       deleteCardLoading ||
+      valueLoading ||
       edit.loading ||
+      updateLoading ||
       createCardLoading ||
       digitalContractLoading ||
       isFetching ? (
