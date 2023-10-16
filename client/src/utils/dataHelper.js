@@ -21,6 +21,7 @@ export const allFrequency = [
   { value: "2 Times In A Week", label: "2 Times In A Week" },
   { value: "Weekly", label: "Weekly" },
   { value: "2 Times In A Month", label: "2 Times In A Month" },
+  { value: "3 Times In A Month", label: "3 Times In A Month" },
   { value: "Monthly", label: "Monthly" },
   { value: "Quarterly", label: "Quarterly" },
 ];

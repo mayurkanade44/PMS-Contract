@@ -48,6 +48,9 @@ export const serviceDates = ({ frequency, serviceStartDate, contract }) => {
   } else if (frequency === "2 Times In A Month") {
     frequencyDays = 15;
     end = Math.floor(diffDays / frequencyDays);
+  } else if (frequency === "3 Times In A Month") {
+    frequencyDays = 10;
+    end = Math.floor(diffDays / frequencyDays);
   } else if (frequency === "Monthly") {
     frequencyDays = 1;
     add = "Months";
