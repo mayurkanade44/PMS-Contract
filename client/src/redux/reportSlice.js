@@ -38,6 +38,13 @@ export const reportSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    contractExpiry: builder.mutation({
+      query: (data) => ({
+        url: "/api/report/contractExpiry",
+        method: "POST",
+        body: data,
+      }),
+    }),
     sevenDayServiceDue: builder.query({
       query: (id) => ({
         url: "/api/report/serviceDue",
@@ -54,4 +61,5 @@ export const {
   useAllStatsQuery,
   useMonthlyServiceMutation,
   useSevenDayServiceDueQuery,
+  useContractExpiryMutation
 } = reportSlice;

@@ -98,6 +98,12 @@ const ClientReport = () => {
                     ))}
                   </tbody>
                 </table>
+                <h2 className="mt-5 text-lg font-semibold text-center">
+                  For detailed service report kindly connect over below modes:{" "}
+                  <p className="text-green-600">
+                    1800 2699 039/contact@pestmanagements.in
+                  </p>
+                </h2>
               </div>
             </div>
           )}

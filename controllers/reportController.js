@@ -537,3 +537,56 @@ export const sendQuarterlyReport = async (req, res) => {
     res.status(500).json({ msg: "Server error, try again later" });
   }
 };
+
+export const expireContractsReport = async (req, res) => {
+  const { startDate, endDate } = req.body;
+  try {
+    if (!startDate || !endDate)
+      return res.status(400).json({ msg: "Expiry date is required" });
+
+    const contracts = await Contract.find({
+      "tenure.endDate": {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    });
+
+    if (contracts.length < 1)
+      return res
+        .status(404)
+        .json({ msg: "No contracts found during given dates" });
+
+    const workbook = new exceljs.Workbook();
+    let worksheet = workbook.addWorksheet("Sheet1");
+
+    worksheet.columns = [
+      { header: "Contract Number", key: "contract" },
+      { header: "Client Name", key: "name" },
+      { header: "Contract Status", key: "status" },
+      { header: "Start Date", key: "start" },
+      { header: "End Date", key: "end" },
+      { header: "Total Cost", key: "cost" },
+    ];
+
+    for (let contract of contracts) {
+      worksheet.addRow({
+        contract: contract.contractNo,
+        status: contract.active ? "Active" : "Deactive",
+        start: moment(contract.tenure.startDate).format("DD/MM/YY"),
+        end: moment(contract.tenure.endDate).format("DD/MM/YY"),
+        name: contract.billToDetails.name,
+        cost: contract.cost,
+      });
+    }
+    const filePath = `./tmp/contractExpiry.xlsx`;
+    await workbook.xlsx.writeFile(filePath);
+
+    const link = await uploadFile({ filePath, folder: "reports" });
+    if (!link) return res.status(400).json({ msg: "File generation error" });
+
+    return res.status(200).json({ link });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};

@@ -1,5 +1,6 @@
 import {
   useAllStatsQuery,
+  useContractExpiryMutation,
   useDailyServicesQuery,
   useMonthlyServiceMutation,
   useSevenDayServiceDueQuery,
@@ -24,6 +25,10 @@ const Dashboard = () => {
   const [allData, setAllData] = useState({ label: [], value: [] });
   const [month, setMonth] = useState("");
   const [skip, setSkip] = useState(true);
+  const [expiry, setExpiry] = useState({
+    startDate: "",
+    endDate: "",
+  });
 
   const {
     data: dailyServices,
@@ -38,6 +43,8 @@ const Dashboard = () => {
   } = useSevenDayServiceDueQuery(show, { skip });
   const [monthlyService, { isLoading: monthlyLoading }] =
     useMonthlyServiceMutation();
+  const [contractExpiry, { isLoading: expiryLoading }] =
+    useContractExpiryMutation();
 
   ChartJS.register(
     CategoryScale,
@@ -101,9 +108,32 @@ const Dashboard = () => {
     }
   };
 
+  const handleExpiry = async (e) => {
+    e.preventDefault();
+    if (!expiry.startDate || !expiry.endDate)
+      return toast.error("Please expiry dates");
+
+    const data = {
+      startDate: new Date(expiry.startDate),
+      endDate: new Date(expiry.endDate),
+    };
+    try {
+      const res = await contractExpiry(data).unwrap();
+      if (res.link) saveAs(res.link, `Contract Expiry`);
+      toast.success("File Generated")
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.msg || error.error);
+    }
+  };
+
   return (
-    <div className="my-20 lg:my-5">
-      {dailyLoading || statsLoading || monthlyLoading || dueLoading ? (
+    <div className="my-24 lg:my-5">
+      {dailyLoading ||
+      statsLoading ||
+      monthlyLoading ||
+      dueLoading ||
+      expiryLoading ? (
         <Loading />
       ) : (
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
@@ -126,6 +156,12 @@ const Dashboard = () => {
               color="bg-gray-600"
               width="w-40"
               handleClick={() => setShow("Monthly Schedule")}
+            />
+            <Button
+              label="Contract Expiry"
+              color="bg-orange-600"
+              width="w-40"
+              handleClick={() => setShow("Contract Expiry")}
             />
             <Button
               label="7Day Schedule"
@@ -193,6 +229,40 @@ const Dashboard = () => {
                   type="month"
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
+                  className="mr-3 px-1 w-44 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black"
+                />
+                <Button label="Generate" color="bg-green-600" type="submit" />
+              </form>
+            </div>
+          ) : show === "Contract Expiry" ? (
+            <div className="flex justify-center">
+              <form onSubmit={handleExpiry} className="flex">
+                <label className="w-24 text-md font-medium leading-6 text-gray-900">
+                  Start Date:
+                </label>
+                <input
+                  type="date"
+                  value={expiry.startDate}
+                  onChange={(e) =>
+                    setExpiry((prev) => ({
+                      ...prev,
+                      startDate: e.target.value,
+                    }))
+                  }
+                  className="mr-3 px-1 w-44 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black"
+                />
+                <label className="w-20 ml-4 text-md font-medium leading-6 text-gray-900">
+                  End Date:
+                </label>
+                <input
+                  type="date"
+                  value={expiry.endDate}
+                  onChange={(e) =>
+                    setExpiry((prev) => ({
+                      ...prev,
+                      endDate: e.target.value,
+                    }))
+                  }
                   className="mr-3 px-1 w-44 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black"
                 />
                 <Button label="Generate" color="bg-green-600" type="submit" />

@@ -6,6 +6,7 @@ import {
   allStats,
   clientReport,
   dailyServices,
+  expireContractsReport,
   generateReport,
   monthlyServiceDue,
   quarterlyReport,
@@ -34,6 +35,12 @@ router.post(
   authenticateUser,
   authorizeUser("Admin", "Back Office"),
   monthlyServiceDue
+);
+router.post(
+  "/contractExpiry",
+  authenticateUser,
+  authorizeUser("Admin", "Back Office"),
+  expireContractsReport
 );
 router.get(
   "/dailyServices",
