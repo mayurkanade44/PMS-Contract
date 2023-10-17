@@ -19,11 +19,19 @@ const navData = [
     name: "Home",
     link: "/home",
     icon: <AiOutlineHome className="mr-2 w-5 h-5" />,
+    role: ["Admin", "Technician", "Back Office"],
   },
   {
     name: "Dashboard",
     link: "/dashboard",
     icon: <RxDashboard className="mr-2 w-4 h-4" />,
+    role: ["Admin", "Back Office"],
+  },
+  {
+    name: "Admin",
+    link: "/admin",
+    icon: <RiAdminLine className="mr-2 w-4 h-4" />,
+    role: ["Admin"],
   },
 ];
 
@@ -61,7 +69,7 @@ const Navbar = () => {
           >
             <div className="flex w-full sm:w-auto items-center sm:items-stretch justify-end sm:justify-center">
               <div className="flex items-center">
-                <img src={logo} className="w-20" alt="logo" />
+                <img src={logo} className="w-28" alt="logo" />
                 <h2 className="hidden sm:block text-xl text-gray-700 font-bold leading-normal pl-3">
                   Pest Management & Services
                 </h2>
@@ -71,24 +79,18 @@ const Navbar = () => {
               <div className="flex mr-8">
                 <div className="hidden lg:flex lg:mr-5 xl:mr-10">
                   {navData.map((nav) => (
-                    <Link
-                      key={nav.name}
-                      to={nav.link}
-                      className="flex px-5 items-center py-6 text-md leading-5 text-black hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
-                    >
-                      {nav.icon}
-                      {nav.name}
-                    </Link>
+                    <div key={nav.name}>
+                      {nav.role.includes(user?.role) && (
+                        <Link
+                          to={nav.link}
+                          className="flex px-5 items-center py-6 text-md leading-5 text-black hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
+                        >
+                          {nav.icon}
+                          {nav.name}
+                        </Link>
+                      )}
+                    </div>
                   ))}
-                  {user.role === "Admin" && (
-                    <Link
-                      to="/admin"
-                      className="flex px-5 items-center py-6 text-md leading-5 text-black hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
-                    >
-                      <RiAdminLine className="mr-2 w-4 h-4" />
-                      Admin
-                    </Link>
-                  )}
                 </div>
                 <div className="hidden lg:flex items-center">
                   <div className="relative">
@@ -176,25 +178,21 @@ const Navbar = () => {
                   </div>
                   <ul>
                     {navData.map((nav) => (
-                      <li key={nav.name} className="text-gray-800 pt-5">
-                        <Link
-                          to={nav.link}
-                          onClick={() => setShow(!show)}
-                          className="flex items-center"
-                        >
-                          {nav.icon}
-                          <span className="ml-3">{nav.name}</span>
-                        </Link>
-                      </li>
+                      <div key={nav.name}>
+                        {nav.role.includes(user?.role) && (
+                          <li className="text-gray-800 pt-5">
+                            <Link
+                              to={nav.link}
+                              onClick={() => setShow(!show)}
+                              className="flex items-center"
+                            >
+                              {nav.icon}
+                              <span className="ml-3">{nav.name}</span>
+                            </Link>
+                          </li>
+                        )}
+                      </div>
                     ))}
-                    {user?.role === "Admin" && (
-                      <li className="text-gray-800 pt-5">
-                        <Link to="/admin" className="flex items-center">
-                          <RiAdminLine className="mr-5 w-4 h-4" />
-                          Admin
-                        </Link>
-                      </li>
-                    )}
                     <li className="text-gray-800 pt-4">
                       <button
                         onClick={handleLogout}
