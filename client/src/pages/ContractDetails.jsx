@@ -103,6 +103,8 @@ const ContractDetails = () => {
               <div className="flex justify-around">
                 <h1 className="text-lg md:text-[25px] font-bold text-center">
                   Contract Number: {contract.contractNo}
+                  <br />
+                  <span className="text-xl text-red-700 font-medium">Contract Cost: ₹ {contract.cost}</span>
                 </h1>
                 {contract.softCopy && (
                   <Button
@@ -113,7 +115,7 @@ const ContractDetails = () => {
                 )}
               </div>
 
-              <h2 className="text-2xl font-semibold text-center mt-5 mb-2">
+              <h2 className="text-2xl font-semibold text-center mt-2 mb-2">
                 Billing Address
               </h2>
               <h3 className="text-xl my-1">
@@ -166,7 +168,7 @@ const ContractDetails = () => {
                   handleClick={() => handleDelete(contract._id)}
                 />
               </div>
-              <h2 className="text-2xl font-semibold text-center mt-5 mb-2">
+              <h2 className="text-2xl font-semibold text-center mt-[30px] mb-2">
                 Service Address
               </h2>
               <h3 className="text-xl my-1">

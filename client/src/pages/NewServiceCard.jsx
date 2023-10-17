@@ -289,6 +289,7 @@ const NewServiceCard = () => {
                 id="instruction"
                 errors={errors}
                 register={register}
+                required={false}
               />
               <p className="text-xs text-red-500 -bottom-4 pl-1">
                 {errors.instruction && "Instruction is required"}

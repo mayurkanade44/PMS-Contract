@@ -29,6 +29,7 @@ const ContractSchema = new mongoose.Schema(
       pincode: String,
       contact: [Object],
     },
+    cost: { type: String },
     sendMail: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     softCopy: { type: String },

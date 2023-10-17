@@ -63,6 +63,7 @@ const NewContract = () => {
           { name: "", number: "", email: "" },
         ],
       },
+      cost: "",
     },
   });
 
@@ -290,7 +291,7 @@ const NewContract = () => {
                   {errors.billToDetails?.contact && "Contact name is required"}
                 </p>
               </div>
-              
+
               <div>
                 <InputRow
                   label="Contact Number"
@@ -511,6 +512,18 @@ const NewContract = () => {
                 />
               </div>
             </div>
+          </div>
+          <div className="col-span-2">
+            <InputRow
+              label="Total Cost"
+              placeholder="Total contract cost"
+              id="cost"
+              errors={errors}
+              register={register}
+            />
+            <p className="text-xs text-red-500 -bottom-4 pl-1">
+              {errors.cost && "Total cost is required"}
+            </p>
           </div>
         </div>
         <Button

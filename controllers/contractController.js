@@ -1,7 +1,6 @@
 import moment from "moment";
 import Admin from "../models/adminModel.js";
 import Contract from "../models/contractModel.js";
-import Service from "../models/serviceModel.js";
 import { capitalLetter } from "../utils/helper.js";
 
 export const createContract = async (req, res) => {
