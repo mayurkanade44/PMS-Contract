@@ -7,7 +7,6 @@ import exceljs from "exceljs";
 import moment from "moment";
 import axios from "axios";
 import fs from "fs";
-import { createReport } from "docx-templates";
 
 export const addServiceData = async (req, res) => {
   const { contract: contractId, service: serviceId } = req.body;
@@ -193,7 +192,7 @@ export const serviceNotification = async (req, res) => {
       serviceDates: { $in: date },
     }).populate({
       path: "contract",
-      select: "contractNo active shipToDetails",
+      select: "contractNo active shipToDetails business",
       match: { active: true },
     });
 
@@ -227,6 +226,7 @@ export const serviceNotification = async (req, res) => {
 
     worksheet.columns = [
       { header: "Contract Number", key: "contract" },
+      { header: "Business Type", key: "business" },
       { header: "Service Name", key: "serviceName" },
       { header: "Frequency", key: "frequency" },
       { header: "Client Name", key: "name" },
@@ -242,6 +242,7 @@ export const serviceNotification = async (req, res) => {
       if (service.contract) {
         worksheet.addRow({
           contract: service.contract.contractNo,
+          business: service.contract.business,
           serviceName: service.services.map((item) => item.label).join(", "),
           frequency: service.frequency,
           name: service.contract.shipToDetails.name,
@@ -348,7 +349,7 @@ export const monthlyServiceDue = async (req, res) => {
       serviceMonths: { $in: [month] },
     }).populate({
       path: "contract",
-      select: "contractNo shipToDetails active",
+      select: "contractNo shipToDetails active business",
     });
 
     if (!services.length) return res.status(404).json({ msg: "No data found" });
@@ -359,6 +360,7 @@ export const monthlyServiceDue = async (req, res) => {
     worksheet.columns = [
       { header: "Contract Number", key: "contract" },
       { header: "Contract Status", key: "status" },
+      { header: "Business Type", key: "business" },
       { header: "Clinet Name", key: "name" },
       { header: "Service Name", key: "serviceName" },
       { header: "Frequency", key: "frequency" },
@@ -369,6 +371,7 @@ export const monthlyServiceDue = async (req, res) => {
       if (service.contract) {
         worksheet.addRow({
           contract: service.contract.contractNo,
+          business: service.contract.business,
           status: service.contract.active ? "Active" : "Deactive",
           serviceName: service.services.map((item) => item.label).join(", "),
           frequency: service.frequency,
@@ -566,6 +569,7 @@ export const expireContractsReport = async (req, res) => {
       { header: "Start Date", key: "start" },
       { header: "End Date", key: "end" },
       { header: "Total Cost", key: "cost" },
+      { header: "Business Type", key: "business" },
     ];
 
     for (let contract of contracts) {
@@ -576,6 +580,7 @@ export const expireContractsReport = async (req, res) => {
         end: moment(contract.tenure.endDate).format("DD/MM/YY"),
         name: contract.billToDetails.name,
         cost: contract.cost,
+        business: contract.business,
       });
     }
     const filePath = `./tmp/contractExpiry.xlsx`;
