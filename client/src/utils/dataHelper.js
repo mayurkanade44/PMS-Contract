@@ -49,3 +49,9 @@ export const userRoles = [
   { value: "Back Office", label: "Back Office" },
   { value: "Admin", label: "Admin" },
 ];
+
+export const businessType = [
+  { value: "Individual", label: "Individual" },
+  { value: "Commercial", label: "Commercial" },
+  { value: "Society", label: "Society" },
+];

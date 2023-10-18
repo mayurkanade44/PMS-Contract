@@ -10,7 +10,9 @@ const ContractSchema = new mongoose.Schema(
       endDate: { type: Date, required: true },
       months: { type: Number, required: true },
     },
+    cost: { type: String },
     billingFrequency: { type: String, required: true },
+    business: { type: String, required: true },
     billToDetails: {
       name: String,
       address: String,
@@ -29,7 +31,6 @@ const ContractSchema = new mongoose.Schema(
       pincode: String,
       contact: [Object],
     },
-    cost: { type: String },
     sendMail: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     softCopy: { type: String },

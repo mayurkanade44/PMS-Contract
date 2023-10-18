@@ -9,7 +9,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { contractEnd, contractTypes } from "../utils/dataHelper";
+import { businessType, contractEnd, contractTypes } from "../utils/dataHelper";
 
 const NewContract = () => {
   const { id } = useParams();
@@ -38,7 +38,9 @@ const NewContract = () => {
         startDate: new Date().toISOString().slice(0, 10),
         months: 12,
       },
+      cost: "",
       billingFrequency: "",
+      business: "",
       billToDetails: {
         name: "",
         address: "",
@@ -63,7 +65,6 @@ const NewContract = () => {
           { name: "", number: "", email: "" },
         ],
       },
-      cost: "",
     },
   });
 
@@ -176,7 +177,24 @@ const NewContract = () => {
               {errors.sales?.message}
             </p>
           </div>
-          <div className="col-span-6 md:col-span-4 lg:col-span-3">
+          <div className="col-span-6 md:col-span-4 lg:col-span-3"></div>
+        </div>
+
+        <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
+        <div className="grid lg:grid-cols-6 gap-x-5 gap-y-2 mb-2">
+          <div className="col-span-1">
+            <InputRow
+              label="Total Cost"
+              placeholder="Total contract cost"
+              id="cost"
+              errors={errors}
+              register={register}
+            />
+            <p className="text-xs text-red-500 -bottom-4 pl-1">
+              {errors.cost && "Total cost is required"}
+            </p>
+          </div>
+          <div className="col-span-2">
             <InputRow
               label="Billing Frequency"
               placeholder="Full payment"
@@ -186,6 +204,25 @@ const NewContract = () => {
             />
             <p className="text-xs text-red-500 -bottom-4 pl-1">
               {errors.billingFrequency && "Billing frequency is required"}
+            </p>
+          </div>
+          <div>
+            <Controller
+              name="business"
+              control={control}
+              rules={{ required: "Business type is required" }}
+              render={({ field: { onChange, value, ref } }) => (
+                <InputSelect
+                  label="Business Type"
+                  options={businessType}
+                  onChange={onChange}
+                  value={value}
+                  placeholder="Select business"
+                />
+              )}
+            />
+            <p className="text-xs text-red-500 -bottom-4 pl-1">
+              {errors.business?.message}
             </p>
           </div>
         </div>
@@ -513,18 +550,7 @@ const NewContract = () => {
               </div>
             </div>
           </div>
-          <div className="col-span-2">
-            <InputRow
-              label="Total Cost"
-              placeholder="Total contract cost"
-              id="cost"
-              errors={errors}
-              register={register}
-            />
-            <p className="text-xs text-red-500 -bottom-4 pl-1">
-              {errors.cost && "Total cost is required"}
-            </p>
-          </div>
+          <div className="col-span-2"></div>
         </div>
         <Button
           color="bg-green-700"
