@@ -12,7 +12,6 @@ import {
   uploadFile,
 } from "../utils/helper.js";
 import { createReport } from "docx-templates";
-import axios from "axios";
 
 let cardId = null;
 
@@ -50,19 +49,19 @@ export const addCard = async (req, res) => {
     const qrLink = `${process.env.WEBSITE}/report/${service._id}`;
 
     //service qr image creation
-    const serviceName = service.services.map((item) => item.label + ",");
-    const buf = await qrCodeGenerator(qrLink, contract.contractNo, serviceName);
-    if (!buf) {
-      if (cardId) {
-        await Service.findByIdAndDelete(cardId);
-        cardId = null;
-      }
-      return res.status(400).json({ msg: "QR error, trg again later" });
-    }
+    // const serviceName = service.services.map((item) => item.label + ",");
+    // const buf = await qrCodeGenerator(qrLink, contract.contractNo, serviceName);
+    // if (!buf) {
+    //   if (cardId) {
+    //     await Service.findByIdAndDelete(cardId);
+    //     cardId = null;
+    //   }
+    //   return res.status(400).json({ msg: "QR error, trg again later" });
+    // }
+    const qrFilePath = "./tmp/cardQR.png";
+    await QRCode.toFile(qrFilePath, qrLink, { width: 1, margin: 2 });
 
     //upload qr image
-    const qrFilePath = "./tmp/cardQR.jpeg";
-    fs.writeFileSync(qrFilePath, buf);
     const qrUrl = await uploadFile({
       filePath: qrFilePath,
       folder: "contracts",
@@ -116,27 +115,26 @@ export const addCard = async (req, res) => {
 
 const qrCodeGenerator = async (link, contractNo, serviceName) => {
   try {
-    let height = 230,
-      width = 230,
+    let height = 120,
+      width = 120,
       margin = 2;
 
     const qrCode = await QRCode.toDataURL(link, { width, height, margin });
 
-    const canvas = createCanvas(width, height + 60);
+    const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
     const qrCodeImg = await loadImage(qrCode);
-    ctx.drawImage(qrCodeImg, 0, 25);
+    ctx.drawImage(qrCodeImg, 0, 0);
 
-    // Add the bottom text to the canvas
-    ctx.fillStyle = "rgb(255,255,255)";
-    ctx.font = "12px Arial";
-    ctx.textAlign = "start";
-    ctx.fillText(`Contract Number: ${contractNo}`, 2, height + 40);
-    ctx.fillText(`Service: ${serviceName}`, 2, height + 53);
-    ctx.fillStyle = "rgb(32, 125, 192)";
-    ctx.textAlign = "center";
-    ctx.font = "italic bold 15px Arial";
-    ctx.fillText(`Pest Management & Services`, width / 2, 17);
+    // // Add the bottom text to the canvas
+    // ctx.fillStyle = "rgb(255,255,255)";
+    // ctx.font = "12px Arial";
+    // ctx.textAlign = "start";
+
+    // ctx.fillStyle = "rgb(32, 125, 192)";
+    // ctx.textAlign = "center";
+    // ctx.font = "italic bold 12px Arial";
+    // ctx.fillText(`PMS`, width / 2, 12);
 
     const buf = canvas.toBuffer("image/jpeg");
     return buf;
