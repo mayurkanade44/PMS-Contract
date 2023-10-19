@@ -6,7 +6,7 @@ const ServiceSchema = new mongoose.Schema(
     serviceStartDate: { type: Object },
     area: { type: String, required: true },
     treatmentLocation: { type: String, required: true },
-    instruction: { type: String, required: true },
+    instruction: { type: String },
     services: [Object],
     serviceMonths: [String],
     serviceDates: [String],

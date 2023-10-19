@@ -61,7 +61,7 @@ const Navbar = () => {
   return (
     <div className="bg-gray-200 h-full w-full mb-16 lg:mb-2">
       <nav className="bg-white shadow lg:block hidden">
-        <div className="mx-auto container lg:pl-10 xl:px-0  py-2 lg:py-0">
+        <div className="mx-auto container py-2 lg:py-0">
           <div
             className={`flex items-center ${
               user ? "justify-between" : "justify-center"

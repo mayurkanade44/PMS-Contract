@@ -238,6 +238,7 @@ export const createDigitalContract = async (req, res) => {
 
       additionalJsContext: {
         contractNo: contract.contractNo,
+        cost: contract.cost,
         sales: contract.sales,
         startDate: moment(contract.tenure.startDate).format("DD/MM/YYYY"),
         endDate: moment(contract.tenure.endDate).format("DD/MM/YYYY"),

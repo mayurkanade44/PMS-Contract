@@ -226,6 +226,7 @@ export const serviceNotification = async (req, res) => {
 
     worksheet.columns = [
       { header: "Contract Number", key: "contract" },
+      { header: "Service Date", key: "serviceDate" },
       { header: "Business Type", key: "business" },
       { header: "Service Name", key: "serviceName" },
       { header: "Frequency", key: "frequency" },
@@ -242,6 +243,7 @@ export const serviceNotification = async (req, res) => {
       if (service.contract) {
         worksheet.addRow({
           contract: service.contract.contractNo,
+          serviceDate: date,
           business: service.contract.business,
           serviceName: service.services.map((item) => item.label).join(", "),
           frequency: service.frequency,
