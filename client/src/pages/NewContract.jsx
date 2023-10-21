@@ -79,7 +79,6 @@ const NewContract = () => {
 
   const handleCopyDetails = () => {
     setValue("shipToDetails", getValues("billToDetails"));
-    // setValue("shipToContact", getValues("billToContact"));
   };
 
   const submit = async (data) => {

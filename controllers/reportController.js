@@ -231,6 +231,8 @@ export const serviceNotification = async (req, res) => {
       { header: "Service Name", key: "serviceName" },
       { header: "Frequency", key: "frequency" },
       { header: "Client Name", key: "name" },
+      { header: "Contact Number", key: "number" },
+      { header: "Contact Email", key: "email" },
       { header: "Service Address", key: "address" },
       { header: "Service Area", key: "area" },
       { header: "Service City", key: "city" },
@@ -248,6 +250,8 @@ export const serviceNotification = async (req, res) => {
           serviceName: service.services.map((item) => item.label).join(", "),
           frequency: service.frequency,
           name: service.contract.shipToDetails.name,
+          number: service.contract.shipToDetails.contact[0].number,
+          email: service.contract.shipToDetails.contact[0].email,
           address: service.contract.shipToDetails.address,
           area: service.contract.shipToDetails.area,
           city: service.contract.shipToDetails.city,
@@ -310,7 +314,8 @@ export const dailyServices = async (req, res) => {
       serviceDates: { $in: date },
     }).populate({
       path: "contract",
-      select: "contractNo shipToDetails",
+      select: "contractNo active shipToDetails",
+      match: { active: true },
     });
 
     return res.json(services);
@@ -363,7 +368,9 @@ export const monthlyServiceDue = async (req, res) => {
       { header: "Contract Number", key: "contract" },
       { header: "Contract Status", key: "status" },
       { header: "Business Type", key: "business" },
-      { header: "Clinet Name", key: "name" },
+      { header: "Client Name", key: "name" },
+      { header: "Client Number", key: "number" },
+      { header: "Client Email", key: "email" },
       { header: "Service Name", key: "serviceName" },
       { header: "Frequency", key: "frequency" },
       { header: "Service Address", key: "address" },
@@ -378,6 +385,8 @@ export const monthlyServiceDue = async (req, res) => {
           serviceName: service.services.map((item) => item.label).join(", "),
           frequency: service.frequency,
           name: service.contract.shipToDetails.name,
+          number: service.contract.shipToDetails.contact[0].number,
+          email: service.contract.shipToDetails.contact[0].email,
           address: `${service.contract.shipToDetails.address}, ${service.contract.shipToDetails.city} - ${service.contract.shipToDetails.pincode}`,
         });
       }
@@ -554,7 +563,7 @@ export const expireContractsReport = async (req, res) => {
         $gte: startDate,
         $lte: endDate,
       },
-    });
+    }).populate({ path: "services", select: "services frequency" });
 
     if (contracts.length < 1)
       return res
@@ -566,8 +575,14 @@ export const expireContractsReport = async (req, res) => {
 
     worksheet.columns = [
       { header: "Contract Number", key: "contract" },
-      { header: "Client Name", key: "name" },
       { header: "Contract Status", key: "status" },
+      { header: "Client Name", key: "name" },
+      { header: "Bill Address", key: "address" },
+      { header: "Area", key: "area" },
+      { header: "Pincode", key: "pincode" },
+      { header: "Contact Details", key: "contact" },
+      { header: "Service Name", key: "service" },
+      { header: "Service Frequency", key: "frequency" },
       { header: "Start Date", key: "start" },
       { header: "End Date", key: "end" },
       { header: "Total Cost", key: "cost" },
@@ -575,9 +590,19 @@ export const expireContractsReport = async (req, res) => {
     ];
 
     for (let contract of contracts) {
+      const services = contract.services.map((item) =>
+        item.services.map((ser) => ser.label)
+      );
+
       worksheet.addRow({
         contract: contract.contractNo,
         status: contract.active ? "Active" : "Deactive",
+        address: `${contract.billToDetails.address}`,
+        area: `${contract.billToDetails.area}`,
+        pincode: `${contract.billToDetails.pincode}`,
+        contact: `${contract.billToDetails.contact[0].number} / ${contract.billToDetails.contact[0].email}`,
+        service: services,
+        frequency: contract.services.map((item) => item.frequency),
         start: moment(contract.tenure.startDate).format("DD/MM/YY"),
         end: moment(contract.tenure.endDate).format("DD/MM/YY"),
         name: contract.billToDetails.name,

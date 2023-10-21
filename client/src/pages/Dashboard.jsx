@@ -188,6 +188,9 @@ const Dashboard = () => {
                         Ship To Name
                       </th>
                       <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
+                        Contact Number
+                      </th>
+                      <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
                         Services
                       </th>
                       <th className="border-r px-2 py-1 dark:border-neutral-800 border-2">
@@ -201,13 +204,16 @@ const Dashboard = () => {
                         className="border-b dark:border-neutral-500"
                         key={service._id}
                       >
-                        <td className="border-r w-20 px-2 py-1 font-normal dark:border-neutral-500">
+                        <td className="border-r w-20 px-2 py-1 text-center font-normal dark:border-neutral-500">
                           {service.contract.contractNo}
                         </td>
                         <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
                           {service.contract.shipToDetails.name}
                         </td>
-                        <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
+                        <td className="border-r w-20 text-center px-2 py-1 font-normal dark:border-neutral-500">
+                          {service.contract.shipToDetails.contact?.[0].number}
+                        </td>
+                        <td className="border-r w-40 px-2 py-1 font-normal dark:border-neutral-500">
                           {service.services.map((item) => item.label + ", ")}
                         </td>
                         <td className="border-r w-20 px-2 py-1 font-normal dark:border-neutral-500">
