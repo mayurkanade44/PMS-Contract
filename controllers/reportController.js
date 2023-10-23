@@ -114,7 +114,7 @@ export const generateReport = async (req, res) => {
   try {
     const report = await Report.find({
       service: new mongoose.Types.ObjectId(id),
-    });
+    }).populate({ path: "contract", select: "shipToDetails" });
     if (!report.length) return res.status(400).json({ msg: "No data found" });
 
     const workbook = new exceljs.Workbook();
@@ -125,25 +125,26 @@ export const generateReport = async (req, res) => {
       let row = worksheet.getRow(i + 4);
       let item = report[i];
       row.getCell(1).value = item.contractNo;
-      row.getCell(2).value = item.serviceName;
-      row.getCell(3).value = item.serviceType;
-      row.getCell(4).value = item.serviceStatus;
-      row.getCell(5).value = item.serviceDate;
-      row.getCell(6).value = item.serviceComment;
-      row.getCell(7).value = item.serviceBy;
-      row.getCell(8).value =
+      row.getCell(2).value = item.contract.shipToDetails.name;
+      row.getCell(3).value = item.serviceName;
+      row.getCell(4).value = item.serviceType;
+      row.getCell(5).value = item.serviceStatus;
+      row.getCell(6).value = item.serviceDate;
+      row.getCell(7).value = item.serviceComment;
+      row.getCell(8).value = item.serviceBy;
+      row.getCell(9).value =
         (item.image.length >= 1 && {
           text: "Download",
           hyperlink: item.image[0],
         }) ||
         "No Image";
-      row.getCell(9).value =
+      row.getCell(10).value =
         (item.image.length >= 2 && {
           text: "Download",
           hyperlink: item.image[1],
         }) ||
         "No Image";
-      row.getCell(10).value =
+      row.getCell(11).value =
         (item.image.length >= 3 && {
           text: "Download",
           hyperlink: item.image[2],
@@ -581,8 +582,8 @@ export const expireContractsReport = async (req, res) => {
       { header: "Area", key: "area" },
       { header: "Pincode", key: "pincode" },
       { header: "Contact Details", key: "contact" },
-      { header: "Service Name", key: "service" },
-      { header: "Service Frequency", key: "frequency" },
+      // { header: "Service Name", key: "service" },
+      // { header: "Service Frequency", key: "frequency" },
       { header: "Start Date", key: "start" },
       { header: "End Date", key: "end" },
       { header: "Total Cost", key: "cost" },
@@ -590,9 +591,9 @@ export const expireContractsReport = async (req, res) => {
     ];
 
     for (let contract of contracts) {
-      const services = contract.services.map((item) =>
-        item.services.map((ser) => ser.label)
-      );
+      // const services = contract.services.map((item) =>
+      //   item.services.map((ser) => ser.label)
+      // );
 
       worksheet.addRow({
         contract: contract.contractNo,
@@ -601,8 +602,8 @@ export const expireContractsReport = async (req, res) => {
         area: `${contract.billToDetails.area}`,
         pincode: `${contract.billToDetails.pincode}`,
         contact: `${contract.billToDetails.contact[0].number} / ${contract.billToDetails.contact[0].email}`,
-        service: services,
-        frequency: contract.services.map((item) => item.frequency),
+        // service: services,
+        // frequency: contract.services.map((item) => item.frequency),
         start: moment(contract.tenure.startDate).format("DD/MM/YY"),
         end: moment(contract.tenure.endDate).format("DD/MM/YY"),
         name: contract.billToDetails.name,
