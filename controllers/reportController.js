@@ -319,7 +319,9 @@ export const dailyServices = async (req, res) => {
       match: { active: true },
     });
 
-    return res.json(services);
+    const activeServices = services.filter((ser) => ser.contract);
+
+    return res.json(activeServices);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
