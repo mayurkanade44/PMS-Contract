@@ -120,7 +120,7 @@ const Dashboard = () => {
     try {
       const res = await contractExpiry(data).unwrap();
       if (res.link) saveAs(res.link, `Contract Expiry`);
-      toast.success("File Generated")
+      toast.success("File Generated");
     } catch (error) {
       console.log(error);
       toast.error(error?.data?.msg || error.error);
@@ -205,13 +205,13 @@ const Dashboard = () => {
                         key={service._id}
                       >
                         <td className="border-r w-20 px-2 py-1 text-center font-normal dark:border-neutral-500">
-                          {service.contract.contractNo}
+                          {service.contract?.contractNo}
                         </td>
                         <td className="border-r w-32 px-2 py-1 font-normal dark:border-neutral-500">
-                          {service.contract.shipToDetails.name}
+                          {service.contract?.shipToDetails.name}
                         </td>
                         <td className="border-r w-20 text-center px-2 py-1 font-normal dark:border-neutral-500">
-                          {service.contract.shipToDetails.contact?.[0].number}
+                          {service.contract?.shipToDetails.contact?.[0].number}
                         </td>
                         <td className="border-r w-40 px-2 py-1 font-normal dark:border-neutral-500">
                           {service.services.map((item) => item.label + ", ")}
