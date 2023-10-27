@@ -5,7 +5,7 @@ import { useGetAllContractsQuery } from "../redux/contractSlice";
 import { useState } from "react";
 import { dateFormat } from "../utils/functionHelper";
 import { useDispatch, useSelector } from "react-redux";
-import { removeContractDetails, removeCredentials } from "../redux/allSlice";
+import { removeContractDetails } from "../redux/allSlice";
 
 const Home = () => {
   const [search, setSearch] = useState("");

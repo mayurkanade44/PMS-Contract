@@ -375,12 +375,17 @@ export const monthlyServiceDue = async (req, res) => {
       { header: "Client Number", key: "number" },
       { header: "Client Email", key: "email" },
       { header: "Service Name", key: "serviceName" },
+      { header: "Service Date", key: "serviceDate" },
       { header: "Frequency", key: "frequency" },
       { header: "Service Address", key: "address" },
     ];
 
     for (let service of services) {
       if (service.contract) {
+        const dates = service.serviceDates.filter(
+          (date) => moment(date, "DD/MM/YYYY").format("MMM YY") === month
+        );
+
         worksheet.addRow({
           contract: service.contract.contractNo,
           business: service.contract.business,
@@ -388,6 +393,7 @@ export const monthlyServiceDue = async (req, res) => {
           serviceName: service.services.map((item) => item.label).join(", "),
           frequency: service.frequency,
           name: service.contract.shipToDetails.name,
+          serviceDate: dates,
           number: service.contract.shipToDetails.contact[0].number,
           email: service.contract.shipToDetails.contact[0].email,
           address: `${service.contract.shipToDetails.address}, ${service.contract.shipToDetails.city} - ${service.contract.shipToDetails.pincode}`,
