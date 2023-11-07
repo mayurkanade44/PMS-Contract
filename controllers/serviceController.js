@@ -145,7 +145,7 @@ const qrCodeGenerator = async (link, contractNo, serviceName) => {
 };
 
 export const updateCard = async (req, res) => {
-  const { id, frequency, serviceCardId, serviceStartDate } = req.body;
+  const { id, frequency, serviceCardId, serviceStartDate, dates } = req.body;
   try {
     let serviceExist = await Service.findById(serviceCardId);
     if (!serviceExist)
@@ -165,11 +165,16 @@ export const updateCard = async (req, res) => {
         serviceStartDate,
         contract: contract.tenure,
       });
-
       req.body.serviceMonths = due.serviceMonths;
       req.body.serviceDates = due.serviceDates;
-    } else {
-      req.body.serviceMonths = serviceExist.serviceMonths;
+    }
+
+    if (serviceExist.frequency === "Quarterly") {
+      const months = [];
+      for (let date of dates.split(", ")) {
+        months.push(moment(date, "DD/MM/YYYY").format("MMM YY"));
+      }
+      req.body.serviceMonths = months;
     }
 
     const service = req.body;
@@ -292,8 +297,8 @@ export const sendContract = async (req, res) => {
         }
         allServices.push({
           name: serviceName,
-          frequency: serviceCards.frequency.label || serviceCards.frequency,
-          dates: serviceCards.serviceDates.join(", "),
+          frequency: serviceCards.frequency,
+          months: serviceCards.serviceMonths.join(", "),
         });
       }
 

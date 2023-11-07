@@ -354,6 +354,11 @@ export const allStats = async (req, res) => {
 
 export const monthlyServiceDue = async (req, res) => {
   try {
+    const startDate = moment(req.body.month, "YYYY-MM").startOf("month");
+    const endDate = moment(req.body.month, "YYYY-MM")
+      .endOf("month")
+      .add(7, "days");
+
     const month = moment(req.body.month).format("MMM YY");
     const services = await Service.find({
       serviceMonths: { $in: [month] },
@@ -363,6 +368,37 @@ export const monthlyServiceDue = async (req, res) => {
     });
 
     if (!services.length) return res.status(404).json({ msg: "No data found" });
+
+    // const ser = services.map(
+    //   (item) =>
+    //     item.contract && {
+    //       id: item._id,
+    //       contract: item.contract.contractNo,
+    //       status: item.contract.active,
+    //       business: item.contract.business,
+    //       name: item.contract.shipToDetails.name,
+    //       number: item.contract.shipToDetails.contact[0].number,
+    //       email: item.contract.shipToDetails.contact[0].email,
+    //       serviceName: item.services.map((item) => item.label).join(", "),
+    //       frequency: item.frequency,
+    //       date: item.serviceDates.filter(
+    //         (date) => moment(date, "DD/MM/YYYY").format("MMM YY") === month
+    //       ).length,
+    //     }
+    // );
+
+    const reports = await Report.find({
+      serviceDate: { $gt: startDate, $lt: endDate },
+    }).select("service");
+
+    // for (let s of ser) {
+    //   let date =
+    //     s.date -
+    //     reports.filter((item) => item.service.toString() === s.id.toString())
+    //       .length;
+
+    //   s.date = date > 0 ? date : 0;
+    // }
 
     const workbook = new exceljs.Workbook();
     let worksheet = workbook.addWorksheet("Sheet1");
@@ -375,31 +411,57 @@ export const monthlyServiceDue = async (req, res) => {
       { header: "Client Number", key: "number" },
       { header: "Client Email", key: "email" },
       { header: "Service Name", key: "serviceName" },
-      { header: "Service Date", key: "serviceDate" },
       { header: "Frequency", key: "frequency" },
       { header: "Service Address", key: "address" },
     ];
 
     for (let service of services) {
       if (service.contract) {
-        const dates = service.serviceDates.filter(
-          (date) => moment(date, "DD/MM/YYYY").format("MMM YY") === month
-        );
+        const dates =
+          service.serviceDates.filter(
+            (date) => moment(date, "DD/MM/YYYY").format("MMM YY") === month
+          ).length -
+          reports.filter(
+            (item) => item.service.toString() === service._id.toString()
+          ).length;
 
-        worksheet.addRow({
-          contract: service.contract.contractNo,
-          business: service.contract.business,
-          status: service.contract.active ? "Active" : "Deactive",
-          serviceName: service.services.map((item) => item.label).join(", "),
-          frequency: service.frequency,
-          name: service.contract.shipToDetails.name,
-          serviceDate: dates,
-          number: service.contract.shipToDetails.contact[0].number,
-          email: service.contract.shipToDetails.contact[0].email,
-          address: `${service.contract.shipToDetails.address}, ${service.contract.shipToDetails.city} - ${service.contract.shipToDetails.pincode}`,
-        });
+        if (dates > 0) {
+          for (let i = 0; i < dates; i++) {
+            worksheet.addRow({
+              contract: service.contract.contractNo,
+              business: service.contract.business,
+              status: service.contract.active ? "Active" : "Deactive",
+              serviceName: service.services
+                .map((item) => item.label)
+                .join(", "),
+              frequency: service.frequency,
+              name: service.contract.shipToDetails.name,
+              number: service.contract.shipToDetails.contact[0].number,
+              email: service.contract.shipToDetails.contact[0].email,
+              address: `${service.contract.shipToDetails.address}, ${service.contract.shipToDetails.city} - ${service.contract.shipToDetails.pincode}`,
+            });
+          }
+        }
       }
     }
+
+    // for (let service of ser) {
+    //   if (service.date > 0) {
+    //     for (let i = 0; i < service.date; i++) {
+    //       worksheet.addRow({
+    //         contract: service.contract,
+    //         business: service.business,
+    //         status: service.status ? "Active" : "Deactive",
+    //         serviceName: service.serviceName,
+    //         frequency: service.frequency,
+    //         name: service.name,
+    //         number: service.number,
+    //         email: service.email,
+    //         // address: `${service.contract.shipToDetails.address}, ${service.contract.shipToDetails.city} - ${service.contract.shipToDetails.pincode}`,
+    //       });
+    //     }
+    //   }
+    // }
     const filePath = `./tmp/${month} serviceDue.xlsx`;
     await workbook.xlsx.writeFile(filePath);
     const link = await uploadFile({ filePath, folder: "reports" });
