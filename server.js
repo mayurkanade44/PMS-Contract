@@ -7,11 +7,27 @@ import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from "cloudinary";
 import fileUpload from "express-fileupload";
 
+//Security packages
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
+import { rateLimit } from "express-rate-limit";
+const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 5 minutes).
+  message:
+    "Many request from this IP address, please try again after 10 mins",
+  standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+});
+
+//Routing
 import userRouter from "./routes/userRoute.js";
 import contractRouter from "./routes/contractRoute.js";
 import serviceRouter from "./routes/serviceRoute.js";
 import reportRouter from "./routes/reportRoute.js";
 import adminRouter from "./routes/adminRoute.js";
+
+//Middleware
 import { notFound } from "./middleware/notFound.js";
 import {
   authenticateUser,
@@ -29,6 +45,9 @@ cloudinary.config({
 const app = express();
 
 app.use(express.json());
+app.use(limiter);
+app.use(helmet());
+app.use(mongoSanitize());
 app.use(cookieParser());
 app.use(fileUpload({ useTempFiles: true }));
 if (process.env.NODE_ENV !== "production") app.use(morgan("dev"));
