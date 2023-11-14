@@ -389,6 +389,7 @@ export const monthlyServiceDue = async (req, res) => {
 
     const reports = await Report.find({
       serviceDate: { $gt: startDate, $lt: endDate },
+      serviceType: "Regular",
     }).select("service");
 
     // for (let s of ser) {
@@ -417,13 +418,18 @@ export const monthlyServiceDue = async (req, res) => {
 
     for (let service of services) {
       if (service.contract) {
+        let rep = [];
+        reports.map(
+          (item) =>
+            item.service.toString() === service._id.toString() &&
+            !rep.includes(item.serviceDate) &&
+            rep.push(item.serviceDate)
+        );
+
         const dates =
           service.serviceDates.filter(
             (date) => moment(date, "DD/MM/YYYY").format("MMM YY") === month
-          ).length -
-          reports.filter(
-            (item) => item.service.toString() === service._id.toString()
-          ).length;
+          ).length - rep.length;
 
         if (dates > 0) {
           for (let i = 0; i < dates; i++) {
