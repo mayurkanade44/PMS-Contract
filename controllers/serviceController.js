@@ -1,7 +1,6 @@
 import Contract from "../models/contractModel.js";
 import Service from "../models/serviceModel.js";
 import moment from "moment";
-import { createCanvas, loadImage } from "canvas";
 import QRCode from "qrcode";
 import fs from "fs";
 import {
@@ -110,37 +109,6 @@ export const addCard = async (req, res) => {
     }
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
-  }
-};
-
-const qrCodeGenerator = async (link, contractNo, serviceName) => {
-  try {
-    let height = 120,
-      width = 120,
-      margin = 2;
-
-    const qrCode = await QRCode.toDataURL(link, { width, height, margin });
-
-    const canvas = createCanvas(width, height);
-    const ctx = canvas.getContext("2d");
-    const qrCodeImg = await loadImage(qrCode);
-    ctx.drawImage(qrCodeImg, 0, 0);
-
-    // // Add the bottom text to the canvas
-    // ctx.fillStyle = "rgb(255,255,255)";
-    // ctx.font = "12px Arial";
-    // ctx.textAlign = "start";
-
-    // ctx.fillStyle = "rgb(32, 125, 192)";
-    // ctx.textAlign = "center";
-    // ctx.font = "italic bold 12px Arial";
-    // ctx.fillText(`PMS`, width / 2, 12);
-
-    const buf = canvas.toBuffer("image/jpeg");
-    return buf;
-  } catch (error) {
-    console.log("Qr_Code", error);
-    return false;
   }
 };
 
