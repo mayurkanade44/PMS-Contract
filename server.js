@@ -10,15 +10,7 @@ import fileUpload from "express-fileupload";
 //Security packages
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
-import { rateLimit } from "express-rate-limit";
-const limiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 minutes
-  limit: 100, // Limit each IP to 100 requests per `window` (here, per 5 minutes).
-  message:
-    "Many request from this IP address, please try again after 10 mins",
-  standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-});
+
 
 //Routing
 import userRouter from "./routes/userRoute.js";
@@ -45,7 +37,6 @@ cloudinary.config({
 const app = express();
 
 app.use(express.json());
-app.use(limiter);
 app.use(helmet());
 app.use(mongoSanitize());
 app.use(cookieParser());

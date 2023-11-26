@@ -137,13 +137,11 @@ export const updateCard = async (req, res) => {
       req.body.serviceDates = due.serviceDates;
     }
 
-    if (serviceExist.frequency === "Quarterly") {
-      const months = [];
-      for (let date of dates.split(", ")) {
-        months.push(moment(date, "DD/MM/YYYY").format("MMM YY"));
-      }
-      req.body.serviceMonths = months;
+    const months = new Set();
+    for (let date of dates.split(", ")) {
+      months.add(moment(date, "DD/MM/YYYY").format("MMM YY"));
     }
+    req.body.serviceMonths = [...months];
 
     const service = req.body;
 
