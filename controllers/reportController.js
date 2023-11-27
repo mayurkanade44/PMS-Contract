@@ -370,6 +370,7 @@ export const monthlyServiceDue = async (req, res) => {
     const reports = await Report.find({
       serviceDate: { $gt: startDate, $lt: endDate },
       serviceType: "Regular",
+      serviceStatus: "Completed",
     }).select("service");
 
     const workbook = new exceljs.Workbook();
