@@ -19,6 +19,7 @@ import {
   Login,
   NewContract,
   ServiceCard,
+  NotFound,
 } from "./pages";
 
 function App() {
@@ -54,6 +55,8 @@ function App() {
         <Route path="" element={<ProtectedRoute admin={true} />}>
           <Route path="/admin" element={<Admin />} />
         </Route>
+
+        <Route path="*" element={<NotFound />} />
       </Route>
     )
   );

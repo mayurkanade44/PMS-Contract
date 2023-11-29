@@ -7,6 +7,7 @@ import ServiceCard from "./ServiceCard";
 import Home from "./Home";
 import Admin from "./Admin";
 import ClientReport from "./ClientReport";
+import NotFound from "./NotFound";
 
 export {
   Login,
@@ -18,4 +19,5 @@ export {
   ServiceCard,
   Admin,
   ClientReport,
+  NotFound,
 };

@@ -443,10 +443,11 @@ export const quarterlyReport = async (req, res) => {
       date.getMonth() - 3,
       date.getDate()
     );
-    const month = moment().format("MMM YY");
+    const month = moment().subtract(1, "month").format("MMM YY");
 
     const reportData = await Contract.find({
       quarterlyMonths: { $in: [month] },
+      active: true,
     })
       .populate({
         path: "reports",
@@ -463,7 +464,7 @@ export const quarterlyReport = async (req, res) => {
       return res.status(400).json({ msg: "No data found" });
 
     for (let data of reportData) {
-      if (data.reports.length) {
+      if (data.reports.length > 0) {
         const workbook = new exceljs.Workbook();
         await workbook.xlsx.readFile("./tmp/quarterlyReport.xlsx");
         let worksheet = workbook.getWorksheet("Sheet1");
@@ -495,7 +496,7 @@ export const quarterlyReport = async (req, res) => {
       }
     }
 
-    return res.status(200).json({ msg: "Report generated" });
+    return res.status(200).json({ reportData });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
@@ -508,11 +509,13 @@ export const sendQuarterlyReport = async (req, res) => {
       quarterlyReport: { $ne: null },
       active: true,
     });
-    const end = moment().format("MMM YY");
+    const end = moment().subtract(1, "month").format("MMM YY");
     const start = moment().subtract(3, "months").format("MMM YY");
 
     if (!reports.length)
       return res.status(400).json({ msg: "No report found" });
+
+    let emailCount = 0
 
     for (let report of reports) {
       const emailList = [];
@@ -569,6 +572,7 @@ export const sendQuarterlyReport = async (req, res) => {
       });
 
       if (mailSent) {
+        emailCount += 1
         await Contract.findByIdAndUpdate(
           report._id,
           { quarterlyReport: null },
@@ -577,7 +581,7 @@ export const sendQuarterlyReport = async (req, res) => {
       }
     }
 
-    res.status(200).json({ msg: "Report sent" });
+    res.status(200).json({ msg: "Report sent", emailCount });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
