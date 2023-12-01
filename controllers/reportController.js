@@ -463,6 +463,8 @@ export const quarterlyReport = async (req, res) => {
     if (!reportData.length)
       return res.status(400).json({ msg: "No data found" });
 
+    let count = 0
+
     for (let data of reportData) {
       if (data.reports.length > 0) {
         const workbook = new exceljs.Workbook();
@@ -488,6 +490,7 @@ export const quarterlyReport = async (req, res) => {
         await workbook.xlsx.writeFile(filePath);
         const link = await uploadFile({ filePath, folder: "reports" });
         if (link)
+          count++
           await Contract.findByIdAndUpdate(
             data._id,
             { quarterlyReport: link },
@@ -496,7 +499,7 @@ export const quarterlyReport = async (req, res) => {
       }
     }
 
-    return res.status(200).json({ reportData });
+    return res.status(200).json({ msg:"Quarterly Report Generated", count });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
