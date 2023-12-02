@@ -135,14 +135,14 @@ export const updateCard = async (req, res) => {
       });
       req.body.serviceMonths = due.serviceMonths;
       req.body.serviceDates = due.serviceDates;
+    } else {
+      const months = new Set();
+      for (let date of dates.split(", ")) {
+        months.add(moment(date, "DD/MM/YYYY").format("MMM YY"));
+      }
+      req.body.serviceMonths = [...months];
     }
-
-    const months = new Set();
-    for (let date of dates.split(", ")) {
-      months.add(moment(date, "DD/MM/YYYY").format("MMM YY"));
-    }
-    req.body.serviceMonths = [...months];
-
+        
     const service = req.body;
 
     const cardQrCode = await QRCode.toDataURL(
@@ -169,7 +169,7 @@ export const updateCard = async (req, res) => {
     }
 
     req.body.card = cardUrl;
-    await Service.findByIdAndUpdate(serviceCardId, req.body, {
+    await Service.findByIdAndUpdate(serviceCardId, service, {
       new: true,
       runValidators: true,
     });
