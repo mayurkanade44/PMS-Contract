@@ -386,6 +386,7 @@ export const monthlyServiceDue = async (req, res) => {
       { header: "Service Name", key: "serviceName" },
       { header: "Frequency", key: "frequency" },
       { header: "Service Address", key: "address" },
+      { header: "Instructions", key: "instructions" },
     ];
 
     for (let service of services) {
@@ -417,6 +418,7 @@ export const monthlyServiceDue = async (req, res) => {
               number: service.contract.shipToDetails.contact[0].number,
               email: service.contract.shipToDetails.contact[0].email,
               address: `${service.contract.shipToDetails.address}, ${service.contract.shipToDetails.city} - ${service.contract.shipToDetails.pincode}`,
+              instructions: service.instruction,
             });
           }
         }
@@ -463,7 +465,7 @@ export const quarterlyReport = async (req, res) => {
     if (!reportData.length)
       return res.status(400).json({ msg: "No data found" });
 
-    let count = 0
+    let count = 0;
 
     for (let data of reportData) {
       if (data.reports.length > 0) {
@@ -489,17 +491,18 @@ export const quarterlyReport = async (req, res) => {
         const filePath = `./tmp/${contractNo}_Quarterly_Service_Report.xlsx`;
         await workbook.xlsx.writeFile(filePath);
         const link = await uploadFile({ filePath, folder: "reports" });
-        if (link)
-          count++
+        if (link) {
+          count++;
           await Contract.findByIdAndUpdate(
             data._id,
             { quarterlyReport: link },
             { runValidators: true, new: true }
           );
+        }
       }
     }
 
-    return res.status(200).json({ msg:"Quarterly Report Generated", count });
+    return res.status(200).json({ msg: "Quarterly Report Generated", count });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
@@ -518,7 +521,7 @@ export const sendQuarterlyReport = async (req, res) => {
     if (!reports.length)
       return res.status(400).json({ msg: "No report found" });
 
-    let emailCount = 0
+    let emailCount = 0;
 
     for (let report of reports) {
       const emailList = [];
@@ -575,7 +578,7 @@ export const sendQuarterlyReport = async (req, res) => {
       });
 
       if (mailSent) {
-        emailCount += 1
+        emailCount += 1;
         await Contract.findByIdAndUpdate(
           report._id,
           { quarterlyReport: null },
