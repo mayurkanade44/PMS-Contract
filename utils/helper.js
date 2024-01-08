@@ -2,9 +2,7 @@ import jwt from "jsonwebtoken";
 import moment from "moment";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import sgMail from "@sendgrid/mail";
 import SibApiV3Sdk from "@getbrevo/brevo";
-import QRCode from "qrcode";
 import { createReport } from "docx-templates";
 
 export const generateToken = (res, userId) => {
@@ -119,30 +117,6 @@ export const uploadFile = async ({ filePath, folder }) => {
     return result.secure_url;
   } catch (error) {
     console.log("Cloud Upload", error);
-    return false;
-  }
-};
-
-export const sendEmail = async ({
-  attachObj,
-  dynamicData,
-  emailList,
-  templateId,
-}) => {
-  try {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-    const msg = {
-      to: emailList,
-      from: { email: "noreply.pestbytes@gmail.com", name: "PMS" },
-      dynamic_template_data: dynamicData,
-      template_id: templateId,
-      attachments: attachObj,
-    };
-    await sgMail.send(msg);
-    return true;
-  } catch (error) {
-    console.log("Email error", error);
     return false;
   }
 };

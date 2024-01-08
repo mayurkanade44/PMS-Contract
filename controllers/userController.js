@@ -18,10 +18,10 @@ export const registerUser = async (req, res) => {
       role,
     });
 
-    return res.status(201).send({ msg: `${user.name} is created` });
+    return res.status(201).json({ msg: `${user.name} is created` });
   } catch (error) {
     console.log(error);
-    res.send(500).json({ msg: "Server error, try again later" });
+    res.status(500).json({ msg: "Server error, try again later" });
   }
 };
 
@@ -43,7 +43,7 @@ export const loginUser = async (req, res) => {
     } else res.status(400).json({ msg: "Invalid credentials" });
   } catch (error) {
     console.log(error);
-    res.send(500).json({ msg: "Server error, try again later" });
+    res.status(500).json({ msg: "Server error, try again later" });
   }
 };
 

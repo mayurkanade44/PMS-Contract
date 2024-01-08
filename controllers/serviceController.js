@@ -6,7 +6,6 @@ import fs from "fs";
 import {
   createServiceCard,
   sendBrevoEmail,
-  sendEmail,
   serviceDates,
   uploadFile,
 } from "../utils/helper.js";
@@ -142,7 +141,7 @@ export const updateCard = async (req, res) => {
       }
       req.body.serviceMonths = [...months];
     }
-        
+
     const service = req.body;
 
     const cardQrCode = await QRCode.toDataURL(
@@ -283,19 +282,6 @@ export const sendContract = async (req, res) => {
       );
 
       const fileName = contract.contractNo.replace(/\//g, "-");
-      // const result = await axios.get(contract.softCopy, {
-      //   responseType: "arraybuffer",
-      // });
-      // const base64File = Buffer.from(result.data, "binary").toString("base64");
-
-      // const attachObj = [
-      //   {
-      //     content: base64File,
-      //     filename: `${fileName}.docx`,
-      //     type: `application/docx`,
-      //     disposition: "attachment",
-      //   },
-      // ];
 
       const dynamicData = {
         name: contract.billToDetails.name,
@@ -306,13 +292,6 @@ export const sendContract = async (req, res) => {
       };
       let templateId = 2;
       if (contract.type === "RC") templateId = 3;
-
-      // const mailSent = await sendEmail({
-      //   emailList,
-      //   attachObj,
-      //   templateId: tempId,
-      //   dynamicData,
-      // });
 
       const mailSent = await sendBrevoEmail({
         emailList,

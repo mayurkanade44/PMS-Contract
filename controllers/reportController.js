@@ -1,12 +1,10 @@
-import Report from "../models/reportModel.js";
-import Contract from "../models/contractModel.js";
-import Service from "../models/serviceModel.js";
-import mongoose from "mongoose";
-import { sendBrevoEmail, sendEmail, uploadFile } from "../utils/helper.js";
 import exceljs from "exceljs";
 import moment from "moment";
-import axios from "axios";
-import fs from "fs";
+import mongoose from "mongoose";
+import Contract from "../models/contractModel.js";
+import Report from "../models/reportModel.js";
+import Service from "../models/serviceModel.js";
+import { sendBrevoEmail, uploadFile } from "../utils/helper.js";
 
 export const addServiceData = async (req, res) => {
   const { contract: contractId, service: serviceId } = req.body;
@@ -58,21 +56,6 @@ export const addServiceData = async (req, res) => {
         emailList.push({ email: item.email })
     );
 
-    // const attachObj = [];
-    // for (let i = 0; i < imageLinks.length; i++) {
-    //   const result = await axios.get(imageLinks[i], {
-    //     responseType: "arraybuffer",
-    //   });
-    //   const base64File = Buffer.from(result.data, "binary").toString("base64");
-
-    //   attachObj.push({
-    //     content: base64File,
-    //     filename: `image-${i + 1}.jpg`,
-    //     type: `application/jpg`,
-    //     disposition: "attachment",
-    //   });
-    // }
-
     const dynamicData = {
       contractNo: req.body.contractNo,
       link: `${process.env.WEBSITE}/report/${serviceId}`,
@@ -82,13 +65,6 @@ export const addServiceData = async (req, res) => {
       serviceStatus: req.body.serviceStatus,
       serviceComment: req.body.serviceComment,
     };
-
-    // const mailSent = await sendEmail({
-    //   emailList,
-    //   attachObj,
-    //   templateId: "d-ebb9f0ccce80432dba009696fe455382",
-    //   dynamicData,
-    // });
 
     await Report.create(req.body);
 
@@ -198,16 +174,6 @@ export const serviceNotification = async (req, res) => {
     });
 
     if (!services.length) {
-      // const mailSent = await sendEmail({
-      //   emailList: emailList,
-      //   attachObj: [],
-      //   templateId: "d-80c1a47b2e014671aa2f536409ee4504",
-      //   dynamicData: {
-      //     date: date,
-      //     description: `No services schedule on ${date}`,
-      //   },
-      // });
-
       const mailSent = await sendBrevoEmail({
         emailList,
         templateId: 5,
@@ -263,30 +229,6 @@ export const serviceNotification = async (req, res) => {
     const filePath = "./tmp/serviceDue.xlsx";
     await workbook.xlsx.writeFile(filePath);
     const link = await uploadFile({ filePath, folder: "reports" });
-
-    // const result = await axios.get(link, {
-    //   responseType: "arraybuffer",
-    // });
-    // const base64File = Buffer.from(result.data, "binary").toString("base64");
-
-    // const attachObj = [
-    //   {
-    //     content: base64File,
-    //     filename: `${date}.xlsx`,
-    //     type: `application/xlsx`,
-    //     disposition: "attachment",
-    //   },
-    // ];
-
-    // const mailSent = await sendEmail({
-    //   emailList: emailList,
-    //   attachObj,
-    //   templateId: "d-80c1a47b2e014671aa2f536409ee4504",
-    //   dynamicData: {
-    //     date: date,
-    //     description: `Please find the attachment of services schedule on ${date}`,
-    //   },
-    // });
 
     const mailSent = await sendBrevoEmail({
       emailList,
@@ -543,32 +485,11 @@ export const sendQuarterlyReport = async (req, res) => {
         "-"
       )}_Quarterly_Service_Report`;
 
-      // const result = await axios.get(report.quarterlyReport, {
-      //   responseType: "arraybuffer",
-      // });
-      // const base64File = Buffer.from(result.data, "binary").toString("base64");
-
-      // const attachObj = [
-      //   {
-      //     content: base64File,
-      //     filename: `${fileName}.xlsx`,
-      //     type: `application/xlsx`,
-      //     disposition: "attachment",
-      //   },
-      // ];
-
       const dynamicData = {
         contractNo: report.contractNo,
         start,
         end,
       };
-
-      // const mailSent = await sendEmail({
-      //   emailList,
-      //   attachObj,
-      //   templateId: "d-ebf14fa28bf5478ea134f97af409b1b7",
-      //   dynamicData,
-      // });
 
       const mailSent = await sendBrevoEmail({
         emailList,
