@@ -326,6 +326,8 @@ export const monthlyServiceDue = async (req, res) => {
       { header: "Client Number", key: "number" },
       { header: "Client Email", key: "email" },
       { header: "Service Name", key: "serviceName" },
+      { header: "Treatment Area", key: "area" },
+      { header: "Treatment Location", key: "treatment" },
       { header: "Frequency", key: "frequency" },
       { header: "Service Address", key: "address" },
       { header: "Instructions", key: "instructions" },
@@ -356,6 +358,8 @@ export const monthlyServiceDue = async (req, res) => {
                 .map((item) => item.label)
                 .join(", "),
               frequency: service.frequency,
+              area: service.area,
+              treatment: service.treatmentLocation,
               name: service.contract.shipToDetails.name,
               number: service.contract.shipToDetails.contact[0].number,
               email: service.contract.shipToDetails.contact[0].email,
