@@ -299,6 +299,8 @@ export const monthlyServiceDue = async (req, res) => {
     const startDate = moment(req.body.month, "YYYY-MM").startOf("month");
     const endDate = moment(req.body.month, "YYYY-MM").endOf("month");
 
+    console.log(startDate, endDate);
+
     const month = moment(req.body.month).format("MMM YY");
     const services = await Service.find({
       serviceMonths: { $in: [month] },
@@ -310,7 +312,7 @@ export const monthlyServiceDue = async (req, res) => {
     if (!services.length) return res.status(404).json({ msg: "No data found" });
 
     const reports = await Report.find({
-      serviceDate: { $gt: startDate, $lt: endDate },
+      serviceDate: { $gte: startDate, $lte: endDate },
       serviceType: "Regular",
       serviceStatus: "Completed",
     }).select("service");
@@ -323,6 +325,7 @@ export const monthlyServiceDue = async (req, res) => {
       { header: "Contract Status", key: "status" },
       { header: "Business Type", key: "business" },
       { header: "Client Name", key: "name" },
+      { header: "Contact Name", key: "contactName" },
       { header: "Client Number", key: "number" },
       { header: "Client Email", key: "email" },
       { header: "Service Name", key: "serviceName" },
@@ -361,6 +364,7 @@ export const monthlyServiceDue = async (req, res) => {
               area: service.area,
               treatment: service.treatmentLocation,
               name: service.contract.shipToDetails.name,
+              contactName: service.contract.shipToDetails.contact[0].name,
               number: service.contract.shipToDetails.contact[0].number,
               email: service.contract.shipToDetails.contact[0].email,
               address: `${service.contract.shipToDetails.address}, ${service.contract.shipToDetails.city} - ${service.contract.shipToDetails.pincode}`,
