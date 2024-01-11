@@ -299,8 +299,6 @@ export const monthlyServiceDue = async (req, res) => {
     const startDate = moment(req.body.month, "YYYY-MM").startOf("month");
     const endDate = moment(req.body.month, "YYYY-MM").endOf("month");
 
-    console.log(startDate, endDate);
-
     const month = moment(req.body.month).format("MMM YY");
     const services = await Service.find({
       serviceMonths: { $in: [month] },
