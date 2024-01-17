@@ -313,7 +313,7 @@ export const monthlyServiceDue = async (req, res) => {
       serviceDate: { $gte: startDate, $lte: endDate },
       serviceType: "Regular",
       serviceStatus: "Completed",
-    }).select("service");
+    }).select("service serviceDate");
 
     const workbook = new exceljs.Workbook();
     let worksheet = workbook.addWorksheet("Sheet1");
