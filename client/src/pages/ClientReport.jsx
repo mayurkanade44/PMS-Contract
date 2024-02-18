@@ -21,6 +21,8 @@ const ClientReport = () => {
     if (user) navigate(`/service-card/${id}`);
   }, []);
 
+  console.log(report);
+
   return (
     <div className="my-10 lg:my-5">
       <div className="flex justify-center my-2">
@@ -50,10 +52,17 @@ const ClientReport = () => {
           {report && (
             <div>
               <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
-              <h1 className="lg:text-2xl font-bold text-center">
+              <h1 className="lg:text-xl font-bold text-center">
                 Contract Number : {report[0].contractNo}
               </h1>
-              <h1 className="lg:text-2xl font-bold text-center">
+              <h1 className="lg:text-xl font-bold text-center">
+                Client Name : {report[0].contract.shipToDetails?.name}
+              </h1>
+              <h1 className="lg:text-xl font-bold text-center">
+                Client Address : {report[0].contract.shipToDetails?.address}{" "}
+                {report[0].contract.shipToDetails?.area}
+              </h1>
+              <h1 className="lg:text-xl font-bold text-center">
                 Service Name : {report[0].serviceName}
               </h1>
               <div className="overflow-y-auto my-4">

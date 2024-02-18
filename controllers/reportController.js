@@ -145,7 +145,9 @@ export const clientReport = async (req, res) => {
   try {
     const report = await Report.find({
       service: new mongoose.Types.ObjectId(id),
-    }).select("-image -contract");
+    })
+      .select("-image")
+      .populate({ path: "contract", select: "shipToDetails" });
 
     if (!report.length) return res.status(404).json({ msg: "No data found" });
 

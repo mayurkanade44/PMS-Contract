@@ -34,10 +34,13 @@ export const serviceDates = ({ frequency, serviceStartDate, contract }) => {
     add = "Days",
     end = 1;
 
-  const diffDays = moment(contract.endDate).diff(
+  let diffDays = moment(contract.endDate).diff(
     moment(contract.startDate),
     "days"
   );
+  if (moment(contract.startDate).month() === 1 ) {
+    diffDays += 2
+  }
   const endDate = contract.endDate;
 
   if (frequency === "2 Times In A Week" || frequency === "Weekly") {
