@@ -20,6 +20,7 @@ import {
   NewContract,
   ServiceCard,
   NotFound,
+  ServiceCardMessage,
 } from "./pages";
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
             element={<NewServiceCard />}
           />
           <Route path="/service-card/:id" element={<ServiceCard />} />
+          <Route path="/service-card/message/:status" element={<ServiceCardMessage />} />
         </Route>
 
         <Route path="" element={<ProtectedRoute admin={true} />}>

@@ -338,18 +338,17 @@ export const monthlyServiceDue = async (req, res) => {
 
     for (let service of services) {
       if (service.contract) {
-        let rep = [];
+        let rep = new Set();
         reports.map(
           (item) =>
             item.service.toString() === service._id.toString() &&
-            !rep.includes(item.serviceDate) &&
-            rep.push(item.serviceDate)
+            rep.add(item.serviceDate.toISOString())
         );
 
         const dates =
           service.serviceDates.filter(
             (date) => moment(date, "DD/MM/YYYY").format("MMM YY") === month
-          ).length - rep.length;
+          ).length - rep.size;
 
         if (dates > 0) {
           for (let i = 0; i < dates; i++) {

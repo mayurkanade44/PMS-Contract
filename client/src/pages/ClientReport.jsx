@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button, Loading } from "../components";
 import { useSelector } from "react-redux";
 import logo from "../assets/logo.jpg";
+import { dateFormat } from "../utils/functionHelper";
 
 const ClientReport = () => {
   const { id } = useParams();
@@ -90,9 +91,7 @@ const ClientReport = () => {
                         key={item._id}
                       >
                         <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
-                          {new Date(item.serviceDate)
-                            .toISOString()
-                            .slice(0, 10)}
+                          {dateFormat(item.serviceDate)}
                         </td>
                         <td className="border-r px-2 py-1 font-normal dark:border-neutral-500">
                           {item.serviceType}

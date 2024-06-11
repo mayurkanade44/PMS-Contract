@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useSingleCardQuery } from "../redux/serviceSlice";
 import { useForm, Controller } from "react-hook-form";
 import {
@@ -17,6 +17,7 @@ import { useGetAllValuesQuery } from "../redux/contractSlice";
 const ServiceCard = () => {
   const [images, setImages] = useState([]);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const { data: adminValues, isLoading: adminLoading } = useGetAllValuesQuery();
   const { data, isLoading: cardLoading, error } = useSingleCardQuery(id);
@@ -58,11 +59,15 @@ const ServiceCard = () => {
     try {
       const res = await addReportData(form).unwrap();
       toast.success(res.msg);
+      navigate("/service-card/message/true");
       reset();
       setImages([]);
     } catch (error) {
       console.log(error);
       toast.error(error?.data?.msg || error.error);
+      if (error?.data?.msg == "Report saved but email not sent") {
+        navigate("/service-card/message/true");
+      } else navigate("/service-card/message/false");
     }
   };
 
