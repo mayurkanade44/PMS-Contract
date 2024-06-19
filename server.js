@@ -11,13 +11,13 @@ import fileUpload from "express-fileupload";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 
-
 //Routing
 import userRouter from "./routes/userRoute.js";
 import contractRouter from "./routes/contractRoute.js";
 import serviceRouter from "./routes/serviceRoute.js";
 import reportRouter from "./routes/reportRoute.js";
 import adminRouter from "./routes/adminRoute.js";
+import scheduleRouter from "./routes/scheduleRoute.js";
 
 //Middleware
 import { notFound } from "./middleware/notFound.js";
@@ -47,6 +47,7 @@ app.use("/api/user", userRouter);
 app.use("/api/contract", authenticateUser, contractRouter);
 app.use("/api/service", authenticateUser, serviceRouter);
 app.use("/api/report", reportRouter);
+app.use("/api/schedule", scheduleRouter);
 app.use("/api/admin", authenticateUser, authorizeUser("Admin"), adminRouter);
 
 if (process.env.NODE_ENV === "production") {

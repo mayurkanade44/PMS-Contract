@@ -27,7 +27,7 @@ function App() {
   const Layout = () => {
     return (
       <>
-        <ToastContainer position="top-center" autoClose={2000} />
+        <ToastContainer position="top-center" autoClose={5000} />
         <Navbar />
         <div className="mx-5 md:mx-10">
           <Outlet />

@@ -55,3 +55,9 @@ export const businessType = [
   { value: "Commercial", label: "Commercial" },
   { value: "Society", label: "Society" },
 ];
+
+export const timeSlot = [
+  { value: "anytime", label: "Anytime" },
+  { value: "1st half", label: "1st Half" },
+  { value: "2nd half", label: "2nd Half" },
+];

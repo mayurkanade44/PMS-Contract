@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { useGetClientReportQuery } from "../redux/reportSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Loading } from "../components";
+import { Button, Loading, ServiceRequestForm } from "../components";
 import { useSelector } from "react-redux";
 import logo from "../assets/logo.jpg";
 import { dateFormat } from "../utils/functionHelper";
 
 const ClientReport = () => {
   const { id } = useParams();
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState({
+    report: true,
+    request: false,
+    buttons: true,
+  });
   const { user } = useSelector((store) => store.all);
   const navigate = useNavigate();
 
@@ -16,13 +20,11 @@ const ClientReport = () => {
     data: report,
     isLoading: reportLoading,
     error,
-  } = useGetClientReportQuery(id, { skip: show });
+  } = useGetClientReportQuery(id, { skip: show.report });
 
   useEffect(() => {
     if (user) navigate(`/service-card/${id}`);
   }, []);
-
-  console.log(report);
 
   return (
     <div className="my-10 lg:my-5">
@@ -38,14 +40,27 @@ const ClientReport = () => {
           </h2>
         )
       )}
-      {show ? (
-        <div className="flex justify-center items-center mt-5">
+      {show.buttons ? (
+        <div className="text-center mt-14">
+          <div className="mb-5">
+            <Button
+              label="Show My Service Report"
+              width="w-52"
+              height="h-10"
+              color="bg-green-600"
+              handleClick={() =>
+                setShow({ report: false, request: false, buttons: false })
+              }
+            />
+          </div>
           <Button
-            label="Show My Service Report"
+            label="Raise Service Request"
             width="w-52"
             height="h-10"
-            color="bg-green-600"
-            handleClick={() => setShow(false)}
+            color="bg-blue-600"
+            handleClick={() =>
+              setShow({ report: true, request: true, buttons: false })
+            }
           />
         </div>
       ) : (
@@ -115,6 +130,7 @@ const ClientReport = () => {
               </div>
             </div>
           )}
+          {show.request && <ServiceRequestForm />}
         </>
       )}
     </div>
