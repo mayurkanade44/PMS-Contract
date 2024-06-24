@@ -9,7 +9,7 @@ import { dateFormat } from "../utils/functionHelper";
 const ClientReport = () => {
   const { id } = useParams();
   const [show, setShow] = useState({
-    report: true,
+    report: false,
     request: false,
     buttons: true,
   });
@@ -20,7 +20,7 @@ const ClientReport = () => {
     data: report,
     isLoading: reportLoading,
     error,
-  } = useGetClientReportQuery(id, { skip: show.report });
+  } = useGetClientReportQuery(id, { skip: !show.report });
 
   useEffect(() => {
     if (user) navigate(`/service-card/${id}`);
@@ -42,24 +42,24 @@ const ClientReport = () => {
       )}
       {show.buttons ? (
         <div className="text-center mt-14">
-          <div className="mb-5">
+          {/* <div className="mb-5">
             <Button
-              label="Show My Service Report"
+              label="Service Request"
               width="w-52"
               height="h-10"
-              color="bg-green-600"
+              color="bg-blue-600"
               handleClick={() =>
-                setShow({ report: false, request: false, buttons: false })
+                setShow({ report: false, request: true, buttons: false })
               }
             />
-          </div>
+          </div> */}
           <Button
-            label="Raise Service Request"
+            label="Service Report"
             width="w-52"
             height="h-10"
-            color="bg-blue-600"
+            color="bg-green-600"
             handleClick={() =>
-              setShow({ report: true, request: true, buttons: false })
+              setShow({ report: true, request: false, buttons: false })
             }
           />
         </div>
@@ -73,10 +73,6 @@ const ClientReport = () => {
               </h1>
               <h1 className="lg:text-xl font-bold text-center">
                 Client Name : {report[0].contract.shipToDetails?.name}
-              </h1>
-              <h1 className="lg:text-xl font-bold text-center">
-                Client Address : {report[0].contract.shipToDetails?.address}{" "}
-                {report[0].contract.shipToDetails?.area}
               </h1>
               <h1 className="lg:text-xl font-bold text-center">
                 Service Name : {report[0].serviceName}

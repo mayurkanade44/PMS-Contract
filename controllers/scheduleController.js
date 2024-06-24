@@ -10,7 +10,7 @@ export const addScheduleByClient = async (req, res) => {
   try {
     const serviceDetails = await Service.findById(serviceId).populate({
       path: "contract",
-      select: "contractNo shipToDetails active",
+      select: "contractNo shipToDetails active tenure",
     });
     if (!serviceDetails)
       return res.status(404).json({ msg: "Service not found" });
@@ -21,20 +21,31 @@ export const addScheduleByClient = async (req, res) => {
         .json({ msg: "Your contract is not active. Please contact PMS team." });
     }
 
-    let newDate = new Date(date);
+    let currentDate = new Date();
+    if (currentDate > serviceDetails.contract.tenure.endDate) {
+      return res
+        .status(400)
+        .json({ msg: "Your contract is expired. Please contact PMS team." });
+    }
+
+    let scheduleDate = new Date(date);
+    if (scheduleDate > serviceDetails.contract.tenure.endDate) {
+      return res.status(400).json({
+        msg: "Selected date is after contract end, please select another date or contact PMS team.",
+      });
+    }
+
     const alreadyScheduled = await Schedule.findOne({
       contractNo: serviceDetails.contract.contractNo,
-      date: newDate,
+      date: scheduleDate,
       serviceName: serviceDetails.services.map((service) => service.label),
     });
     if (alreadyScheduled) {
-      return res
-        .status(400)
-        .json({
-          msg: `Service is already schedule on ${moment(date).format(
-            "DD/MM/YYYY"
-          )}`,
-        });
+      return res.status(400).json({
+        msg: `Service is already schedule on ${moment(date).format(
+          "DD/MM/YYYY"
+        )}`,
+      });
     }
 
     const clientDetails = serviceDetails.contract.shipToDetails;
@@ -50,7 +61,7 @@ export const addScheduleByClient = async (req, res) => {
       serviceName: serviceDetails.services.map((service) => service.label),
       serviceType: "complaint",
       scheduleType: "tentative",
-      date: newDate,
+      date: scheduleDate,
       time,
       service: serviceId,
     });
