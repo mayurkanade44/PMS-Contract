@@ -21,6 +21,7 @@ import {
   ServiceCard,
   NotFound,
   ServiceCardMessage,
+  Schedule,
 } from "./pages";
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
         <Route path="" element={<ProtectedRoute />}>
           <Route path="/home" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/schedule" element={<Schedule />} />
           <Route path="/contract/:id" element={<NewContract />} />
           <Route path="/contract-details/:id" element={<ContractDetails />} />
           <Route
@@ -51,7 +53,10 @@ function App() {
             element={<NewServiceCard />}
           />
           <Route path="/service-card/:id" element={<ServiceCard />} />
-          <Route path="/service-card/message/:status" element={<ServiceCardMessage />} />
+          <Route
+            path="/service-card/message/:status"
+            element={<ServiceCardMessage />}
+          />
         </Route>
 
         <Route path="" element={<ProtectedRoute admin={true} />}>

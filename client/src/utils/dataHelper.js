@@ -61,3 +61,21 @@ export const timeSlot = [
   { value: "1st half", label: "1st Half" },
   { value: "2nd half", label: "2nd Half" },
 ];
+
+export const scheduleTypes = [
+  { value: "tentative", label: "Tentative" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "cancelled", label: "Cancelled" },
+];
+
+export const jobStatusOptions = [
+  { value: "all", label: "All" },
+  { value: "open", label: "Open" },
+  { value: "done", label: "Done" },
+];
+
+export const serviceTypeOptions = [
+  { value: "all", label: "All" },
+  { value: "regular", label: "Regular" },
+  { value: "complaint", label: "Complaint" },
+];

@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button, InputRow, InputSelect, Loading } from "../components";
-import { useAddRequestByClientMutation } from "../redux/serviceRequestSlice";
+import { useAddRequestByClientMutation } from "../redux/scheduleSlice";
 import { timeSlot } from "../utils/dataHelper";
 
 const ServiceRequestForm = () => {
@@ -44,9 +44,7 @@ const ServiceRequestForm = () => {
       {isLoading && <Loading />}
       {message ? (
         <div className="text-center mt-10">
-          <h1 className="text-2xl md:text-[40px] font-bold">
-            {message}
-          </h1>
+          <h1 className="text-2xl md:text-[40px] font-bold">{message}</h1>
           <h2 className="mt-10 text-lg font-semibold">
             For any queries kindly contact below modes:
             <p className="text-green-600">

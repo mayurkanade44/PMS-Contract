@@ -1,24 +1,24 @@
 import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  Title,
+  Tooltip,
+} from "chart.js";
+import { saveAs } from "file-saver";
+import { useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
+import { toast } from "react-toastify";
+import { AlertMessage, Button, Loading } from "../components";
+import {
   useAllStatsQuery,
   useContractExpiryMutation,
   useDailyServicesQuery,
   useMonthlyServiceMutation,
   useSevenDayServiceDueQuery,
 } from "../redux/reportSlice";
-import { AlertMessage, Button, InputSelect, Loading } from "../components";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { saveAs } from "file-saver";
 
 const Dashboard = () => {
   const [show, setShow] = useState("Today's Schedule");

@@ -54,6 +54,7 @@ const NewServiceCard = () => {
     useSendContractMutation();
   const { data: adminValues, isLoading: valueLoading } = useGetAllValuesQuery();
 
+
   const {
     register,
     formState: { errors },

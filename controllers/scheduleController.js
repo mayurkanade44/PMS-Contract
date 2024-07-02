@@ -74,3 +74,49 @@ export const addScheduleByClient = async (req, res) => {
     res.status(500).json({ msg: "Server error, try again later" });
   }
 };
+
+export const getAllSchedules = async (req, res) => {
+  const { search, page, serviceType, scheduleType, jobStatus, date, time } =
+    req.query;
+
+  //filtering
+  let query = {
+    scheduleType,
+  };
+  if (search) {
+    query.contractNo = { $regex: search, $options: "i" };
+  }
+  if (date) {
+    query.date = new Date(date);
+  }
+  if (serviceType && serviceType != "all") {
+    query.serviceType = serviceType;
+  }
+  if (time && time !== "all") {
+    query.time = time;
+  }
+  if (jobStatus && jobStatus !== "all") {
+    query.jobStatus = jobStatus;
+  }
+
+  let pageNumber = Number(page) || 1;
+  try {
+    const count = await Schedule.countDocuments({ ...query });
+
+    const schedules = await Schedule.find(query)
+      .populate({
+        path: "user",
+        select: "name",
+      })
+      .sort("-createdAt")
+      .skip(15 * (pageNumber - 1))
+      .limit(15);
+
+    return res
+      .status(200)
+      .json({ schedules, pages: Math.min(10, Math.ceil(count / 15)) });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};

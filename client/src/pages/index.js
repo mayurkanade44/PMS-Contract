@@ -9,6 +9,7 @@ import Admin from "./Admin";
 import ClientReport from "./ClientReport";
 import NotFound from "./NotFound";
 import ServiceCardMessage from "./ServiceCardMessage";
+import Schedule from "./Schedule";
 
 export {
   Login,
@@ -22,4 +23,5 @@ export {
   ClientReport,
   NotFound,
   ServiceCardMessage,
+  Schedule,
 };
