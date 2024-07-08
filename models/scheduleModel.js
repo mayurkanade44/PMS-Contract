@@ -25,7 +25,7 @@ const ScheduleSchema = new mongoose.Schema(
     },
     date: { type: Date, required: true },
     time: { type: String, required: true },
-    user: {
+    technician: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },

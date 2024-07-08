@@ -7,6 +7,7 @@ import {
   AiOutlineLogout,
   AiOutlineMenuFold,
   AiOutlineMenuUnfold,
+  AiOutlineSchedule,
 } from "react-icons/ai";
 import { RiAdminLine } from "react-icons/ri";
 import logo from "../assets/logo.jpg";
@@ -20,6 +21,12 @@ const navData = [
     link: "/home",
     icon: <AiOutlineHome className="mr-2 w-5 h-5" />,
     role: ["Admin", "Technician", "Back Office"],
+  },
+  {
+    name: "Schedule",
+    link: "/schedule",
+    icon: <AiOutlineSchedule className="mr-2 w-5 h-5" />,
+    role: ["Admin", "Back Office"],
   },
   {
     name: "Dashboard",

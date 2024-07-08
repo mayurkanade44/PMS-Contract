@@ -9,6 +9,21 @@ export const serviceRequestSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    updateRequest: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/api/schedule/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Schedules"],
+    }),
+    getAllTechnicians: builder.query({
+      query: () => ({
+        url: "/api/schedule/allTechnicians",
+      }),
+      providesTags: ["User"],
+      keepUnusedDataFor: 10,
+    }),
     getAllSchedules: builder.query({
       query: ({
         scheduleType,
@@ -34,5 +49,9 @@ export const serviceRequestSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useAddRequestByClientMutation, useGetAllSchedulesQuery } =
-  serviceRequestSlice;
+export const {
+  useAddRequestByClientMutation,
+  useGetAllSchedulesQuery,
+  useUpdateRequestMutation,
+  useGetAllTechniciansQuery
+} = serviceRequestSlice;

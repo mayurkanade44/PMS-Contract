@@ -1,6 +1,7 @@
 import moment from "moment/moment.js";
 import Schedule from "../models/scheduleModel.js";
 import Service from "../models/serviceModel.js";
+import User from "../models/userModel.js";
 
 export const addScheduleByClient = async (req, res) => {
   const { date, time, serviceId } = req.body;
@@ -105,7 +106,7 @@ export const getAllSchedules = async (req, res) => {
 
     const schedules = await Schedule.find(query)
       .populate({
-        path: "user",
+        path: "technician",
         select: "name",
       })
       .sort("-createdAt")
@@ -115,6 +116,51 @@ export const getAllSchedules = async (req, res) => {
     return res
       .status(200)
       .json({ schedules, pages: Math.min(10, Math.ceil(count / 15)) });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const updateSchedule = async (req, res) => {
+  const { contractNo, clientName, clientAddress, clientContact } = req.body;
+  const { id } = req.params;
+  if (!contractNo || !clientName || !clientAddress || !clientContact)
+    return res.status(400).json({ msg: "Please provide required details" });
+
+  try {
+    const scheduler = await Schedule.findById(id);
+    if (!scheduler) {
+      res.status(400).json({ msg: "Requested service not found" });
+    }
+    if (scheduler.contractNo !== contractNo) {
+      return res
+        .status(400)
+        .json({ msg: "Contract number change not allowed" });
+    }
+    req.body.date = new Date(req.body.date);
+
+    await Schedule.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    return res.status(200).json({ msg: "Schedule service updated" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const getAllTechnicians = async (req, res) => {
+  try {
+    const users = await User.find({ role: "Technician" });
+    const formattedUsers = users.map((user) => ({
+      value: user._id,
+      label: user.name,
+    }));
+
+    return res.json(formattedUsers);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

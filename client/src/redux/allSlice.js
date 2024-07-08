@@ -5,6 +5,7 @@ const initialState = {
     ? JSON.parse(localStorage.getItem("user"))
     : null,
   contractDetails: null,
+  scheduleDetails: null,
 };
 
 const allSlice = createSlice({
@@ -25,6 +26,12 @@ const allSlice = createSlice({
     removeContractDetails: (state) => {
       state.contractDetails = null;
     },
+    setScheduleDetails: (state, action) => {
+      state.scheduleDetails = action.payload;
+    },
+    removeScheduleDetails: (state) => {
+      state.scheduleDetails = null;
+    },
   },
 });
 
@@ -33,6 +40,8 @@ export const {
   removeCredentials,
   setContractDetails,
   removeContractDetails,
+  setScheduleDetails,
+  removeScheduleDetails,
 } = allSlice.actions;
 
 export default allSlice.reducer;

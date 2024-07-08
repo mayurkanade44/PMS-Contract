@@ -10,6 +10,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import ServiceTable from "./ServiceTable";
 import ServiceRequestForm from "./ServiceRequestForm";
 import ScheduleTable from "./ScheduleTable";
+import ScheduleForm from "./ScheduleForm";
 
 export {
   Navbar,
@@ -24,4 +25,5 @@ export {
   AdminTable,
   ServiceRequestForm,
   ScheduleTable,
+  ScheduleForm,
 };
