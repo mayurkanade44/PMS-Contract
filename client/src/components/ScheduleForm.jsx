@@ -12,13 +12,14 @@ import {
 import {
   scheduleTypes,
   serviceTypeOptions,
-  timeSlot
+  timeSlot,
 } from "../utils/dataHelper";
 import Modal from "./Modals/Modal";
 
 const ScheduleForm = ({ open, setOpen }) => {
   const [selectedOption, setSelectedOption] = useState([]);
   const { scheduleDetails } = useSelector((store) => store.all);
+  const [services, setServices] = useState([]);
   const { data: adminValues, isLoading: valueLoading } = useGetAllValuesQuery();
   const { data: technicians, isLoading: techniciansLoading } =
     useGetAllTechniciansQuery();
@@ -28,6 +29,7 @@ const ScheduleForm = ({ open, setOpen }) => {
   console.log(scheduleDetails);
 
   useEffect(() => {
+    setServices(adminValues?.services);
     if (open && scheduleDetails?.contractNo) {
       setLoading(true);
       setSelectedOption([]);
@@ -40,21 +42,25 @@ const ScheduleForm = ({ open, setOpen }) => {
       setValue("time", scheduleDetails?.time);
       setValue(
         "date",
-        new Date(scheduleDetails?.date).toISOString().slice(0, 10)
+        scheduleDetails?.date
+          ? new Date(scheduleDetails?.date).toISOString().slice(0, 10)
+          : new Date().toISOString().slice(0, 10)
       );
       setValue("technician", scheduleDetails?.technician?._id);
-      scheduleDetails?.serviceName.map((serviceName) =>
-        adminValues?.services.map(
-          (service) =>
-            service.label === serviceName &&
-            setSelectedOption((prev) => [...prev, service])
-        )
-      );
+      scheduleDetails?.serviceName
+        ? scheduleDetails?.serviceName?.map((serviceName) =>
+            adminValues?.services.map(
+              (service) =>
+                service.label === serviceName &&
+                setSelectedOption((prev) => [...prev, service])
+            )
+          )
+        : setServices(scheduleDetails.services);
     }
     setTimeout(() => {
       setLoading(false);
-    }, 500);
-  }, [open]);
+    }, 1000);
+  }, [open, adminValues]);
 
   const {
     register,
@@ -96,13 +102,13 @@ const ScheduleForm = ({ open, setOpen }) => {
   };
   return (
     <>
-      {loading ? (
+      {loading || valueLoading || techniciansLoading ? (
         <Loading />
       ) : (
         <Modal open={open}>
           <form
             onSubmit={handleSubmit(submit)}
-            className="relative my-10 lg:my-2 w-[600px] "
+            className="relative my-10 lg:my-2 w-[600px]"
           >
             <div className="grid grid-cols-2 gap-x-5 gap-y-2">
               <div className="col-span-1">
@@ -176,7 +182,7 @@ const ScheduleForm = ({ open, setOpen }) => {
                   closeMenuOnSelect={false}
                   defaultValue={selectedOption}
                   onChange={setSelectedOption}
-                  options={adminValues?.services}
+                  options={services}
                   isMulti={true}
                   placeholder="Select Service"
                   required

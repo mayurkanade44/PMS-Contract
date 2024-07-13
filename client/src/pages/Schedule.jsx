@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import Select from "react-select";
 import {
   AlertMessage,
+  Button,
   Loading,
   ScheduleForm,
   ScheduleTable,
@@ -13,6 +14,7 @@ import {
   serviceTypeOptions,
 } from "../utils/dataHelper";
 import { AiOutlineSearch } from "react-icons/ai";
+import SearchClientModal from "../components/Modals/SearchClientModal";
 
 const Schedule = () => {
   const [scheduleType, setScheduleType] = useState({
@@ -32,6 +34,7 @@ const Schedule = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
+  const [openSearch, setOpenSearch] = useState(false);
 
   const {
     data,
@@ -62,6 +65,10 @@ const Schedule = () => {
 
   const pages = Array.from({ length: data?.pages }, (_, index) => index + 1);
 
+  const closeSearchModal = () => {
+    setOpenSearch(false);
+  };
+
   return (
     <>
       {schedulesLoading || isFetching ? (
@@ -69,21 +76,29 @@ const Schedule = () => {
       ) : (
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       )}
+      {openSearch && (
+        <SearchClientModal
+          open={openSearch}
+          close={closeSearchModal}
+          setOpen={setOpen}
+        />
+      )}
+      {open && <ScheduleForm open={open} setOpen={setOpen} />}
       <div className="pt-1 pb-5">
         <div className="mx-auto container bg-white shadow rounded">
           <div className="flex flex-col lg:flex-row px-8 pt-4 justify-between items-start lg:items-stretch w-full">
             <h1 className="text-3xl font-semibold">Service Scheduling </h1>
             <div className="w-full lg:w-2/4 flex flex-col lg:flex-row items-start lg:items-center justify-end">
-              <button
-                className="focus:shadow-outline-gray border border-transparent w-auto lg:w-1/4 my-2 lg:my-0 lg:ml-2 xl:ml-4 bg-indigo-700 transition focus:outline-none focus:border-gray-800 focus:shadow-outline-gray duration-150 ease-in-out hover:bg-indigo-600 rounded text-white px-6 py-2 text-sm"
-                onClick={() => setOpen(true)}
-              >
-                Add Schedule
-              </button>
-              <ScheduleForm open={open} setOpen={setOpen} />
-              <button className="focus:shadow-outline-gray border border-transparent w-auto lg:w-1/4 my-2 lg:my-0 lg:ml-2 xl:ml-4 bg-green-600 transition focus:outline-none focus:border-gray-800 focus:shadow-outline-gray duration-150 ease-in-out hover:bg-green-500 rounded text-white px-6 py-2 text-sm">
+              <Button
+                label="Add Schedule"
+                height="h-10"
+                width="w-1/4"
+                color="bg-indigo-700"
+                handleClick={() => setOpenSearch(true)}
+              />
+              {/* <button className="focus:shadow-outline-gray border border-transparent w-auto lg:w-1/4 my-2 lg:my-0 lg:ml-2 xl:ml-4 bg-green-600 transition focus:outline-none focus:border-gray-800 focus:shadow-outline-gray duration-150 ease-in-out hover:bg-green-500 rounded text-white px-6 py-2 text-sm">
                 Generate Report
-              </button>
+              </button> */}
             </div>
           </div>
           <div className="flex flex-col lg:flex-row px-8 justify-between items-start lg:items-stretch w-full">
@@ -94,7 +109,7 @@ const Schedule = () => {
                 </div>
                 <input
                   id="search"
-                  className=" text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-10 text-sm border-gray-300  rounded border"
+                  className=" text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-10 text-sm border-gray-300 rounded border"
                   placeholder="Contract Number"
                   value={tempSearch}
                   onChange={handleSearch}
@@ -112,7 +127,7 @@ const Schedule = () => {
                   options={scheduleTypes}
                 />
               </div>
-              <div className="w-full lg:w-1/4 my-2 lg:my-0 lg:mx-2 xl:mx-4 ">
+              <div className="w-full lg:w-1/4 my-2 lg:my-0 lg:mx-2 xl:mx-4">
                 <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
                   Service Type
                 </label>

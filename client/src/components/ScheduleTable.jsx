@@ -1,6 +1,6 @@
+import { useDispatch } from "react-redux";
 import { setScheduleDetails } from "../redux/allSlice";
 import { dateFormat } from "../utils/functionHelper";
-import { useDispatch, useSelector } from "react-redux";
 
 const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
   const dispatch = useDispatch();

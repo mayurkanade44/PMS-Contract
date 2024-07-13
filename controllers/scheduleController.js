@@ -2,6 +2,7 @@ import moment from "moment/moment.js";
 import Schedule from "../models/scheduleModel.js";
 import Service from "../models/serviceModel.js";
 import User from "../models/userModel.js";
+import Contract from "../models/contractModel.js";
 
 export const addScheduleByClient = async (req, res) => {
   const { date, time, serviceId } = req.body;
@@ -161,6 +162,47 @@ export const getAllTechnicians = async (req, res) => {
     }));
 
     return res.json(formattedUsers);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const searchContract = async (req, res) => {
+  const { search } = req.query;
+  try {
+    if (!search)
+      return res.status(400).json({ msg: "Please provide contract number" });
+
+    const contract = await Contract.findOne({
+      contractNo: search.toUpperCase(),
+    }).populate({
+      path: "services",
+      select: "services",
+    });
+    if (!contract)
+      return res.status(404).json({ msg: "Client details not found" });
+
+    let clientContact = "";
+    contract.shipToDetails.contact.map(
+      (item) => item.number.length > 0 && (clientContact += item.number + ", ")
+    );
+    let services = [];
+    contract.services.map((item) =>
+      item.services.map((service) =>
+        services.push({ value: item._id, label: service.label })
+      )
+    );
+
+    const contractDetails = {
+      contractNo: contract.contractNo,
+      clientName: contract.shipToDetails.name,
+      clientContact,
+      services,
+      clientAddress: `${contract.shipToDetails.address}, ${contract.shipToDetails.nearBy}, ${contract.shipToDetails.area}, ${contract.shipToDetails.city}, ${contract.shipToDetails.pincode}`,
+    };
+
+    return res.json(contractDetails);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
