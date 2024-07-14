@@ -62,7 +62,7 @@ export const addScheduleByClient = async (req, res) => {
       clientContact: contacts,
       serviceName: serviceDetails.services.map((service) => service.label),
       serviceType: "complaint",
-      scheduleType: "tentative",
+      scheduleType: "byClient",
       date: scheduleDate,
       time,
       service: serviceId,
@@ -82,9 +82,7 @@ export const getAllSchedules = async (req, res) => {
     req.query;
 
   //filtering
-  let query = {
-    scheduleType,
-  };
+  let query = {};
   if (search) {
     query.contractNo = { $regex: search, $options: "i" };
   }
@@ -94,8 +92,8 @@ export const getAllSchedules = async (req, res) => {
   if (serviceType && serviceType != "all") {
     query.serviceType = serviceType;
   }
-  if (time && time !== "all") {
-    query.time = time;
+  if (scheduleType && scheduleType !== "all") {
+    query.scheduleType = scheduleType;
   }
   if (jobStatus && jobStatus !== "all") {
     query.jobStatus = jobStatus;
@@ -154,13 +152,34 @@ export const updateSchedule = async (req, res) => {
 };
 
 export const getAllTechnicians = async (req, res) => {
+  const { date, time } = req.query;
   try {
     const users = await User.find({ role: "Technician" });
-    const formattedUsers = users.map((user) => ({
+    const allUsers = users.map((user) => ({
       value: user._id,
       label: user.name,
     }));
+    let formattedUsers;
+    if (time && date) {
+      console.log(time, date);
+      const schedules = await Schedule.find({
+        date: new Date(date),
+        time,
+        scheduleType: "confirmed",
+      }).select("technician");
 
+      const confirmedUserIds = new Set(
+        schedules.map((schedule) => schedule.technician.toString())
+      );
+
+      console.log(confirmedUserIds);
+      formattedUsers = allUsers.filter(
+        (user) => !confirmedUserIds.has(user.value.toString())
+      );
+    } else {
+      formattedUsers = allUsers;
+    }
+    console.log(formattedUsers.length);
     return res.json(formattedUsers);
   } catch (error) {
     console.log(error);
@@ -203,6 +222,70 @@ export const searchContract = async (req, res) => {
     };
 
     return res.json(contractDetails);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const addScheduleByPms = async (req, res) => {
+  const {
+    contractNo,
+    clientName,
+    clientAddress,
+    clientContact,
+    date,
+    serviceName,
+    scheduleType,
+    technician,
+    serviceType,
+    time,
+  } = req.body;
+
+  if (
+    !contractNo ||
+    !clientName ||
+    !clientAddress ||
+    !clientContact ||
+    !date ||
+    serviceName.length < 1 ||
+    !technician ||
+    !time ||
+    !serviceType
+  )
+    return res.status(400).json({ msg: "Please provide required details" });
+
+  try {
+    let scheduleDate = new Date(date);
+    const alreadyScheduled = await Schedule.findOne({
+      contractNo,
+      date: scheduleDate,
+      serviceName,
+    });
+    if (alreadyScheduled) {
+      return res.status(400).json({
+        msg: `Service is already schedule on ${moment(date).format(
+          "DD/MM/YYYY"
+        )}`,
+      });
+    }
+
+    req.body.date = scheduleDate;
+    await Schedule.create({
+      contractNo,
+      clientName,
+      clientAddress,
+      clientContact,
+      serviceName,
+      serviceType,
+      scheduleType,
+      date: scheduleDate,
+      time,
+      service: req.body.service,
+      technician,
+    });
+
+    return res.status(201).json({ msg: "New schedule is added" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

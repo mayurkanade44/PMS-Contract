@@ -15,7 +15,7 @@ const ScheduleSchema = new mongoose.Schema(
     scheduleType: {
       type: String,
       required: true,
-      enum: ["tentative", "confirmed", "cancelled"],
+      enum: ["byClient", "confirmed", "cancelled"],
     },
     jobStatus: {
       type: String,

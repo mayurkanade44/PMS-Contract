@@ -60,10 +60,21 @@ export const timeSlot = [
   { value: "anytime", label: "Anytime" },
   { value: "1st half", label: "1st Half" },
   { value: "2nd half", label: "2nd Half" },
+  { value: "10.30", label: "10.30" },
+  { value: "11.30", label: "11.30" },
+  { value: "12.30", label: "12.30" },
+  { value: "1.30", label: "1.30" },
+  { value: "2.30", label: "2.30" },
+  { value: "3.30", label: "3.30" },
+  { value: "4.30", label: "4.30" },
+  { value: "5.30", label: "5.30" },
+  { value: "6.30", label: "6.30" },
+  { value: "night", label: "Night" },
 ];
 
 export const scheduleTypes = [
-  { value: "tentative", label: "Tentative" },
+  { value: "all", label: "All" },
+  { value: "byClient", label: "By Client" },
   { value: "confirmed", label: "Confirmed" },
   { value: "cancelled", label: "Cancelled" },
 ];

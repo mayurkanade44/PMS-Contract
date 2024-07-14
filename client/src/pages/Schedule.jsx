@@ -18,8 +18,8 @@ import SearchClientModal from "../components/Modals/SearchClientModal";
 
 const Schedule = () => {
   const [scheduleType, setScheduleType] = useState({
-    value: "tentative",
-    label: "Tentative",
+    value: "all",
+    label: "All",
   });
   const [jobStatus, setJobStatus] = useState({
     value: "all",

@@ -75,7 +75,7 @@ const ServiceRequestForm = () => {
               render={({ field: { onChange, value } }) => (
                 <InputSelect
                   label="Time Slot"
-                  options={timeSlot}
+                  options={timeSlot.slice(0, 3)}
                   onChange={onChange}
                   value={value}
                   placeholder="Select time slot"

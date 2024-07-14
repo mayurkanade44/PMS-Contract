@@ -8,6 +8,15 @@ export const serviceRequestSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Schedules"],
+    }),
+    addRequestByPms: builder.mutation({
+      query: (data) => ({
+        url: "/api/schedule/byPms",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Schedules"],
     }),
     updateRequest: builder.mutation({
       query: ({ id, data }) => ({
@@ -18,11 +27,10 @@ export const serviceRequestSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Schedules"],
     }),
     getAllTechnicians: builder.query({
-      query: () => ({
+      query: ({ date, time }) => ({
         url: "/api/schedule/allTechnicians",
+        params: { date, time },
       }),
-      providesTags: ["User"],
-      keepUnusedDataFor: 10,
     }),
     getClientDetails: builder.query({
       query: ({ search }) => ({
@@ -61,4 +69,5 @@ export const {
   useUpdateRequestMutation,
   useGetAllTechniciansQuery,
   useGetClientDetailsQuery,
+  useAddRequestByPmsMutation,
 } = serviceRequestSlice;

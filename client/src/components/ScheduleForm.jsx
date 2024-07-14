@@ -8,6 +8,7 @@ import { useGetAllValuesQuery } from "../redux/contractSlice";
 import {
   useGetAllTechniciansQuery,
   useUpdateRequestMutation,
+  useAddRequestByPmsMutation,
 } from "../redux/scheduleSlice";
 import {
   scheduleTypes,
@@ -20,13 +21,23 @@ const ScheduleForm = ({ open, setOpen }) => {
   const [selectedOption, setSelectedOption] = useState([]);
   const { scheduleDetails } = useSelector((store) => store.all);
   const [services, setServices] = useState([]);
+  const [technicianDateTime, setTechnicianDateTime] = useState({
+    date: "",
+    time: "",
+  });
   const { data: adminValues, isLoading: valueLoading } = useGetAllValuesQuery();
-  const { data: technicians, isLoading: techniciansLoading } =
-    useGetAllTechniciansQuery();
-  const [updateRequest, { isLoading }] = useUpdateRequestMutation();
+  const {
+    data: technicians,
+    isLoading: techniciansLoading,
+    isFetching: techniciansFetchLoading,
+  } = useGetAllTechniciansQuery({
+    date: technicianDateTime.date,
+    time: technicianDateTime.time,
+  });
+  const [updateRequest, { isLoading: updateLoading }] =
+    useUpdateRequestMutation();
+  const [addRequest, { isLoading: addLoading }] = useAddRequestByPmsMutation();
   const [loading, setLoading] = useState(true);
-
-  console.log(scheduleDetails);
 
   useEffect(() => {
     setServices(adminValues?.services);
@@ -44,7 +55,7 @@ const ScheduleForm = ({ open, setOpen }) => {
         "date",
         scheduleDetails?.date
           ? new Date(scheduleDetails?.date).toISOString().slice(0, 10)
-          : new Date().toISOString().slice(0, 10)
+          : new Date()
       );
       setValue("technician", scheduleDetails?.technician?._id);
       scheduleDetails?.serviceName
@@ -67,8 +78,8 @@ const ScheduleForm = ({ open, setOpen }) => {
     formState: { errors, isValid },
     handleSubmit,
     reset,
-    getValues,
     setValue,
+    watch,
     control,
   } = useForm({
     defaultValues: {
@@ -76,21 +87,41 @@ const ScheduleForm = ({ open, setOpen }) => {
       clientName: "",
       clientAddress: "",
       clientContact: "",
-      serviceType: "",
-      scheduleType: "",
+      serviceType: "regular",
+      scheduleType: "confirmed",
       date: "",
-      time: "",
+      time: "anytime",
       technician: "",
-      service: "",
     },
   });
 
+  let scheduleDate = watch("date");
+  let scheduleTime = watch("time");
+
+  useEffect(() => {
+    if (
+      scheduleDate &&
+      scheduleTime !== "anytime" &&
+      scheduleTime !== "1st half" &&
+      scheduleTime !== "2nd half" &&
+      scheduleTime !== "night"
+    ) {
+      setTechnicianDateTime({ date: scheduleDate, time: scheduleTime });
+    }
+  }, [scheduleDate, scheduleTime]);
+
   const submit = async (data) => {
-    data.service = scheduleDetails?.id;
+    console.log(data);
     const serviceName = selectedOption.map((service) => service.label);
     data.serviceName = serviceName;
     try {
-      let res = await updateRequest({ id: scheduleDetails._id, data }).unwrap();
+      let res;
+      if (scheduleDetails._id) {
+        res = await updateRequest({ id: scheduleDetails._id, data }).unwrap();
+      } else {
+        data.service = selectedOption[0].value;
+        res = await addRequest(data).unwrap();
+      }
       toast.success(res.msg);
       reset();
       setOpen(false);
@@ -100,12 +131,21 @@ const ScheduleForm = ({ open, setOpen }) => {
       toast.error(error?.data?.msg || error.error);
     }
   };
+
   return (
     <>
-      {loading || valueLoading || techniciansLoading ? (
+      {loading ||
+      valueLoading ||
+      techniciansLoading ||
+      techniciansFetchLoading ||
+      addLoading ||
+      updateLoading ? (
         <Loading />
       ) : (
         <Modal open={open}>
+          <h4 className="text-center text-xl font-semibold mb-5">
+            {scheduleDetails._id ? "Update" : "New"}  Schedule
+          </h4>
           <form
             onSubmit={handleSubmit(submit)}
             className="relative my-10 lg:my-2 w-[600px]"
@@ -118,6 +158,7 @@ const ScheduleForm = ({ open, setOpen }) => {
                   id="contractNo"
                   errors={errors}
                   register={register}
+                  disabled={true}
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
                   {errors.contractNo && "Contract number is required"}
@@ -142,9 +183,10 @@ const ScheduleForm = ({ open, setOpen }) => {
                   id="clientContact"
                   errors={errors}
                   register={register}
+                  required
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.clientContact && "contact number is required"}
+                  {errors.clientContact && "Contact number is required"}
                 </p>
               </div>
               <div className="col-span-1">
@@ -168,9 +210,10 @@ const ScheduleForm = ({ open, setOpen }) => {
                   id="clientAddress"
                   errors={errors}
                   register={register}
+                  required
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
-                  {errors.clientContact && "contact number is required"}
+                  {errors.clientAddress && "Address is required"}
                 </p>
               </div>
               <div className="col-span-2">
@@ -195,6 +238,7 @@ const ScheduleForm = ({ open, setOpen }) => {
                   errors={errors}
                   register={register}
                   type="date"
+                  required
                 />
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
                   {errors.date && "schedule date is required"}
@@ -214,7 +258,6 @@ const ScheduleForm = ({ open, setOpen }) => {
                   )}
                 />
               </div>
-
               <div className="col-span-1">
                 <Controller
                   name="serviceType"
@@ -229,7 +272,6 @@ const ScheduleForm = ({ open, setOpen }) => {
                   )}
                 />
               </div>
-
               <div className="col-span-1">
                 <Controller
                   name="technician"

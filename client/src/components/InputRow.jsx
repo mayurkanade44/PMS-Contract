@@ -4,6 +4,7 @@ const InputRow = ({
   id,
   placeholder,
   required = true,
+  disabled = false,
   type,
 }) => {
   return (
@@ -19,9 +20,10 @@ const InputRow = ({
       </label>
       <input
         type={type || "text"}
-        className={`mt-0.5 w-full py-0.5 px-2 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black`}
+        className={`mt-0.5 w-full py-0.5 px-2 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black disabled:bg-gray-100`}
         placeholder={placeholder}
         {...register(id, { required: required })}
+        disabled={disabled}
       />
     </div>
   );

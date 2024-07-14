@@ -19,6 +19,7 @@ const InputSelect = ({
         isMulti={isMulti || false}
         className="basic-multi-select"
         isClearable
+        maxMenuHeight={170}
         options={options}
         value={value ? options?.find((c) => c.value === value) : value}
         onChange={(val) => onChange(val ? val.value : val)}

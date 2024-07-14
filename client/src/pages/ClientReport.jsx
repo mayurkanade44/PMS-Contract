@@ -42,7 +42,7 @@ const ClientReport = () => {
       )}
       {show.buttons ? (
         <div className="text-center mt-14">
-          {/* <div className="mb-5">
+          <div className="mb-5">
             <Button
               label="Service Request"
               width="w-52"
@@ -52,7 +52,7 @@ const ClientReport = () => {
                 setShow({ report: false, request: true, buttons: false })
               }
             />
-          </div> */}
+          </div>
           <Button
             label="Service Report"
             width="w-52"
