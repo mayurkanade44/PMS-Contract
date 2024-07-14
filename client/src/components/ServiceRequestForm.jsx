@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -6,7 +6,7 @@ import { Button, InputRow, InputSelect, Loading } from "../components";
 import { useAddRequestByClientMutation } from "../redux/scheduleSlice";
 import { timeSlot } from "../utils/dataHelper";
 
-const ServiceRequestForm = () => {
+const ServiceRequestForm = ({ directRequest }) => {
   const [addRequest, { isLoading }] = useAddRequestByClientMutation();
   const { id } = useParams();
   const [message, setMessage] = useState(null);
@@ -24,6 +24,29 @@ const ServiceRequestForm = () => {
       time: "anytime",
     },
   });
+
+  useEffect(() => {
+    if (directRequest) {
+      handleDirectRequest();
+    }
+  }, []);
+
+  const handleDirectRequest = async () => {
+    try {
+      let res = await addRequest({
+        serviceId: id,
+        date: new Date().toISOString().slice(0, 10),
+        time: "anytime",
+      }).unwrap();
+      toast.success(res.msg);
+      setMessage(res.msg);
+      reset();
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.msg || error.error);
+      setMessage(error?.data?.msg || error.error);
+    }
+  };
 
   const submit = async (data) => {
     console.log(data);

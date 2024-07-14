@@ -11,6 +11,7 @@ const ClientReport = () => {
   const [show, setShow] = useState({
     report: false,
     request: false,
+    direct: false,
     buttons: true,
   });
   const { user } = useSelector((store) => store.all);
@@ -44,12 +45,33 @@ const ClientReport = () => {
         <div className="text-center mt-14">
           <div className="mb-5">
             <Button
+              label="Direct Request"
+              width="w-52"
+              height="h-10"
+              color="bg-slate-600"
+              handleClick={() =>
+                setShow({
+                  report: false,
+                  request: true,
+                  direct: true,
+                  buttons: false,
+                })
+              }
+            />
+          </div>
+          <div className="mb-5">
+            <Button
               label="Service Request"
               width="w-52"
               height="h-10"
               color="bg-blue-600"
               handleClick={() =>
-                setShow({ report: false, request: true, buttons: false })
+                setShow({
+                  report: false,
+                  request: true,
+                  direct: false,
+                  buttons: false,
+                })
               }
             />
           </div>
@@ -59,7 +81,12 @@ const ClientReport = () => {
             height="h-10"
             color="bg-green-600"
             handleClick={() =>
-              setShow({ report: true, request: false, buttons: false })
+              setShow({
+                report: true,
+                request: false,
+                direct: false,
+                buttons: false,
+              })
             }
           />
         </div>
@@ -126,7 +153,7 @@ const ClientReport = () => {
               </div>
             </div>
           )}
-          {show.request && <ServiceRequestForm />}
+          {show.request && <ServiceRequestForm directRequest={show.direct} />}
         </>
       )}
     </div>

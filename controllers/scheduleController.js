@@ -172,14 +172,13 @@ export const getAllTechnicians = async (req, res) => {
         schedules.map((schedule) => schedule.technician.toString())
       );
 
-      console.log(confirmedUserIds);
       formattedUsers = allUsers.filter(
         (user) => !confirmedUserIds.has(user.value.toString())
       );
     } else {
       formattedUsers = allUsers;
     }
-    console.log(formattedUsers.length);
+
     return res.json(formattedUsers);
   } catch (error) {
     console.log(error);
