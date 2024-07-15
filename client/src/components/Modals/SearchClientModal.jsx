@@ -46,7 +46,7 @@ const SearchClientModal = ({ open, close, setOpen }) => {
         <Loading />
       ) : (
         <Modal open={open}>
-          <div className="my-10 lg:my-1 w-[500px]">
+          <div className="md:my-10 lg:my-1 md:w-[500px]">
             <div className="relative">
               <div className="flex justify-around mb-8">
                 <h4 className="text-center text-xl font-semibold">

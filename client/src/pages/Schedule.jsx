@@ -1,12 +1,6 @@
 import { useMemo, useState } from "react";
 import Select from "react-select";
-import {
-  AlertMessage,
-  Button,
-  Loading,
-  ScheduleForm,
-  ScheduleTable,
-} from "../components";
+import { AlertMessage, Button, Loading, ScheduleTable } from "../components";
 import { useGetAllSchedulesQuery } from "../redux/scheduleSlice";
 import {
   jobStatusOptions,
@@ -15,6 +9,7 @@ import {
 } from "../utils/dataHelper";
 import { AiOutlineSearch } from "react-icons/ai";
 import SearchClientModal from "../components/Modals/SearchClientModal";
+import ScheduleFormModal from "../components/Modals/ScheduleFormModal";
 
 const Schedule = () => {
   const [scheduleType, setScheduleType] = useState({
@@ -83,7 +78,7 @@ const Schedule = () => {
           setOpen={setOpen}
         />
       )}
-      {open && <ScheduleForm open={open} setOpen={setOpen} />}
+      {open && <ScheduleFormModal open={open} setOpen={setOpen} />}
       <div className="pt-1 pb-5">
         <div className="mx-auto container bg-white shadow rounded">
           <div className="flex flex-col lg:flex-row px-8 pt-4 justify-between items-start lg:items-stretch w-full">
@@ -92,12 +87,12 @@ const Schedule = () => {
               <Button
                 label="Add Schedule"
                 height="h-10"
-                width="w-1/4"
+                width="md:w-1/4 mb-5 md:mb-0"
                 color="bg-indigo-700"
                 handleClick={() => setOpenSearch(true)}
               />
               {/* <button className="focus:shadow-outline-gray border border-transparent w-auto lg:w-1/4 my-2 lg:my-0 lg:ml-2 xl:ml-4 bg-green-600 transition focus:outline-none focus:border-gray-800 focus:shadow-outline-gray duration-150 ease-in-out hover:bg-green-500 rounded text-white px-6 py-2 text-sm">
-                Generate Report
+                Generate Schedule
               </button> */}
             </div>
           </div>

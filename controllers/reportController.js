@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import Contract from "../models/contractModel.js";
 import Report from "../models/reportModel.js";
 import Service from "../models/serviceModel.js";
+import Schedule from "../models/scheduleModel.js";
 import { sendBrevoEmail, uploadFile } from "../utils/helper.js";
 
 export const addServiceData = async (req, res) => {
@@ -67,6 +68,17 @@ export const addServiceData = async (req, res) => {
     };
 
     await Report.create(req.body);
+
+    if (req.body.serviceStatus === "Completed") {
+      const schedule = await Schedule.findOne({
+        service: serviceId,
+        date: req.body.serviceDate,
+      });
+      if (schedule) {
+        schedule.jobStatus = "done";
+        await schedule.save();
+      }
+    }
 
     const mailSent = await sendBrevoEmail({
       emailList,
