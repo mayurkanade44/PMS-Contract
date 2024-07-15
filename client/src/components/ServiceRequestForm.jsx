@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { Button, InputRow, InputSelect, Loading } from "../components";
 import { useAddRequestByClientMutation } from "../redux/scheduleSlice";
 import { timeSlot } from "../utils/dataHelper";
+import { todaysDate } from "../utils/functionHelper";
 
 const ServiceRequestForm = ({ directRequest }) => {
   const [addRequest, { isLoading }] = useAddRequestByClientMutation();
@@ -35,7 +36,7 @@ const ServiceRequestForm = ({ directRequest }) => {
     try {
       let res = await addRequest({
         serviceId: id,
-        date: new Date().toISOString().slice(0, 10),
+        date: todaysDate(),
         time: "anytime",
       }).unwrap();
       toast.success(res.msg);

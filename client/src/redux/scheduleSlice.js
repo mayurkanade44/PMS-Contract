@@ -38,6 +38,14 @@ export const serviceRequestSlice = apiSlice.injectEndpoints({
         params: { search },
       }),
     }),
+    getTechnicianSchedules: builder.query({
+      query: ({ date }) => ({
+        url: "/api/schedule/technicianSchedules",
+        params: { date },
+      }),
+      providesTags: ["Schedules"],
+      keepUnusedDataFor: 10,
+    }),
     getAllSchedules: builder.query({
       query: ({
         scheduleType,
@@ -70,4 +78,5 @@ export const {
   useGetAllTechniciansQuery,
   useGetClientDetailsQuery,
   useAddRequestByPmsMutation,
+  useGetTechnicianSchedulesQuery,
 } = serviceRequestSlice;

@@ -6,6 +6,7 @@ import {
   getAllTechnicians,
   searchContract,
   addScheduleByPms,
+  getTechnicianSchedules,
 } from "../controllers/scheduleController.js";
 import {
   authenticateUser,
@@ -35,6 +36,12 @@ router
     authorizeUser("Admin", "Back Office"),
     addScheduleByPms
   );
+router.get(
+  "/technicianSchedules",
+  authenticateUser,
+  authorizeUser("Technician"),
+  getTechnicianSchedules
+);
 router.put(
   "/:id",
   authenticateUser,

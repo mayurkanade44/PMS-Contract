@@ -290,3 +290,15 @@ export const addScheduleByPms = async (req, res) => {
     res.status(500).json({ msg: "Server error, try again later" });
   }
 };
+
+export const getTechnicianSchedules = async (req, res) => {
+  try {
+    const date = new Date(req.query.date);
+    const schedules = await Schedule.find({ date, technician: req.user._id });
+
+    return res.json(schedules);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};

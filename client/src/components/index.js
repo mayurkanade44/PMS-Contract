@@ -11,6 +11,7 @@ import ServiceTable from "./ServiceTable";
 import ServiceRequestForm from "./ServiceRequestForm";
 import ScheduleTable from "./ScheduleTable";
 import ScheduleForm from "./ScheduleForm";
+import TechnicianScheduleTable from "./TechnicianScheduleTable";
 
 export {
   Navbar,
@@ -26,4 +27,5 @@ export {
   ServiceRequestForm,
   ScheduleTable,
   ScheduleForm,
+  TechnicianScheduleTable
 };

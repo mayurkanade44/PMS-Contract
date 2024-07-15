@@ -27,7 +27,9 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
       <p
         className={`inline-flex items-center rounded-md px-2 py-1 font-medium ${text} ring-1 ring-gray-300`}
       >
-        {status === "byClient" ? "By Client" : status.charAt(0).toUpperCase() + status.slice(1)}
+        {status === "byClient"
+          ? "By Client"
+          : status.charAt(0).toUpperCase() + status.slice(1)}
       </p>
     );
   };
@@ -100,7 +102,7 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
               <td className="pr-4 whitespace-no-wrap text-gray-800  tracking-normal">
                 {schedule.serviceName.join(", ")}
               </td>
-              <td >{progress(schedule.scheduleType)}</td>
+              <td>{progress(schedule.scheduleType)}</td>
               <td className="pr-1">{progress(schedule.serviceType)}</td>
               <td className="whitespace-no-wrap  text-gray-800  tracking-normal">
                 {progress(schedule.jobStatus)}
