@@ -45,10 +45,10 @@ const ClientReport = () => {
         <div className="text-center mt-14">
           <div className="mb-5">
             <Button
-              label="Direct Request"
+              label="Direct Service"
               width="w-52"
               height="h-10"
-              color="bg-slate-600"
+              color="bg-red-600"
               handleClick={() =>
                 setShow({
                   report: false,
@@ -61,7 +61,7 @@ const ClientReport = () => {
           </div>
           <div className="mb-5">
             <Button
-              label="Service Request"
+              label="Schedule Request"
               width="w-52"
               height="h-10"
               color="bg-blue-600"

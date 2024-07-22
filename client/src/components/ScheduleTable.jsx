@@ -63,13 +63,13 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
             <th className="text-gray-600 w-28 font-normal text-left text-sm tracking-normal">
               Schedule Type
             </th>
-            <th className="text-gray-600 w-24 font-normal  text-left text-sm tracking-normal">
+            <th className="text-gray-600 w-24 font-normal text-left text-sm tracking-normal">
               Service Type
             </th>
             <th className="text-gray-600 font-normal pr-5  text-left text-sm tracking-normal">
               Status
             </th>
-            <th className="text-gray-600 font-normal pr-6 text-left text-sm tracking-normal">
+            <th className="text-gray-600 font-normal pr-4 text-left text-sm tracking-normal">
               Technician
             </th>
           </tr>
@@ -107,7 +107,7 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
               <td className="whitespace-no-wrap  text-gray-800  tracking-normal">
                 {progress(schedule.jobStatus)}
               </td>
-              <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
+              <td className="px-2 whitespace-no-wrap text-gray-800  tracking-normal">
                 {schedule.technician?.name}
               </td>
             </tr>

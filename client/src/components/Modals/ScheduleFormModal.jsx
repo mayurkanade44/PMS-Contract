@@ -143,15 +143,12 @@ const ScheduleFormModal = ({ open, setOpen }) => {
         <Loading />
       ) : (
         <Modal open={open}>
-          <div className="h-[400px] md:h-full overflow-x-scroll xl:overflow-x-hidden md:w-[600px]">
+          <div className="h-[440px] md:h-full overflow-x-scroll md:overflow-visible md:w-[600px]">
             <h4 className="text-center text-xl font-semibold mb-5">
               {scheduleDetails._id ? "Update" : "New"} Schedule
             </h4>
-            <form
-              onSubmit={handleSubmit(submit)}
-              className="relative my-10 lg:my-2"
-            >
-              <div className="grid grid-cols-2 gap-x-5 gap-y-2">
+            <form onSubmit={handleSubmit(submit)} className="relative my-2">
+              <div className="grid grid-cols-2 gap-x-5 gap-y-2 ">
                 <div className="col-span-2 md:col-span-1">
                   <InputRow
                     label="Contract Number"

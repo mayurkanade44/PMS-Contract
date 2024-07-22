@@ -3,7 +3,7 @@ import React from "react";
 const Modal = ({ open, children }) => {
   return (
     <div
-      className={`fixed z-10 inset-0 flex justify-center items-center  transition-colors ${
+      className={`fixed z-10 inset-0 flex justify-center items-center pt-10 md:pt-0 transition-colors ${
         open ? "visible bg-black/20" : "invisible"
       }`}
     >
