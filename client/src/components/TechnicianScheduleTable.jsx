@@ -83,19 +83,19 @@ const TechnicianScheduleTable = () => {
                   <th className="text-left w-40 border-neutral-800 border-2 whitespace-nowrap px-8">
                     Card No
                   </th>
-                  <th className="text-left w-40 border-neutral-800 border-2 whitespace-nowrap px-8">
+                  <th className="text-left border-neutral-800 border-2 whitespace-nowrap px-2">
                     Job Status
                   </th>
-                  <th className="text-left  border-neutral-800 border-2 px-10">
+                  <th className="text-left  border-neutral-800 border-2 px-12">
                     Name
                   </th>
                   <th className="text-left   border-neutral-800 border-2 px-20">
                     Address
                   </th>
-                  <th className="text-left  border-neutral-800 border-2 px-2">
+                  <th className="text-left  border-neutral-800 border-2 px-5">
                     Contact
                   </th>
-                  <th className="text-left  border-neutral-800 border-2 px-10">
+                  <th className="text-left  border-neutral-800 border-2 px-12">
                     Service
                   </th>
                   <th className="text-left border-neutral-800 border-2 px-2">

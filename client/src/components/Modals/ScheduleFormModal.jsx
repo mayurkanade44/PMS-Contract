@@ -75,7 +75,7 @@ const ScheduleFormModal = ({ open, setOpen }) => {
 
   const {
     register,
-    formState: { errors, isValid },
+    formState: { errors},
     handleSubmit,
     reset,
     setValue,

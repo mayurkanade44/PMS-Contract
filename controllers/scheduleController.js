@@ -78,13 +78,25 @@ export const addScheduleByClient = async (req, res) => {
 };
 
 export const getAllSchedules = async (req, res) => {
-  const { search, page, serviceType, scheduleType, jobStatus, date, time } =
-    req.query;
+  const {
+    search,
+    page,
+    serviceType,
+    scheduleType,
+    jobStatus,
+    date,
+    technician,
+  } = req.query;
 
   //filtering
   let query = {};
   if (search) {
-    query.contractNo = { $regex: search, $options: "i" };
+    query = {
+      $or: [
+        { contractNo: { $regex: search, $options: "i" } },
+        { clientName: { $regex: search, $options: "i" } },
+      ],
+    };
   }
   if (date) {
     query.date = new Date(date);
@@ -98,6 +110,9 @@ export const getAllSchedules = async (req, res) => {
   if (jobStatus && jobStatus !== "all") {
     query.jobStatus = jobStatus;
   }
+  if (technician && technician !== "all") {
+    query.technician = technician;
+  }
 
   let pageNumber = Number(page) || 1;
   try {
@@ -109,12 +124,12 @@ export const getAllSchedules = async (req, res) => {
         select: "name",
       })
       .sort("-createdAt")
-      .skip(15 * (pageNumber - 1))
-      .limit(15);
+      .skip(20 * (pageNumber - 1))
+      .limit(20);
 
     return res
       .status(200)
-      .json({ schedules, pages: Math.min(10, Math.ceil(count / 15)) });
+      .json({ schedules, pages: Math.min(10, Math.ceil(count / 20)) });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
@@ -294,8 +309,42 @@ export const addScheduleByPms = async (req, res) => {
 export const getTechnicianSchedules = async (req, res) => {
   try {
     const date = new Date(req.query.date);
-    const schedules = await Schedule.find({ date, technician: req.user._id });
+    const schedules = await Schedule.find({
+      date,
+      scheduleType: { $ne: "cancelled" },
+      technician: req.user._id,
+    }).sort("time");
 
+    return res.json(schedules);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const generateSchedule = async (req, res) => {
+  const { date } = req.body;
+  if (!date) return res.status(400).json({ msg: "Please provide valid date" });
+  try {
+    const schedules = await Schedule.find({
+      date: new Date(date),
+      scheduleType: "confirmed",
+    })
+      .populate({
+        path: "technician",
+        select: "name",
+      })
+      .sort("technician");
+
+    const template = fs.readFileSync("./tmp/scheduleTemp.docx");
+    const buffer = await createReport({
+      cmdDelimiter: ["{", "}"],
+      template,
+
+      additionalJsContext: {},
+    });
+
+    console.log(schedules);
     return res.json(schedules);
   } catch (error) {
     console.log(error);

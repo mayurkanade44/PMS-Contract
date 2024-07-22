@@ -1,7 +1,10 @@
 import { useMemo, useState } from "react";
 import Select from "react-select";
 import { AlertMessage, Button, Loading, ScheduleTable } from "../components";
-import { useGetAllSchedulesQuery } from "../redux/scheduleSlice";
+import {
+  useGetAllSchedulesQuery,
+  useGetAllTechniciansQuery,
+} from "../redux/scheduleSlice";
 import {
   jobStatusOptions,
   scheduleTypes,
@@ -24,12 +27,21 @@ const Schedule = () => {
     value: "all",
     label: "All",
   });
+  const [technician, setTechnician] = useState({
+    value: "all",
+    label: "All",
+  });
   const [date, setDate] = useState("");
   const [tempSearch, setTempSearch] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
+
+  const { data: technicians, isLoading: techniciansLoading } =
+    useGetAllTechniciansQuery({ date: "", time: "" });
+
+  console.log(technicians);
 
   const {
     data,
@@ -40,6 +52,7 @@ const Schedule = () => {
     scheduleType: scheduleType.value,
     jobStatus: jobStatus.value,
     serviceType: serviceType.value,
+    technician: technician.value,
     date,
     search,
     page,
@@ -66,7 +79,7 @@ const Schedule = () => {
 
   return (
     <>
-      {schedulesLoading || isFetching ? (
+      {schedulesLoading || isFetching || techniciansLoading ? (
         <Loading />
       ) : (
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
@@ -96,8 +109,8 @@ const Schedule = () => {
               </button> */}
             </div>
           </div>
-          <div className="flex flex-col lg:flex-row px-8 justify-between items-start lg:items-stretch w-full">
-            <div className="w-full lg:w-1/4 flex flex-col lg:flex-row items-start lg:items-center">
+          <div className="flex flex-col lg:flex-row px-4 justify-between items-start lg:items-stretch w-full">
+            <div className="w-full lg:w-1/5 flex flex-col lg:flex-row items-start lg:items-center">
               <div className="w-full relative mb-2 lg:mb-0 lg:mr-4 lg:mt-6">
                 <div className="absolute text-gray-600 dark:text-gray-400 flex items-center pl-3 h-full">
                   <AiOutlineSearch />
@@ -111,8 +124,8 @@ const Schedule = () => {
                 />
               </div>
             </div>
-            <div className="w-full lg:w-3/4 flex flex-col lg:flex-row items-start lg:items-center justify-between">
-              <div className="w-full lg:w-1/4 my-2 lg:my-0 lg:mx-2 xl:mx-4">
+            <div className="w-full lg:w-4/5 flex flex-col lg:flex-row items-start lg:items-center justify-between">
+              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-2">
                 <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
                   Schedule Type
                 </label>
@@ -122,7 +135,7 @@ const Schedule = () => {
                   options={scheduleTypes}
                 />
               </div>
-              <div className="w-full lg:w-1/4 my-2 lg:my-0 lg:mx-2 xl:mx-4">
+              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-2">
                 <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
                   Service Type
                 </label>
@@ -132,7 +145,7 @@ const Schedule = () => {
                   options={serviceTypeOptions}
                 />
               </div>
-              <div className="w-full lg:w-1/4 my-2 lg:my-0 lg:mx-2 xl:mx-4 ">
+              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-2 ">
                 <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
                   Job Status
                 </label>
@@ -142,7 +155,22 @@ const Schedule = () => {
                   options={jobStatusOptions}
                 />
               </div>
-              <div className=" w-full lg:w-1/4 my-5 lg:mx-2 xl:mx-4">
+              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-2">
+                <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
+                  Technicians
+                </label>
+                <Select
+                  defaultValue={technician}
+                  onChange={setTechnician}
+                  options={
+                    technicians && [
+                      { value: "all", label: "All" },
+                      ...technicians,
+                    ]
+                  }
+                />
+              </div>
+              <div className=" w-full lg:w-1/5 my-5 lg:ml-2">
                 <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
                   Schedule Date
                 </label>

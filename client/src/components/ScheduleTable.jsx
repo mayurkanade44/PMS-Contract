@@ -45,16 +45,16 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
             <th className=" text-gray-600 w-40 font-normal text-left pr-4 text-sm tracking-normal">
               Client Name
             </th>
-            <th className="text-gray-600 font-normal pr-6 text-left text-sm tracking-normal">
+            <th className="text-gray-600 font-normal pr-4 text-left text-sm tracking-normal">
               Address
             </th>
-            <th className="text-gray-600 w-28 font-normal pr-4 text-left text-sm tracking-normal">
+            <th className="text-gray-600 w-[84px] font-normal pr-4 text-left text-sm tracking-normal">
               Phone No
             </th>
-            <th className="text-gray-600 w-24 font-normal text-left text-sm tracking-normal">
+            <th className="text-gray-600 w-20 font-normal text-left text-sm tracking-normal">
               Date
             </th>
-            <th className="text-gray-600 w-20 font-normal text-left text-sm tracking-normal">
+            <th className="text-gray-600 w-16 font-normal text-left text-sm tracking-normal">
               Time
             </th>
             <th className="text-gray-600 w-40 font-normal text-left text-sm tracking-normal">
@@ -69,7 +69,7 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
             <th className="text-gray-600 font-normal pr-5  text-left text-sm tracking-normal">
               Status
             </th>
-            <th className="text-gray-600 font-normal pr-4 text-left text-sm tracking-normal">
+            <th className="text-gray-600 w-32 font-normal px-4 text-left text-sm tracking-normal">
               Technician
             </th>
           </tr>
@@ -87,19 +87,19 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
               <td className="p-2 text-left whitespace-no-wrap text-gray-800  tracking-normal">
                 {schedule.clientName}
               </td>
-              <td className="pr-4 whitespace-no-wrap text-gray-800  tracking-normal">
+              <td className="pr-3 whitespace-no-wrap text-gray-800  tracking-normal">
                 {schedule.clientAddress}
               </td>
-              <td className="pr-4 whitespace-no-wrap text-gray-800  tracking-normal">
+              <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
                 {schedule.clientContact}
               </td>
               <td className="text-left whitespace-no-wrap text-gray-800  tracking-normal">
                 {dateFormat(schedule.date)}
               </td>
-              <td className="pr-4 whitespace-no-wrap text-gray-800  tracking-normal">
+              <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
                 {schedule.time.charAt(0).toUpperCase() + schedule.time.slice(1)}
               </td>
-              <td className="pr-4 whitespace-no-wrap text-gray-800  tracking-normal">
+              <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
                 {schedule.serviceName.join(", ")}
               </td>
               <td>{progress(schedule.scheduleType)}</td>
@@ -107,7 +107,7 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
               <td className="whitespace-no-wrap  text-gray-800  tracking-normal">
                 {progress(schedule.jobStatus)}
               </td>
-              <td className="px-2 whitespace-no-wrap text-gray-800  tracking-normal">
+              <td className="px-1 whitespace-no-wrap text-center text-gray-800  tracking-normal">
                 {schedule.technician?.name}
               </td>
             </tr>
