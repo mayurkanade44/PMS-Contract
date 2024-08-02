@@ -38,8 +38,8 @@ export const serviceDates = ({ frequency, serviceStartDate, contract }) => {
     moment(contract.startDate),
     "days"
   );
-  if (moment(contract.startDate).month() === 1 ) {
-    diffDays += 2
+  if (moment(contract.startDate).month() === 1) {
+    diffDays += 2;
   }
   const endDate = contract.endDate;
 

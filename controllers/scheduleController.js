@@ -3,6 +3,7 @@ import Schedule from "../models/scheduleModel.js";
 import Service from "../models/serviceModel.js";
 import User from "../models/userModel.js";
 import Contract from "../models/contractModel.js";
+import { sendBrevoEmail } from "../utils/helper.js";
 
 export const addScheduleByClient = async (req, res) => {
   const { date, time, serviceId } = req.body;
@@ -55,11 +56,20 @@ export const addScheduleByClient = async (req, res) => {
     clientDetails.contact.map(
       (item) => item.number.length > 0 && (contacts += item.number + ", ")
     );
+    const emailList = [];
+    clientDetails.contact.map(
+      (item) =>
+        item.email &&
+        !emailList.some((i) => i.email === item.email) &&
+        emailList.push({ email: item.email })
+    );
+
     await Schedule.create({
       contractNo: serviceDetails.contract.contractNo,
       clientName: clientDetails.name,
       clientAddress: `${clientDetails.address}, ${clientDetails.nearBy}, ${clientDetails.area}, ${clientDetails.city}, ${clientDetails.pincode}`,
       clientContact: contacts,
+      clientEmail: emailList,
       serviceName: serviceDetails.services.map((service) => service.label),
       serviceType: "complaint",
       scheduleType: "byClient",
@@ -137,15 +147,29 @@ export const getAllSchedules = async (req, res) => {
 };
 
 export const updateSchedule = async (req, res) => {
-  const { contractNo, clientName, clientAddress, clientContact } = req.body;
+  const {
+    contractNo,
+    clientName,
+    clientAddress,
+    clientContact,
+    technician,
+    scheduleType,
+  } = req.body;
   const { id } = req.params;
-  if (!contractNo || !clientName || !clientAddress || !clientContact)
+  if (
+    !contractNo ||
+    !clientName ||
+    !clientAddress ||
+    !clientContact ||
+    !technician ||
+    !scheduleType
+  )
     return res.status(400).json({ msg: "Please provide required details" });
 
   try {
     const scheduler = await Schedule.findById(id);
     if (!scheduler) {
-      res.status(400).json({ msg: "Requested service not found" });
+      res.status(400).json({ msg: "Request not found" });
     }
     if (scheduler.contractNo !== contractNo) {
       return res
@@ -159,7 +183,32 @@ export const updateSchedule = async (req, res) => {
       runValidators: true,
     });
 
-    return res.status(200).json({ msg: "Schedule service updated" });
+    //email confirmation
+    if (
+      (scheduleType == "byClient" || scheduleType == "confirmed") &&
+      req.body.date.toString() != scheduler.date.toString()
+    ) {
+      console.log("ok");
+      const dynamicData = {
+        contractNo,
+        serviceDate: moment(req.body.date).format("DD/MM/YYYY"),
+        serviceTime:
+          req.body.time.charAt(0).toUpperCase() + req.body.time.slice(1),
+        serviceName: req.body.serviceName.toString(),
+        serviceType:
+          req.body.serviceType.charAt(0).toUpperCase() +
+          req.body.serviceType.slice(1),
+      };
+      await sendBrevoEmail({
+        emailList: scheduler.clientEmail,
+        templateId: 6,
+        dynamicData,
+      });
+    }
+
+    return res
+      .status(200)
+      .json({ msg: "Schedule is updated & confirmation email is sent" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
@@ -220,6 +269,13 @@ export const searchContract = async (req, res) => {
     contract.shipToDetails.contact.map(
       (item) => item.number.length > 0 && (clientContact += item.number + ", ")
     );
+    const emailList = [];
+    contract.shipToDetails.contact.map(
+      (item) =>
+        item.email &&
+        !emailList.some((i) => i.email === item.email) &&
+        emailList.push({ email: item.email })
+    );
     let services = [];
     contract.services.map((item) =>
       item.services.map((service) =>
@@ -233,6 +289,7 @@ export const searchContract = async (req, res) => {
       clientContact,
       services,
       clientAddress: `${contract.shipToDetails.address}, ${contract.shipToDetails.nearBy}, ${contract.shipToDetails.area}, ${contract.shipToDetails.city}, ${contract.shipToDetails.pincode}`,
+      emailList,
     };
 
     return res.json(contractDetails);
@@ -290,6 +347,7 @@ export const addScheduleByPms = async (req, res) => {
       clientName,
       clientAddress,
       clientContact,
+      clientEmail: req.body.clientEmail,
       serviceName,
       serviceType,
       scheduleType,
@@ -298,6 +356,24 @@ export const addScheduleByPms = async (req, res) => {
       service: req.body.service,
       technician,
     });
+
+    const dynamicData = {
+      contractNo,
+      serviceDate: moment(date).format("DD/MM/YYYY"),
+      serviceTime: time.charAt(0).toUpperCase() + time.slice(1),
+      serviceName: serviceName.toString(),
+      serviceType: serviceType.charAt(0).toUpperCase() + serviceType.slice(1),
+    };
+    const email = await sendBrevoEmail({
+      emailList: req.body.clientEmail,
+      templateId: 6,
+      dynamicData,
+    });
+    if (!email) {
+      return res.status(201).json({
+        msg: "New schedule is added & Confirmation email is not sent",
+      });
+    }
 
     return res.status(201).json({ msg: "New schedule is added" });
   } catch (error) {

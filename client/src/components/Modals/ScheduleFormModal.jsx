@@ -75,7 +75,7 @@ const ScheduleFormModal = ({ open, setOpen }) => {
 
   const {
     register,
-    formState: { errors},
+    formState: { errors },
     handleSubmit,
     reset,
     setValue,
@@ -87,6 +87,7 @@ const ScheduleFormModal = ({ open, setOpen }) => {
       clientName: "",
       clientAddress: "",
       clientContact: "",
+      emailList: "",
       serviceType: "regular",
       scheduleType: "confirmed",
       date: "",
@@ -119,6 +120,7 @@ const ScheduleFormModal = ({ open, setOpen }) => {
       if (scheduleDetails._id) {
         res = await updateRequest({ id: scheduleDetails._id, data }).unwrap();
       } else {
+        data.clientEmail = scheduleDetails.emailList;
         data.service = selectedOption[0].value;
         res = await addRequest(data).unwrap();
       }

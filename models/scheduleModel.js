@@ -6,6 +6,7 @@ const ScheduleSchema = new mongoose.Schema(
     clientName: { type: String, required: true },
     clientAddress: { type: String, required: true },
     clientContact: { type: String, required: true },
+    clientEmail: [Object],
     serviceName: [String],
     serviceType: {
       type: String,
