@@ -26,6 +26,8 @@ const ScheduleSchema = new mongoose.Schema(
     },
     date: { type: Date, required: true },
     time: { type: String, required: true },
+    raiseBy: { type: String },
+    assistantTechnician: { type: String },
     technician: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

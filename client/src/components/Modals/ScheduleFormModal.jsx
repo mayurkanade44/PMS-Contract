@@ -6,14 +6,13 @@ import { toast } from "react-toastify";
 import { Button, InputRow, InputSelect, Loading } from "..";
 import { useGetAllValuesQuery } from "../../redux/contractSlice";
 import {
+  useAddRequestByPmsMutation,
   useGetAllTechniciansQuery,
   useUpdateRequestMutation,
-  useAddRequestByPmsMutation,
 } from "../../redux/scheduleSlice";
 import {
   scheduleTypes,
-  serviceTypeOptions,
-  timeSlot,
+  serviceTypeOptions
 } from "../../utils/dataHelper";
 import Modal from "./Modal";
 
@@ -51,6 +50,8 @@ const ScheduleFormModal = ({ open, setOpen }) => {
       setValue("scheduleType", scheduleDetails?.scheduleType);
       setValue("serviceType", scheduleDetails?.serviceType);
       setValue("time", scheduleDetails?.time);
+      setValue("assistantTechnician", scheduleDetails?.assistantTechnician);
+      setValue("raiseBy", scheduleDetails?.raiseBy);
       setValue(
         "date",
         scheduleDetails?.date
@@ -92,24 +93,26 @@ const ScheduleFormModal = ({ open, setOpen }) => {
       scheduleType: "confirmed",
       date: "",
       time: "anytime",
+      raiseBy: "",
       technician: "",
+      assistantTechnician: "",
     },
   });
 
   let scheduleDate = watch("date");
   let scheduleTime = watch("time");
 
-  useEffect(() => {
-    if (
-      scheduleDate &&
-      scheduleTime !== "anytime" &&
-      scheduleTime !== "1st half" &&
-      scheduleTime !== "2nd half" &&
-      scheduleTime !== "night"
-    ) {
-      setTechnicianDateTime({ date: scheduleDate, time: scheduleTime });
-    }
-  }, [scheduleDate, scheduleTime]);
+  // useEffect(() => {
+  //   if (
+  //     scheduleDate &&
+  //     scheduleTime !== "anytime" &&
+  //     scheduleTime !== "1st half" &&
+  //     scheduleTime !== "2nd half" &&
+  //     scheduleTime !== "night"
+  //   ) {
+  //     setTechnicianDateTime({ date: scheduleDate, time: scheduleTime });
+  //   }
+  // }, [scheduleDate, scheduleTime]);
 
   const submit = async (data) => {
     console.log(data);
@@ -245,18 +248,17 @@ const ScheduleFormModal = ({ open, setOpen }) => {
                   </p>
                 </div>
                 <div className="col-span-2 md:col-span-1">
-                  <Controller
-                    name="time"
-                    control={control}
-                    render={({ field: { onChange, value, ref } }) => (
-                      <InputSelect
-                        options={timeSlot}
-                        onChange={onChange}
-                        value={value}
-                        label="Schedule Time"
-                      />
-                    )}
+                  <InputRow
+                    label="Schedule Time"
+                    placeholder="time"
+                    id="time"
+                    errors={errors}
+                    register={register}
+                    required
                   />
+                  <p className="text-xs text-red-500 -bottom-4 pl-1">
+                    {errors.time && "time is required"}
+                  </p>
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <Controller
@@ -271,6 +273,18 @@ const ScheduleFormModal = ({ open, setOpen }) => {
                       />
                     )}
                   />
+                </div>
+                <div className="col-span-2 md:col-span-1">
+                  <InputRow
+                    label="Compliant Raise By"
+                    placeholder="name"
+                    id="raiseBy"
+                    errors={errors}
+                    register={register}
+                  />
+                  <p className="text-xs text-red-500 -bottom-4 pl-1">
+                    {errors.raiseBy && "Complaint raise by is required"}
+                  </p>
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <Controller
@@ -289,6 +303,16 @@ const ScheduleFormModal = ({ open, setOpen }) => {
                   <p className="text-xs text-red-500 -bottom-4 pl-1">
                     {errors.technician?.message}
                   </p>
+                </div>
+                <div className="col-span-2 md:col-span-1">
+                  <InputRow
+                    label="Assistant Technician"
+                    placeholder="Assistant technician name"
+                    id="assistantTechnician"
+                    errors={errors}
+                    register={register}
+                    required={false}
+                  />
                 </div>
                 <div className="col-span-1 mt-3">
                   <Button

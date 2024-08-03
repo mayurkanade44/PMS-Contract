@@ -5,6 +5,8 @@ import { dateFormat } from "../utils/functionHelper";
 const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
   const dispatch = useDispatch();
 
+  console.log(schedules);
+
   const handleEditModal = (schedule) => {
     dispatch(setScheduleDetails(schedule));
     setOpen(true);
@@ -48,10 +50,13 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
             <th className="text-gray-600 font-normal pr-4 text-left text-sm tracking-normal">
               Address
             </th>
+            <th className="text-gray-600 w-28 font-normal pr-4 text-left text-sm tracking-normal">
+              Complaint By
+            </th>
             <th className="text-gray-600 w-[84px] font-normal pr-4 text-left text-sm tracking-normal">
               Phone No
             </th>
-            <th className="text-gray-600 w-20 font-normal text-left text-sm tracking-normal">
+            <th className="text-gray-600 w-16 font-normal text-left text-sm tracking-normal">
               Date
             </th>
             <th className="text-gray-600 w-16 font-normal text-left text-sm tracking-normal">
@@ -91,12 +96,15 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
                 {schedule.clientAddress}
               </td>
               <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
+                {schedule.raiseBy}
+              </td>
+              <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
                 {schedule.clientContact}
               </td>
               <td className="text-left whitespace-no-wrap text-gray-800  tracking-normal">
                 {dateFormat(schedule.date)}
               </td>
-              <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
+              <td className="px-1 whitespace-no-wrap text-gray-800  tracking-normal">
                 {schedule.time.charAt(0).toUpperCase() + schedule.time.slice(1)}
               </td>
               <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
@@ -108,7 +116,11 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
                 {progress(schedule.jobStatus)}
               </td>
               <td className="px-1 whitespace-no-wrap text-center text-gray-800  tracking-normal">
-                {schedule.technician?.name}
+                {schedule.assistantTechnician
+                  ? schedule.technician?.name +
+                    "/" +
+                    schedule.assistantTechnician
+                  : schedule.technician?.name}
               </td>
             </tr>
           ))}

@@ -73,6 +73,7 @@ export const addScheduleByClient = async (req, res) => {
       serviceName: serviceDetails.services.map((service) => service.label),
       serviceType: "complaint",
       scheduleType: "byClient",
+      raiseBy: clientDetails.name,
       date: scheduleDate,
       time,
       service: serviceId,
@@ -154,6 +155,7 @@ export const updateSchedule = async (req, res) => {
     clientContact,
     technician,
     scheduleType,
+    raiseBy,
   } = req.body;
   const { id } = req.params;
   if (
@@ -162,7 +164,8 @@ export const updateSchedule = async (req, res) => {
     !clientAddress ||
     !clientContact ||
     !technician ||
-    !scheduleType
+    !scheduleType ||
+    !raiseBy
   )
     return res.status(400).json({ msg: "Please provide required details" });
 
@@ -309,6 +312,7 @@ export const addScheduleByPms = async (req, res) => {
     serviceName,
     scheduleType,
     technician,
+    raiseBy,
     serviceType,
     time,
   } = req.body;
@@ -322,7 +326,8 @@ export const addScheduleByPms = async (req, res) => {
     serviceName.length < 1 ||
     !technician ||
     !time ||
-    !serviceType
+    !serviceType ||
+    !raiseBy
   )
     return res.status(400).json({ msg: "Please provide required details" });
 
@@ -353,8 +358,10 @@ export const addScheduleByPms = async (req, res) => {
       scheduleType,
       date: scheduleDate,
       time,
+      raiseBy,
       service: req.body.service,
       technician,
+      assistantTechnician: req.body.assistantTechnician,
     });
 
     const dynamicData = {

@@ -41,8 +41,6 @@ const Schedule = () => {
   const { data: technicians, isLoading: techniciansLoading } =
     useGetAllTechniciansQuery({ date: "", time: "" });
 
-  console.log(technicians);
-
   const {
     data,
     isLoading: schedulesLoading,
@@ -117,8 +115,8 @@ const Schedule = () => {
                 </div>
                 <input
                   id="search"
-                  className=" text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-10 text-sm border-gray-300 rounded border"
-                  placeholder="Contract Number"
+                  className=" text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-8 text-sm border-gray-300 rounded border"
+                  placeholder="Contract Number or Client Name"
                   value={tempSearch}
                   onChange={handleSearch}
                 />
