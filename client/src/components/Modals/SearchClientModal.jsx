@@ -25,6 +25,8 @@ const SearchClientModal = ({ open, close, setOpen }) => {
     setSearch(tempSearch);
   };
 
+  console.log(data);
+  
   const handleClose = () => {
     setSkip(true);
     setSearch("");
@@ -84,6 +86,7 @@ const SearchClientModal = ({ open, close, setOpen }) => {
                     <div className="">
                       <p>Client Name: {data.clientName}</p>
                       <p>Client Name: {data.clientContact}</p>
+                      <p>Services: {data.services?.map(item => item.label + ", ")}</p>
                     </div>
                   </div>
                 </div>
