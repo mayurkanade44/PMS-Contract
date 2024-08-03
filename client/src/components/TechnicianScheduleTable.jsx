@@ -89,10 +89,10 @@ const TechnicianScheduleTable = () => {
                   <th className="text-left  border-neutral-800 border-2 px-12">
                     Name
                   </th>
-                  <th className="text-left   border-neutral-800 border-2 px-20">
+                  <th className="text-left border-neutral-800 border-2 px-20">
                     Address
                   </th>
-                  <th className="text-left   border-neutral-800 border-2 px-20">
+                  <th className="text-left border-neutral-800 border-2 whitespace-nowrap px-8">
                     Complaint By
                   </th>
                   <th className="text-left  border-neutral-800 border-2 px-5">
@@ -131,7 +131,7 @@ const TechnicianScheduleTable = () => {
                     <td className="px-2 py-1 border-r font-normal  border-neutral-500">
                       {schedule.clientAddress.toLowerCase()}
                     </td>
-                    <td className="px-2  border-r font-normal border-neutral-500">
+                    <td className="px-2 border-r font-normal border-neutral-500">
                       {schedule.raiseBy}
                     </td>
                     <td className="px-2  border-r font-normal border-neutral-500">
