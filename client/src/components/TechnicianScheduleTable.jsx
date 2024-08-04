@@ -77,7 +77,7 @@ const TechnicianScheduleTable = () => {
                   <th className="text-left  border-neutral-800 border-2 px-2">
                     Date
                   </th>
-                  <th className="text-left  border-neutral-800 border-2 px-2">
+                  <th className="text-left  border-neutral-800 border-2 px-4">
                     Time
                   </th>
                   <th className="text-left w-40 border-neutral-800 border-2 whitespace-nowrap px-8">
@@ -100,6 +100,9 @@ const TechnicianScheduleTable = () => {
                   </th>
                   <th className="text-left  border-neutral-800 border-2 px-12">
                     Service
+                  </th>
+                  <th className="text-left border-neutral-800 border-2 whitespace-nowrap px-2">
+                    Assistant Technician
                   </th>
                   <th className="text-left border-neutral-800 border-2 px-2">
                     Update
@@ -139,6 +142,9 @@ const TechnicianScheduleTable = () => {
                     </td>
                     <td className="px-2  border-r font-normal border-neutral-500">
                       {schedule.serviceName.join(", ")}
+                    </td>
+                    <td className="px-2  border-r font-normal border-neutral-500">
+                      {schedule.assistantTechnician}
                     </td>
                     <td className="px-2 border-r font-normal border-neutral-500">
                       <Link to={`/service-card/${schedule.service}`}>

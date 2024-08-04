@@ -253,7 +253,7 @@ const NewServiceCard = () => {
             </div>
             <div className="col-span-8 md:col-span-4 lg:col-span-2">
               <InputRow
-                label="Area"
+                label="Area / Sq. Feet"
                 id="area"
                 errors={errors}
                 register={register}

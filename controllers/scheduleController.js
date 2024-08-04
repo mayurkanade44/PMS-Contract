@@ -56,6 +56,9 @@ export const addScheduleByClient = async (req, res) => {
     clientDetails.contact.map(
       (item) => item.number.length > 0 && (contacts += item.number + ", ")
     );
+    if (req.body.contact) {
+      contacts += req.body.contact;
+    }
     const emailList = [];
     clientDetails.contact.map(
       (item) =>
@@ -181,17 +184,12 @@ export const updateSchedule = async (req, res) => {
     }
     req.body.date = new Date(req.body.date);
 
-    await Schedule.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
     //email confirmation
     if (
       (scheduleType == "byClient" || scheduleType == "confirmed") &&
-      req.body.date.toString() != scheduler.date.toString()
+      (!scheduler.email ||
+        req.body.date.toString() != scheduler.date.toString())
     ) {
-      console.log("ok");
       const dynamicData = {
         contractNo,
         serviceDate: moment(req.body.date).format("DD/MM/YYYY"),
@@ -208,6 +206,13 @@ export const updateSchedule = async (req, res) => {
         dynamicData,
       });
     }
+
+    req.body.email = true
+
+    await Schedule.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     return res
       .status(200)

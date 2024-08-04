@@ -281,7 +281,7 @@ const NewContract = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1">
               <div>
                 <InputRow
-                  label="Area"
+                  label="City Location / Area"
                   placeholder="Enter area"
                   id="billToDetails.area"
                   errors={errors}
@@ -447,7 +447,7 @@ const NewContract = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-1">
               <div>
                 <InputRow
-                  label="Area"
+                  label="City Location / Area"
                   placeholder="Enter area"
                   id="shipToDetails.area"
                   errors={errors}

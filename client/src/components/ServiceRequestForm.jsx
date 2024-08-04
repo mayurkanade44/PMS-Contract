@@ -23,6 +23,7 @@ const ServiceRequestForm = ({ directRequest }) => {
       serviceId: id,
       date: formatDate(new Date()),
       time: "anytime",
+      contact: "",
     },
   });
 
@@ -109,6 +110,15 @@ const ServiceRequestForm = ({ directRequest }) => {
             <p className="text-xs text-red-500 -bottom-4 pl-1">
               {errors.time?.message}
             </p>
+          </div>
+          <div className="col-span-12">
+            <InputRow
+              label="Contact No"
+              id="contact"
+              errors={errors}
+              register={register}
+              required={false}
+            />
           </div>
           <div className="col-span-12">
             <div className="flex justify-center">
