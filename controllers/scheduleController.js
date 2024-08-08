@@ -71,6 +71,7 @@ export const addScheduleByClient = async (req, res) => {
       contractNo: serviceDetails.contract.contractNo,
       clientName: clientDetails.name,
       clientAddress: `${clientDetails.address}, ${clientDetails.nearBy}, ${clientDetails.area}, ${clientDetails.city}, ${clientDetails.pincode}`,
+      pincode: clientDetails.pincode,
       clientContact: contacts,
       clientEmail: emailList,
       serviceName: serviceDetails.services.map((service) => service.label),
@@ -187,7 +188,7 @@ export const updateSchedule = async (req, res) => {
     //email confirmation
     if (
       (scheduleType == "byClient" || scheduleType == "confirmed") &&
-      (!scheduler.email ||
+      (!scheduler.emailSent ||
         req.body.date.toString() != scheduler.date.toString())
     ) {
       const dynamicData = {
@@ -207,7 +208,7 @@ export const updateSchedule = async (req, res) => {
       });
     }
 
-    req.body.email = true
+    req.body.emailSent = true;
 
     await Schedule.findByIdAndUpdate(id, req.body, {
       new: true,
@@ -231,9 +232,8 @@ export const getAllTechnicians = async (req, res) => {
       value: user._id,
       label: user.name,
     }));
-    let formattedUsers;
+    let technicians;
     if (time && date) {
-      console.log(time, date);
       const schedules = await Schedule.find({
         date: new Date(date),
         time,
@@ -244,14 +244,14 @@ export const getAllTechnicians = async (req, res) => {
         schedules.map((schedule) => schedule.technician.toString())
       );
 
-      formattedUsers = allUsers.filter(
+      technicians = allUsers.filter(
         (user) => !confirmedUserIds.has(user.value.toString())
       );
     } else {
-      formattedUsers = allUsers;
+      technicians = allUsers;
     }
 
-    return res.json(formattedUsers);
+    return res.json(technicians);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
@@ -298,6 +298,7 @@ export const searchContract = async (req, res) => {
       services,
       clientAddress: `${contract.shipToDetails.address}, ${contract.shipToDetails.nearBy}, ${contract.shipToDetails.area}, ${contract.shipToDetails.city}, ${contract.shipToDetails.pincode}`,
       emailList,
+      pincode: contract.shipToDetails.pincode,
     };
 
     return res.json(contractDetails);
@@ -366,7 +367,10 @@ export const addScheduleByPms = async (req, res) => {
       raiseBy,
       service: req.body.service,
       technician,
+      pinecode: req.body.pincode,
+      jobDuration: req.bod.jobDuration,
       assistantTechnician: req.body.assistantTechnician,
+      instruction: req.body.instruction,
     });
 
     const dynamicData = {

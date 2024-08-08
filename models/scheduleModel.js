@@ -7,7 +7,9 @@ const ScheduleSchema = new mongoose.Schema(
     clientAddress: { type: String, required: true },
     clientContact: { type: String, required: true },
     clientEmail: [Object],
+    pincode: { type: String, required: true },
     serviceName: [String],
+    emailSent: { type: Boolean, default: false },
     serviceType: {
       type: String,
       required: true,
@@ -26,9 +28,11 @@ const ScheduleSchema = new mongoose.Schema(
     },
     date: { type: Date, required: true },
     time: { type: String, required: true },
+    jobDuration: { type: String },
     raiseBy: { type: String },
+    instruction: { type: String },
+    image: [String],
     assistantTechnician: { type: String },
-    email: { type: Boolean, default: false },
     technician: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

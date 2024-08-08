@@ -62,6 +62,9 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
             <th className="text-gray-600 w-16 font-normal text-left text-sm tracking-normal">
               Time
             </th>
+            <th className="text-gray-600 w-16 font-normal text-left text-sm tracking-normal">
+              Duration
+            </th>
             <th className="text-gray-600 w-40 font-normal text-left text-sm tracking-normal">
               Service
             </th>
@@ -89,39 +92,45 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
               <td className="text-center whitespace-no-wrap text-gray-800  tracking-normal">
                 {schedule.contractNo}
               </td>
-              <td className="p-2 text-left whitespace-no-wrap text-gray-800  tracking-normal">
-                {schedule.clientName}
-              </td>
-              <td className="pr-3 whitespace-no-wrap text-gray-800  tracking-normal">
-                {schedule.clientAddress}
-              </td>
-              <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
-                {schedule.raiseBy}
-              </td>
-              <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
-                {schedule.clientContact}
-              </td>
-              <td className="text-left whitespace-no-wrap text-gray-800  tracking-normal">
-                {dateFormat(schedule.date)}
-              </td>
-              <td className="px-1 whitespace-no-wrap text-gray-800  tracking-normal">
-                {schedule.time.charAt(0).toUpperCase() + schedule.time.slice(1)}
-              </td>
-              <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
-                {schedule.serviceName.join(", ")}
-              </td>
-              <td>{progress(schedule.scheduleType)}</td>
-              <td className="pr-1">{progress(schedule.serviceType)}</td>
-              <td className="whitespace-no-wrap  text-gray-800  tracking-normal">
-                {progress(schedule.jobStatus)}
-              </td>
-              <td className="px-1 whitespace-no-wrap text-center text-gray-800  tracking-normal">
-                {schedule.assistantTechnician
-                  ? schedule.technician?.name +
-                    "/" +
-                    schedule.assistantTechnician
-                  : schedule.technician?.name}
-              </td>
+              <>
+                <td className="p-2 text-left whitespace-no-wrap text-gray-800  tracking-normal">
+                  {schedule.clientName}
+                </td>
+                <td className="pr-3 whitespace-no-wrap text-gray-800  tracking-normal">
+                  {schedule.clientAddress}
+                </td>
+                <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
+                  {schedule.raiseBy}
+                </td>
+                <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
+                  {schedule.clientContact}
+                </td>
+                <td className="text-left whitespace-no-wrap text-gray-800  tracking-normal">
+                  {dateFormat(schedule.date)}
+                </td>
+                <td className="px-1 whitespace-no-wrap text-gray-800  tracking-normal">
+                  {schedule.time.charAt(0).toUpperCase() +
+                    schedule.time.slice(1)}
+                </td>
+                <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
+                  {schedule.jobDuration}
+                </td>
+                <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
+                  {schedule.serviceName.join(", ")}
+                </td>
+                <td>{progress(schedule.scheduleType)}</td>
+                <td className="pr-1">{progress(schedule.serviceType)}</td>
+                <td className="whitespace-no-wrap  text-gray-800  tracking-normal">
+                  {progress(schedule.jobStatus)}
+                </td>
+                <td className="px-1 whitespace-no-wrap text-center text-gray-800  tracking-normal">
+                  {schedule.assistantTechnician
+                    ? schedule.technician?.name +
+                      "/" +
+                      schedule.assistantTechnician
+                    : schedule.technician?.name}
+                </td>
+              </>
             </tr>
           ))}
         </tbody>

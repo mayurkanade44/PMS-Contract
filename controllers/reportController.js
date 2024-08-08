@@ -71,11 +71,12 @@ export const addServiceData = async (req, res) => {
 
     if (req.body.serviceStatus === "Completed") {
       const schedule = await Schedule.findOne({
-        $or: [{ service: serviceId }, { serviceName: req.body.serviceName }],
+        service: serviceId,
         date: req.body.serviceDate,
       });
       if (schedule) {
         schedule.jobStatus = "done";
+        schedule.image = imageLinks;
         await schedule.save();
       }
     }

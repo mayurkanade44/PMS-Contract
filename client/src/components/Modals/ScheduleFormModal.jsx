@@ -12,7 +12,8 @@ import {
 } from "../../redux/scheduleSlice";
 import {
   scheduleTypes,
-  serviceTypeOptions
+  serviceTypeOptions,
+  timeSlot,
 } from "../../utils/dataHelper";
 import Modal from "./Modal";
 
@@ -52,6 +53,8 @@ const ScheduleFormModal = ({ open, setOpen }) => {
       setValue("time", scheduleDetails?.time);
       setValue("assistantTechnician", scheduleDetails?.assistantTechnician);
       setValue("raiseBy", scheduleDetails?.raiseBy);
+      setValue("pincode", scheduleDetails?.pincode);
+      setValue("instruction", scheduleDetails?.instruction);
       setValue(
         "date",
         scheduleDetails?.date
@@ -96,23 +99,26 @@ const ScheduleFormModal = ({ open, setOpen }) => {
       raiseBy: "",
       technician: "",
       assistantTechnician: "",
+      jobDuration: "",
+      pincode: "",
+      instruction: "",
     },
   });
 
   let scheduleDate = watch("date");
   let scheduleTime = watch("time");
 
-  // useEffect(() => {
-  //   if (
-  //     scheduleDate &&
-  //     scheduleTime !== "anytime" &&
-  //     scheduleTime !== "1st half" &&
-  //     scheduleTime !== "2nd half" &&
-  //     scheduleTime !== "night"
-  //   ) {
-  //     setTechnicianDateTime({ date: scheduleDate, time: scheduleTime });
-  //   }
-  // }, [scheduleDate, scheduleTime]);
+  useEffect(() => {
+    if (
+      scheduleDate &&
+      scheduleTime !== "anytime" &&
+      scheduleTime !== "1st half" &&
+      scheduleTime !== "2nd half" &&
+      scheduleTime !== "night"
+    ) {
+      setTechnicianDateTime({ date: scheduleDate, time: scheduleTime });
+    }
+  }, [scheduleDate, scheduleTime]);
 
   const submit = async (data) => {
     console.log(data);
@@ -150,11 +156,11 @@ const ScheduleFormModal = ({ open, setOpen }) => {
         <Modal open={open}>
           <div className="h-[440px] md:h-full overflow-x-scroll md:overflow-visible md:w-[600px]">
             <h4 className="text-center text-xl font-semibold mb-5">
-              {scheduleDetails._id ? "Update" : "New"} Schedule
+              {scheduleDetails?.contractNo} Schedule
             </h4>
             <form onSubmit={handleSubmit(submit)} className="relative my-2">
               <div className="grid grid-cols-2 gap-x-5 gap-y-2 ">
-                <div className="col-span-2 md:col-span-1">
+                {/* <div className="col-span-2 md:col-span-1">
                   <InputRow
                     label="Contract Number"
                     placeholder="contract no"
@@ -166,7 +172,7 @@ const ScheduleFormModal = ({ open, setOpen }) => {
                   <p className="text-xs text-red-500 -bottom-4 pl-1">
                     {errors.contractNo && "Contract number is required"}
                   </p>
-                </div>
+                </div> */}
                 <div className="col-span-2 md:col-span-1">
                   <InputRow
                     label="Client Name"
@@ -206,6 +212,20 @@ const ScheduleFormModal = ({ open, setOpen }) => {
                     )}
                   />
                 </div>
+                <div className="col-span-2 md:col-span-1">
+                  <Controller
+                    name="serviceType"
+                    control={control}
+                    render={({ field: { onChange, value, ref } }) => (
+                      <InputSelect
+                        options={serviceTypeOptions.slice(1)}
+                        onChange={onChange}
+                        value={value}
+                        label="Service Type"
+                      />
+                    )}
+                  />
+                </div>
                 <div className="col-span-2">
                   <InputRow
                     label="Client Address"
@@ -234,58 +254,46 @@ const ScheduleFormModal = ({ open, setOpen }) => {
                     required
                   />
                 </div>
-                <div className="col-span-2 md:col-span-1">
-                  <InputRow
-                    label="Schedule Date"
-                    id="date"
-                    errors={errors}
-                    register={register}
-                    type="date"
-                    required
-                  />
-                  <p className="text-xs text-red-500 -bottom-4 pl-1">
-                    {errors.date && "schedule date is required"}
-                  </p>
+                <div className="col-span-2 flex">
+                  <div className="w-3/5 mr-4">
+                    <InputRow
+                      label="Schedule Date"
+                      id="date"
+                      errors={errors}
+                      register={register}
+                      type="date"
+                      required
+                    />
+                    <p className="text-xs text-red-500 -bottom-4 pl-1">
+                      {errors.date && "schedule date is required"}
+                    </p>
+                  </div>
+                  <div className="w-3/5 mr-5">
+                    <Controller
+                      name="time"
+                      control={control}
+                      render={({ field: { onChange, value, ref } }) => (
+                        <InputSelect
+                          options={timeSlot}
+                          onChange={onChange}
+                          value={value}
+                          label="Schedule Time"
+                        />
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <InputRow
+                      label="Job Duration"
+                      placeholder=""
+                      id="jobDuration"
+                      errors={errors}
+                      register={register}
+                      required={false}
+                    />
+                  </div>
                 </div>
-                <div className="col-span-2 md:col-span-1">
-                  <InputRow
-                    label="Schedule Time"
-                    placeholder="time"
-                    id="time"
-                    errors={errors}
-                    register={register}
-                    required
-                  />
-                  <p className="text-xs text-red-500 -bottom-4 pl-1">
-                    {errors.time && "time is required"}
-                  </p>
-                </div>
-                <div className="col-span-2 md:col-span-1">
-                  <Controller
-                    name="serviceType"
-                    control={control}
-                    render={({ field: { onChange, value, ref } }) => (
-                      <InputSelect
-                        options={serviceTypeOptions.slice(1)}
-                        onChange={onChange}
-                        value={value}
-                        label="Service Type"
-                      />
-                    )}
-                  />
-                </div>
-                <div className="col-span-2 md:col-span-1">
-                  <InputRow
-                    label="Compliant Raise By"
-                    placeholder="name"
-                    id="raiseBy"
-                    errors={errors}
-                    register={register}
-                  />
-                  <p className="text-xs text-red-500 -bottom-4 pl-1">
-                    {errors.raiseBy && "Complaint raise by is required"}
-                  </p>
-                </div>
+
                 <div className="col-span-2 md:col-span-1">
                   <Controller
                     name="technician"
@@ -309,6 +317,28 @@ const ScheduleFormModal = ({ open, setOpen }) => {
                     label="Assistant Technician"
                     placeholder="Assistant technician name"
                     id="assistantTechnician"
+                    errors={errors}
+                    register={register}
+                    required={false}
+                  />
+                </div>
+                <div className="col-span-2 md:col-span-1">
+                  <InputRow
+                    label="Compliant Raise By"
+                    placeholder="name"
+                    id="raiseBy"
+                    errors={errors}
+                    register={register}
+                  />
+                  <p className="text-xs text-red-500 -bottom-4 pl-1">
+                    {errors.raiseBy && "Complaint raise by is required"}
+                  </p>
+                </div>
+                <div className="col-span-2 md:col-span-1">
+                  <InputRow
+                    label="Instruction"
+                    placeholder="Instructions to technician"
+                    id="instruction"
                     errors={errors}
                     register={register}
                     required={false}
