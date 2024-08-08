@@ -32,6 +32,10 @@ export const createContract = async (req, res) => {
 
     req.body.quarterlyMonths = quarterlyMonths;
     req.body.contractNo = contractNo;
+    req.body.shipToDetails.pincode = req.body.shipToDetails.pincode
+      .split(" ")
+      .join("");
+
     const newContract = await Contract.create(req.body);
 
     return res
@@ -133,6 +137,10 @@ export const getAllContracts = async (req, res) => {
     const count = await Contract.countDocuments({ ...query });
 
     const contracts = await Contract.find(query)
+      .populate({
+        path: "services",
+        select: "services",
+      })
       .sort("-createdAt")
       .skip(10 * (pageNumber - 1))
       .limit(10);

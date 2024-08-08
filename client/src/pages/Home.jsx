@@ -120,6 +120,9 @@ const Home = () => {
                     <th className="font-bold text-left dark:border-neutral-800 border-2 px-3">
                       Ship To Name
                     </th>
+                    <th className="font-bold text-left dark:border-neutral-800 border-2 px-3">
+                      Services
+                    </th>
                     <th className="font-bold text-center dark:border-neutral-800 border-2 w-28 px-3">
                       Start Date
                     </th>
@@ -127,7 +130,7 @@ const Home = () => {
                       End Date
                     </th>
                     {user.role !== "Technician" && (
-                      <th className="font-bold text-center  dark:border-neutral-800 border-2 w-40 px-3">
+                      <th className="font-bold text-center  dark:border-neutral-800 border-2 w-28">
                         Action
                       </th>
                     )}
@@ -150,6 +153,11 @@ const Home = () => {
                       </td>
                       <td className="px-3 border-r font-normal md:whitespace-normal dark:border-neutral-500">
                         {contract.shipToDetails.name}
+                      </td>
+                      <td className="px-2 py-1 border-r font-normal w-60 md:whitespace-normal dark:border-neutral-500">
+                        {contract.services.map((service) =>
+                          service.services.map((item) => item.label + ", ")
+                        )}
                       </td>
                       <td className="px-3 border-r font-normal text-center dark:border-neutral-500">
                         {dateFormat(contract.tenure.startDate)}
