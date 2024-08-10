@@ -33,6 +33,7 @@ const Home = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     setSearch(tempSearch);
+    setPage(1)
   };
 
   const clearSearch = () => {

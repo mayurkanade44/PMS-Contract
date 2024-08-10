@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { AlertMessage, Button, Loading, ScheduleTable } from "../components";
 import {
@@ -9,6 +9,7 @@ import {
   jobStatusOptions,
   scheduleTypes,
   serviceTypeOptions,
+  timeSlot,
 } from "../utils/dataHelper";
 import { AiOutlineSearch } from "react-icons/ai";
 import SearchClientModal from "../components/Modals/SearchClientModal";
@@ -31,6 +32,14 @@ const Schedule = () => {
     value: "all",
     label: "All",
   });
+  const [time, setTime] = useState({
+    value: "all",
+    label: "All",
+  });
+  const [pincode, setPincode] = useState({
+    value: "all",
+    label: "All",
+  });
   const [date, setDate] = useState("");
   const [tempSearch, setTempSearch] = useState("");
   const [search, setSearch] = useState("");
@@ -40,6 +49,11 @@ const Schedule = () => {
 
   const { data: technicians, isLoading: techniciansLoading } =
     useGetAllTechniciansQuery({ date: "", time: "" });
+
+  useEffect(() => {
+    console.log("ok");
+    setPage(1);
+  }, [scheduleType, jobStatus, serviceType, technician, time, date, pincode]);
 
   const {
     data,
@@ -107,23 +121,23 @@ const Schedule = () => {
               </button> */}
             </div>
           </div>
-          <div className="flex flex-col lg:flex-row px-4 justify-between items-start lg:items-stretch w-full">
-            <div className="w-full lg:w-1/5 flex flex-col lg:flex-row items-start lg:items-center">
-              <div className="w-full relative mb-2 lg:mb-0 lg:mr-4 lg:mt-6">
-                <div className="absolute text-gray-600 dark:text-gray-400 flex items-center pl-3 h-full">
+          <div className="flex flex-col lg:flex-row px-2 justify-between items-start lg:items-stretch w-full">
+            <div className="w-full lg:w-1/6 flex flex-col lg:flex-row items-start lg:items-center">
+              <div className="w-full relative mb-2 lg:mb-0 lg:mr-1 lg:mt-6">
+                <div className="absolute text-gray-600 dark:text-gray-400 flex items-center pl-2 h-full">
                   <AiOutlineSearch />
                 </div>
                 <input
                   id="search"
-                  className=" text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-8 text-sm border-gray-300 rounded border"
-                  placeholder="Contract Number or Client Name"
+                  className=" text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-7 text-sm border-gray-300 rounded border"
+                  placeholder="Contract Number / Client Name"
                   value={tempSearch}
                   onChange={handleSearch}
                 />
               </div>
             </div>
-            <div className="w-full lg:w-4/5 flex flex-col lg:flex-row items-start lg:items-center justify-between">
-              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-2">
+            <div className="w-full lg:w-5/6 flex flex-col lg:flex-row items-start lg:items-center justify-between">
+              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-1">
                 <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
                   Schedule Type
                 </label>
@@ -133,7 +147,7 @@ const Schedule = () => {
                   options={scheduleTypes}
                 />
               </div>
-              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-2">
+              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-1">
                 <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
                   Service Type
                 </label>
@@ -143,7 +157,7 @@ const Schedule = () => {
                   options={serviceTypeOptions}
                 />
               </div>
-              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-2 ">
+              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-1 ">
                 <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
                   Job Status
                 </label>
@@ -153,7 +167,39 @@ const Schedule = () => {
                   options={jobStatusOptions}
                 />
               </div>
-              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-2">
+              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-1 ">
+                <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
+                  Pincode
+                </label>
+                <Select
+                  defaultValue={jobStatus}
+                  onChange={setJobStatus}
+                  options={jobStatusOptions}
+                />
+              </div>
+              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-1 ">
+                <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
+                  Time
+                </label>
+                <Select
+                  defaultValue={time}
+                  onChange={setTime}
+                  options={[{ value: "all", label: "All" }, ...timeSlot]}
+                />
+              </div>
+
+              <div className=" w-full lg:w-1/5 my-5 lg:mx-1">
+                <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
+                  Schedule Date
+                </label>
+                <input
+                  type="date"
+                  className="w-full border border-gray-400 py-1 px-2 rounded"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </div>
+              <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-1">
                 <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
                   Technicians
                 </label>
@@ -166,17 +212,6 @@ const Schedule = () => {
                       ...technicians,
                     ]
                   }
-                />
-              </div>
-              <div className=" w-full lg:w-1/5 my-5 lg:ml-2">
-                <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
-                  Schedule Date
-                </label>
-                <input
-                  type="date"
-                  className="w-full border border-gray-400 py-1 px-2 rounded"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
                 />
               </div>
             </div>
