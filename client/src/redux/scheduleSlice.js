@@ -54,6 +54,8 @@ export const serviceRequestSlice = apiSlice.injectEndpoints({
         technician,
         date,
         search,
+        time,
+        pincode,
         page,
       }) => ({
         url: `/api/schedule`,
@@ -64,6 +66,8 @@ export const serviceRequestSlice = apiSlice.injectEndpoints({
           technician,
           date,
           search,
+          time,
+          pincode,
           page,
         },
       }),

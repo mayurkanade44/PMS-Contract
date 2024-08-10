@@ -71,7 +71,6 @@ export const addScheduleByClient = async (req, res) => {
       contractNo: serviceDetails.contract.contractNo,
       clientName: clientDetails.name,
       clientAddress: `${clientDetails.address}, ${clientDetails.nearBy}, ${clientDetails.area}, ${clientDetails.city}, ${clientDetails.pincode}`,
-      pincode: clientDetails.pincode,
       clientContact: contacts,
       clientEmail: emailList,
       serviceName: serviceDetails.services.map((service) => service.label),
@@ -101,10 +100,13 @@ export const getAllSchedules = async (req, res) => {
     jobStatus,
     date,
     technician,
+    time,
+    pincode,
   } = req.query;
 
   //filtering
   let query = {};
+  let sort = "-createdAt";
   if (search) {
     query = {
       $or: [
@@ -115,6 +117,7 @@ export const getAllSchedules = async (req, res) => {
   }
   if (date) {
     query.date = new Date(date);
+    sort = "time.value";
   }
   if (serviceType && serviceType != "all") {
     query.serviceType = serviceType;
@@ -127,6 +130,13 @@ export const getAllSchedules = async (req, res) => {
   }
   if (technician && technician !== "all") {
     query.technician = technician;
+    sort = "time.value";
+  }
+  if (time && time !== "all") {
+    query["time.value"] = Number(time);
+  }
+  if (pincode && pincode !== "all") {
+    query.clientAddress = { $regex: pincode, $options: "i" };
   }
 
   let pageNumber = Number(page) || 1;
@@ -138,7 +148,7 @@ export const getAllSchedules = async (req, res) => {
         path: "technician",
         select: "name",
       })
-      .sort("-createdAt")
+      .sort(sort)
       .skip(20 * (pageNumber - 1))
       .limit(20);
 
@@ -194,18 +204,17 @@ export const updateSchedule = async (req, res) => {
       const dynamicData = {
         contractNo,
         serviceDate: moment(req.body.date).format("DD/MM/YYYY"),
-        serviceTime:
-          req.body.time.charAt(0).toUpperCase() + req.body.time.slice(1),
+        serviceTime: req.body.time.label,
         serviceName: req.body.serviceName.toString(),
         serviceType:
           req.body.serviceType.charAt(0).toUpperCase() +
           req.body.serviceType.slice(1),
       };
-      await sendBrevoEmail({
-        emailList: scheduler.clientEmail,
-        templateId: 6,
-        dynamicData,
-      });
+      // await sendBrevoEmail({
+      //   emailList: scheduler.clientEmail,
+      //   templateId: 6,
+      //   dynamicData,
+      // });
     }
 
     req.body.emailSent = true;
@@ -226,6 +235,7 @@ export const updateSchedule = async (req, res) => {
 
 export const getAllTechnicians = async (req, res) => {
   const { date, time } = req.query;
+
   try {
     const users = await User.find({ role: "Technician" });
     const allUsers = users.map((user) => ({
@@ -236,7 +246,7 @@ export const getAllTechnicians = async (req, res) => {
     if (time && date) {
       const schedules = await Schedule.find({
         date: new Date(date),
-        time,
+        "time.value": Number(time),
         scheduleType: "confirmed",
       }).select("technician");
 
@@ -298,7 +308,6 @@ export const searchContract = async (req, res) => {
       services,
       clientAddress: `${contract.shipToDetails.address}, ${contract.shipToDetails.nearBy}, ${contract.shipToDetails.area}, ${contract.shipToDetails.city}, ${contract.shipToDetails.pincode}`,
       emailList,
-      pincode: contract.shipToDetails.pincode,
     };
 
     return res.json(contractDetails);
@@ -353,6 +362,27 @@ export const addScheduleByPms = async (req, res) => {
     }
 
     req.body.date = scheduleDate;
+    let emailSent = true;
+    let responseMessage = "New schedule is added & Confirmation email is sent";
+
+    const dynamicData = {
+      contractNo,
+      serviceDate: moment(date).format("DD/MM/YYYY"),
+      serviceTime: time.label,
+      serviceName: serviceName.toString(),
+      serviceType: serviceType.charAt(0).toUpperCase() + serviceType.slice(1),
+    };
+    // const email = await sendBrevoEmail({
+    //   emailList: req.body.clientEmail,
+    //   templateId: 6,
+    //   dynamicData,
+    // });
+    // if (!email) {
+    //   emailSent = false;
+    //   responseMessage =
+    //     "New schedule is added but Confirmation email is not sent";
+    // }
+
     await Schedule.create({
       contractNo,
       clientName,
@@ -367,31 +397,13 @@ export const addScheduleByPms = async (req, res) => {
       raiseBy,
       service: req.body.service,
       technician,
-      pinecode: req.body.pincode,
-      jobDuration: req.bod.jobDuration,
+      jobDuration: req.body.jobDuration,
       assistantTechnician: req.body.assistantTechnician,
       instruction: req.body.instruction,
+      emailSent,
     });
 
-    const dynamicData = {
-      contractNo,
-      serviceDate: moment(date).format("DD/MM/YYYY"),
-      serviceTime: time.charAt(0).toUpperCase() + time.slice(1),
-      serviceName: serviceName.toString(),
-      serviceType: serviceType.charAt(0).toUpperCase() + serviceType.slice(1),
-    };
-    const email = await sendBrevoEmail({
-      emailList: req.body.clientEmail,
-      templateId: 6,
-      dynamicData,
-    });
-    if (!email) {
-      return res.status(201).json({
-        msg: "New schedule is added & Confirmation email is not sent",
-      });
-    }
-
-    return res.status(201).json({ msg: "New schedule is added" });
+    return res.status(201).json({ msg: responseMessage });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
@@ -405,7 +417,7 @@ export const getTechnicianSchedules = async (req, res) => {
       date,
       scheduleType: { $ne: "cancelled" },
       technician: req.user._id,
-    }).sort("time");
+    }).sort("time.value");
 
     return res.json(schedules);
   } catch (error) {

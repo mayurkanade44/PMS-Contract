@@ -7,6 +7,7 @@ import {
 } from "../redux/scheduleSlice";
 import {
   jobStatusOptions,
+  pincodeOptions,
   scheduleTypes,
   serviceTypeOptions,
   timeSlot,
@@ -65,6 +66,8 @@ const Schedule = () => {
     jobStatus: jobStatus.value,
     serviceType: serviceType.value,
     technician: technician.value,
+    time: time.value,
+    pincode: pincode.value,
     date,
     search,
     page,
@@ -172,9 +175,9 @@ const Schedule = () => {
                   Pincode
                 </label>
                 <Select
-                  defaultValue={jobStatus}
-                  onChange={setJobStatus}
-                  options={jobStatusOptions}
+                  defaultValue={pincode}
+                  onChange={setPincode}
+                  options={pincodeOptions}
                 />
               </div>
               <div className="w-full lg:w-1/5 my-2 lg:my-0 lg:mx-1 ">

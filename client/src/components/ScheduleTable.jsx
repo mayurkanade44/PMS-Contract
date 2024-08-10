@@ -5,8 +5,6 @@ import { dateFormat } from "../utils/functionHelper";
 const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
   const dispatch = useDispatch();
 
-  console.log(schedules);
-
   const handleEditModal = (schedule) => {
     dispatch(setScheduleDetails(schedule));
     setOpen(true);
@@ -109,8 +107,7 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
                   {dateFormat(schedule.date)}
                 </td>
                 <td className="px-1 whitespace-no-wrap text-gray-800  tracking-normal">
-                  {schedule.time.charAt(0).toUpperCase() +
-                    schedule.time.slice(1)}
+                  {schedule.time.label}
                 </td>
                 <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
                   {schedule.jobDuration}

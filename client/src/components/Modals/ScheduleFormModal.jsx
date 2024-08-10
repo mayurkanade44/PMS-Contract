@@ -50,11 +50,11 @@ const ScheduleFormModal = ({ open, setOpen }) => {
       setValue("clientContact", scheduleDetails?.clientContact);
       setValue("scheduleType", scheduleDetails?.scheduleType);
       setValue("serviceType", scheduleDetails?.serviceType);
-      setValue("time", scheduleDetails?.time);
+      setValue("time", scheduleDetails?.time?.value);
       setValue("assistantTechnician", scheduleDetails?.assistantTechnician);
       setValue("raiseBy", scheduleDetails?.raiseBy);
-      setValue("pincode", scheduleDetails?.pincode);
       setValue("instruction", scheduleDetails?.instruction);
+      setValue("jobDuration", scheduleDetails?.jobDuration);
       setValue(
         "date",
         scheduleDetails?.date
@@ -95,12 +95,11 @@ const ScheduleFormModal = ({ open, setOpen }) => {
       serviceType: "regular",
       scheduleType: "confirmed",
       date: "",
-      time: "anytime",
+      time: 8,
       raiseBy: "",
       technician: "",
       assistantTechnician: "",
       jobDuration: "",
-      pincode: "",
       instruction: "",
     },
   });
@@ -111,10 +110,10 @@ const ScheduleFormModal = ({ open, setOpen }) => {
   useEffect(() => {
     if (
       scheduleDate &&
-      scheduleTime !== "anytime" &&
-      scheduleTime !== "1st half" &&
-      scheduleTime !== "2nd half" &&
-      scheduleTime !== "night"
+      scheduleTime !== 8 &&
+      scheduleTime !== 9 &&
+      scheduleTime !== 13.5 &&
+      scheduleTime !== 18
     ) {
       setTechnicianDateTime({ date: scheduleDate, time: scheduleTime });
     }
@@ -122,8 +121,8 @@ const ScheduleFormModal = ({ open, setOpen }) => {
 
   const submit = async (data) => {
     console.log(data);
-    const serviceName = selectedOption.map((service) => service.label);
-    data.serviceName = serviceName;
+    data.serviceName = selectedOption.map((service) => service.label);
+    data.time = timeSlot.find((obj) => obj.value === data.time);
     try {
       let res;
       if (scheduleDetails._id) {
