@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useGetClientReportQuery } from "../redux/reportSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Loading, ServiceRequestForm } from "../components";
+import { Button, ClientScheduleForm, Loading } from "../components";
 import { useSelector } from "react-redux";
 import logo from "../assets/logo.jpg";
 import { dateFormat } from "../utils/functionHelper";
@@ -153,7 +153,7 @@ const ClientReport = () => {
               </div>
             </div>
           )}
-          {show.request && <ServiceRequestForm directRequest={show.direct} />}
+          {show.request && <ClientScheduleForm directRequest={show.direct} />}
         </>
       )}
     </div>

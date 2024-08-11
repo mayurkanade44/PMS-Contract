@@ -8,7 +8,7 @@ import Loading from "./Loading";
 import Navbar from "./Navbar";
 import ProtectedRoute from "./ProtectedRoute";
 import ServiceTable from "./ServiceTable";
-import ServiceRequestForm from "./ServiceRequestForm";
+import ClientScheduleForm from "./ClientScheduleForm";
 import ScheduleTable from "./ScheduleTable";
 import TechnicianScheduleTable from "./TechnicianScheduleTable";
 
@@ -23,7 +23,7 @@ export {
   ServiceTable,
   ProtectedRoute,
   AdminTable,
-  ServiceRequestForm,
+  ClientScheduleForm,
   ScheduleTable,
   TechnicianScheduleTable,
 };

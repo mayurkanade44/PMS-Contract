@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Button, InputRow, InputSelect, Loading } from "../components";
+import { Button, InputRow, InputSelect, Loading } from ".";
 import { useAddRequestByClientMutation } from "../redux/scheduleSlice";
 import { timeSlot } from "../utils/dataHelper";
 import { formatDate, todaysDate } from "../utils/functionHelper";
 
-const ServiceRequestForm = ({ directRequest }) => {
+const ClientScheduleForm = ({ directRequest }) => {
   const [addRequest, { isLoading }] = useAddRequestByClientMutation();
   const { id } = useParams();
   const [message, setMessage] = useState(null);
@@ -22,7 +22,7 @@ const ServiceRequestForm = ({ directRequest }) => {
     defaultValues: {
       serviceId: id,
       date: formatDate(new Date()),
-      time: "anytime",
+      time: 8,
       contact: "",
     },
   });
@@ -38,7 +38,7 @@ const ServiceRequestForm = ({ directRequest }) => {
       let res = await addRequest({
         serviceId: id,
         date: todaysDate(),
-        time: "anytime",
+        time: { value: 8, label: "Anytime" },
       }).unwrap();
       toast.success(res.msg);
       setMessage(res.msg);
@@ -51,7 +51,7 @@ const ServiceRequestForm = ({ directRequest }) => {
   };
 
   const submit = async (data) => {
-    console.log(data);
+    data.time = timeSlot.find((obj) => obj.value === data.time);
     try {
       let res = await addRequest(data).unwrap();
       toast.success(res.msg);
@@ -130,4 +130,4 @@ const ServiceRequestForm = ({ directRequest }) => {
     </div>
   );
 };
-export default ServiceRequestForm;
+export default ClientScheduleForm;

@@ -14,8 +14,16 @@ const TechnicianScheduleTable = () => {
 
   const progress = (status) => {
     let text = "text-blue-700 bg-blue-100";
-    if (status === "done") text = "text-green-700 bg-green-100";
-    else text = "text-red-700 bg-red-100";
+    if (status === "done" || status === "confirmed")
+      text = "text-green-700 bg-green-100";
+    else if (status === "Open" || status === "regular")
+      text = "text-gray-700 bg-gray-100";
+    else if (
+      status === "cancelled" ||
+      status === "complaint" ||
+      status === "byClient"
+    )
+      text = "text-red-700 bg-red-100";
 
     return (
       <p
@@ -77,7 +85,7 @@ const TechnicianScheduleTable = () => {
                   <th className="text-left  border-neutral-800 border-2 px-2">
                     Date
                   </th>
-                  <th className="text-left  border-neutral-800 border-2 px-4">
+                  <th className="text-left border-neutral-800 border-2 px-5">
                     Time
                   </th>
                   <th className="text-left w-40 border-neutral-800 border-2 whitespace-nowrap px-8">
@@ -86,23 +94,26 @@ const TechnicianScheduleTable = () => {
                   <th className="text-left border-neutral-800 border-2 whitespace-nowrap px-2">
                     Job Status
                   </th>
-                  <th className="text-left  border-neutral-800 border-2 px-12">
+                  <th className="text-center border-neutral-800 border-2 whitespace-nowrap px-2">
+                    Type
+                  </th>
+                  <th className="text-left  border-neutral-800 border-2 px-14">
                     Name
                   </th>
                   <th className="text-left border-neutral-800 border-2 px-20">
                     Address
                   </th>
-                  <th className="text-left border-neutral-800 border-2 whitespace-nowrap px-8">
+                  <th className="text-left border-neutral-800 border-2 whitespace-nowrap px-4">
                     Complaint By
-                  </th>
-                  <th className="text-left  border-neutral-800 border-2 px-5">
-                    Contact
                   </th>
                   <th className="text-left  border-neutral-800 border-2 px-12">
                     Service
                   </th>
+                  <th className="text-left  border-neutral-800 border-2 px-2">
+                    Instruction
+                  </th>
                   <th className="text-left border-neutral-800 border-2 whitespace-nowrap px-2">
-                    Assistant Technician
+                    Asst Technician
                   </th>
                   <th className="text-left border-neutral-800 border-2 px-2">
                     Update
@@ -118,15 +129,17 @@ const TechnicianScheduleTable = () => {
                     <td className="px-2 border font-normal border-neutral-500">
                       {dateFormat(schedule.date)}
                     </td>
-                    <td className="px-2 border font-normal border-neutral-500">
-                      {schedule.time.charAt(0).toUpperCase() +
-                        schedule.time.slice(1)}
+                    <td className="px-1 text-center border font-normal border-neutral-500">
+                      {schedule.time.label}
                     </td>
-                    <td className="px-2 border-r text-center font-normal border-neutral-500">
+                    <td className="px-1 border-r text-center font-normal border-neutral-500">
                       {schedule.contractNo}
                     </td>
                     <td className="px-2 border-r text-center font-normal border-neutral-500">
                       {progress(schedule.jobStatus)}
+                    </td>
+                    <td className="px-2 border-r text-center font-normal border-neutral-500">
+                      {progress(schedule.serviceType)}
                     </td>
                     <td className="px-2 border-r font-normal  border-neutral-500">
                       {schedule.clientName}
@@ -138,10 +151,10 @@ const TechnicianScheduleTable = () => {
                       {schedule.raiseBy}
                     </td>
                     <td className="px-2  border-r font-normal border-neutral-500">
-                      {schedule.clientContact}
+                      {schedule.serviceName.join(", ")}
                     </td>
                     <td className="px-2  border-r font-normal border-neutral-500">
-                      {schedule.serviceName.join(", ")}
+                      {schedule.instruction}
                     </td>
                     <td className="px-2  border-r font-normal border-neutral-500">
                       {schedule.assistantTechnician}

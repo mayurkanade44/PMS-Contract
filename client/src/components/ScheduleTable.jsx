@@ -38,96 +38,100 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
     <div className="w-full overflow-x-scroll xl:overflow-x-hidden">
       <table className="min-w-full bg-white rounded">
         <thead>
-          <tr className="w-full h-12 border-gray-300 border-b py-10 bg-indigo-100">
-            <th className=" text-gray-600 w-32  font-normal text-center text-sm tracking-normal">
+          <tr className="w-full h-12 border-gray-300 border-b py-10 bg-indigo-100 ">
+            <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
               Contract No
             </th>
-            <th className=" text-gray-600 w-40 font-normal text-left pr-4 text-sm tracking-normal">
+            <th className="font-semibold w-32 whitespace-nowrap px-2 text-center text-sm">
               Client Name
             </th>
-            <th className="text-gray-600 font-normal pr-4 text-left text-sm tracking-normal">
+            <th className="font-semibold w-52 whitespace-nowrap px-16 lg:px-2 text-center text-sm">
               Address
             </th>
-            <th className="text-gray-600 w-28 font-normal pr-4 text-left text-sm tracking-normal">
+            <th className="font-semibold w-28 whitespace-nowrap px-2 text-center text-sm">
               Complaint By
             </th>
-            <th className="text-gray-600 w-[84px] font-normal pr-4 text-left text-sm tracking-normal">
+            <th className="font-semibold w-[90px] whitespace-nowrap px-4 lg:px-2 text-center text-sm">
               Phone No
             </th>
-            <th className="text-gray-600 w-16 font-normal text-left text-sm tracking-normal">
+            <th className="font-semibold w-16 whitespace-nowrap px-2 text-center text-sm">
               Date
             </th>
-            <th className="text-gray-600 w-16 font-normal text-left text-sm tracking-normal">
-              Time
+            <th className="font-semibold w-24 whitespace-nowrap px-1 text-center text-sm">
+              Time & Duration
             </th>
-            <th className="text-gray-600 w-16 font-normal text-left text-sm tracking-normal">
-              Duration
-            </th>
-            <th className="text-gray-600 w-40 font-normal text-left text-sm tracking-normal">
+            <th className="font-semibold w-44 whitespace-nowrap px-12 lg:px-1 text-center text-sm">
               Service
             </th>
-            <th className="text-gray-600 w-28 font-normal text-left text-sm tracking-normal">
+            <th className="font-semibold w-32 whitespace-nowrap px-6 lg:px-1 text-center text-sm">
+              Instructions
+            </th>
+            <th className="font-semibold w-24 whitespace-nowrap px-1 text-center text-sm">
               Schedule Type
             </th>
-            <th className="text-gray-600 w-24 font-normal text-left text-sm tracking-normal">
+            <th className="font-semibold w-24 whitespace-nowrap px-1 text-center text-sm">
               Service Type
             </th>
-            <th className="text-gray-600 font-normal pr-5  text-left text-sm tracking-normal">
-              Status
-            </th>
-            <th className="text-gray-600 w-32 font-normal px-4 text-left text-sm tracking-normal">
-              Technician
+            <th className="font-semibold px-1 text-center text-sm">Status</th>
+            <th className="w-32 px-4 text-left text-sm font-semibold">
+              Technicians
             </th>
           </tr>
         </thead>
         <tbody>
           {schedules?.map((schedule) => (
             <tr
-              onClick={() => handleEditModal(schedule)}
               key={schedule._id}
-              className="h-20 text-[12px] border-gray-300 border-t border-b hover:border-indigo-300 hover:shadow-md transition duration-150 ease-in-out hover:cursor-pointer"
+              className="h-20 text-[12px] border-gray-300 border-t border-b hover:border-indigo-300 hover:shadow-md transition duration-150 ease-in-out hover:cursor-default"
             >
-              <td className="text-center whitespace-no-wrap text-gray-800  tracking-normal">
+              <td
+                onClick={() => handleEditModal(schedule)}
+                className="text-center whitespace-no-wrap text-gray-800 px-2 border-r hover:cursor-pointer hover:text-blue-600 hover:font-semibold hover:bg-orange-100"
+              >
                 {schedule.contractNo}
               </td>
-              <>
-                <td className="p-2 text-left whitespace-no-wrap text-gray-800  tracking-normal">
-                  {schedule.clientName}
-                </td>
-                <td className="pr-3 whitespace-no-wrap text-gray-800  tracking-normal">
-                  {schedule.clientAddress}
-                </td>
-                <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
-                  {schedule.raiseBy}
-                </td>
-                <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
-                  {schedule.clientContact}
-                </td>
-                <td className="text-left whitespace-no-wrap text-gray-800  tracking-normal">
-                  {dateFormat(schedule.date)}
-                </td>
-                <td className="px-1 whitespace-no-wrap text-gray-800  tracking-normal">
-                  {schedule.time.label}
-                </td>
-                <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
-                  {schedule.jobDuration}
-                </td>
-                <td className="pr-2 whitespace-no-wrap text-gray-800  tracking-normal">
-                  {schedule.serviceName.join(", ")}
-                </td>
-                <td>{progress(schedule.scheduleType)}</td>
-                <td className="pr-1">{progress(schedule.serviceType)}</td>
-                <td className="whitespace-no-wrap  text-gray-800  tracking-normal">
-                  {progress(schedule.jobStatus)}
-                </td>
-                <td className="px-1 whitespace-no-wrap text-center text-gray-800  tracking-normal">
-                  {schedule.assistantTechnician
-                    ? schedule.technician?.name +
-                      "/" +
-                      schedule.assistantTechnician
-                    : schedule.technician?.name}
-                </td>
-              </>
+              <td className="text-center whitespace-no-wrap text-gray-800 px-2 border-r">
+                {schedule.clientName}
+              </td>
+              <td className="text-gray-800 px-2 border-r">
+                {schedule.clientAddress}
+              </td>
+              <td className="text-gray-800 px-1 border-r">
+                {schedule.raiseBy}
+              </td>
+              <td className="text-gray-800 px-2 border-r">
+                {schedule.clientContact}
+              </td>
+              <td className="text-center text-gray-800 px-1 border-r">
+                {dateFormat(schedule.date)}
+              </td>
+              <td className="text-center text-gray-800 px-1 border-r">
+                {schedule.jobDuration
+                  ? schedule.time.label + " / " + schedule.jobDuration
+                  : schedule.time.label}
+              </td>
+              <td className=" text-gray-800 px-1 border-r">
+                {schedule.serviceName.join(", ")}
+              </td>
+              <td className="text-gray-800 px-1 border-r">
+                {schedule.instruction}
+              </td>
+              <td className="text-gray-800 text-center border-r">
+                {progress(schedule.scheduleType)}
+              </td>
+              <td className="text-gray-800 text-center border-r">
+                {progress(schedule.serviceType)}
+              </td>
+              <td className="text-gray-800 text-center px-2 border-r">
+                {progress(schedule.jobStatus)}
+              </td>
+              <td className="px-1 whitespace-no-wrap text-center text-gray-800">
+                {schedule.assistantTechnician
+                  ? schedule.technician?.name +
+                    "/ " +
+                    schedule.assistantTechnician
+                  : schedule.technician?.name}
+              </td>
             </tr>
           ))}
         </tbody>

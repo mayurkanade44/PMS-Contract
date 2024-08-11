@@ -253,7 +253,7 @@ const ScheduleFormModal = ({ open, setOpen }) => {
                     required
                   />
                 </div>
-                <div className="col-span-2 flex">
+                <div className="col-span-2 md:flex">
                   <div className="w-3/5 mr-4">
                     <InputRow
                       label="Schedule Date"

@@ -108,14 +108,16 @@ const Schedule = () => {
       )}
       {open && <ScheduleFormModal open={open} setOpen={setOpen} />}
       <div className="pt-1 pb-5">
-        <div className="mx-auto container bg-white shadow rounded">
+        <div className="mx-auto container bg-white shadow rounded ">
           <div className="flex flex-col lg:flex-row px-8 pt-4 justify-between items-start lg:items-stretch w-full">
-            <h1 className="text-3xl font-semibold">Service Scheduling </h1>
-            <div className="w-full lg:w-2/4 flex flex-col lg:flex-row items-start lg:items-center justify-end">
+            <h1 className="text-xl md:text-3xl font-semibold text-center">
+              Service Scheduling{" "}
+            </h1>
+            <div className="w-full mt-2 mb-3 lg:mt-0 lg:mb-1 lg:w-2/4 flex flex-col lg:flex-row items-center justify-end">
               <Button
                 label="Add Schedule"
-                height="h-10"
-                width="md:w-1/4 mb-5 md:mb-0"
+                height="h-8 md:h-10"
+                width="w-32 md:w-40"
                 color="bg-indigo-700"
                 handleClick={() => setOpenSearch(true)}
               />
@@ -124,7 +126,7 @@ const Schedule = () => {
               </button> */}
             </div>
           </div>
-          <div className="flex flex-col lg:flex-row px-2 justify-between items-start lg:items-stretch w-full">
+          <div className="flex flex-col lg:flex-row px-2 mb-2 justify-between items-start lg:items-stretch w-full">
             <div className="w-full lg:w-1/6 flex flex-col lg:flex-row items-start lg:items-center">
               <div className="w-full relative mb-2 lg:mb-0 lg:mr-1 lg:mt-6">
                 <div className="absolute text-gray-600 dark:text-gray-400 flex items-center pl-2 h-full">
@@ -191,7 +193,7 @@ const Schedule = () => {
                 />
               </div>
 
-              <div className=" w-full lg:w-1/5 my-5 lg:mx-1">
+              <div className=" w-full lg:w-1/5 my-2 lg:mx-1">
                 <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
                   Schedule Date
                 </label>
