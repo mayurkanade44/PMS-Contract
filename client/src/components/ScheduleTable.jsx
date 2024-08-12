@@ -2,12 +2,21 @@ import { useDispatch } from "react-redux";
 import { setScheduleDetails } from "../redux/allSlice";
 import { dateFormat } from "../utils/functionHelper";
 
-const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
+const ScheduleTable = ({ schedules, setOpen }) => {
   const dispatch = useDispatch();
 
   const handleEditModal = (schedule) => {
     dispatch(setScheduleDetails(schedule));
     setOpen(true);
+  };
+
+  const downloadImages = (contractNo, images) => {
+    if (images.length > 0) {
+      images.forEach((image, index) => {
+        const extension = image.split(".").pop();
+        saveAs(image, `${contractNo} Image-${index + 1}.${extension}`);
+      });
+    }
   };
 
   const progress = (status) => {
@@ -122,7 +131,15 @@ const ScheduleTable = ({ schedules, isLoading, setOpen }) => {
               <td className="text-gray-800 text-center border-r">
                 {progress(schedule.serviceType)}
               </td>
-              <td className="text-gray-800 text-center px-2 border-r">
+              <td
+                onClick={() =>
+                  downloadImages(schedule.contractNo, schedule.image)
+                }
+                className={`px-2 border-r ${
+                  schedule.jobStatus == "done" &&
+                  "hover:bg-green-400 hover:cursor-pointer"
+                }`}
+              >
                 {progress(schedule.jobStatus)}
               </td>
               <td className="px-1 whitespace-no-wrap text-center text-gray-800">

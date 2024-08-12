@@ -69,6 +69,7 @@ export const addServiceData = async (req, res) => {
 
     await Report.create(req.body);
 
+    //schedule data updation
     if (req.body.serviceStatus === "Completed") {
       const schedule = await Schedule.findOne({
         service: serviceId,

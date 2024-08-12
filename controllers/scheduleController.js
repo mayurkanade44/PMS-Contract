@@ -210,11 +210,11 @@ export const updateSchedule = async (req, res) => {
           req.body.serviceType.charAt(0).toUpperCase() +
           req.body.serviceType.slice(1),
       };
-      // await sendBrevoEmail({
-      //   emailList: scheduler.clientEmail,
-      //   templateId: 6,
-      //   dynamicData,
-      // });
+      await sendBrevoEmail({
+        emailList: scheduler.clientEmail,
+        templateId: 6,
+        dynamicData,
+      });
     }
 
     req.body.emailSent = true;
@@ -372,16 +372,16 @@ export const addScheduleByPms = async (req, res) => {
       serviceName: serviceName.toString(),
       serviceType: serviceType.charAt(0).toUpperCase() + serviceType.slice(1),
     };
-    // const email = await sendBrevoEmail({
-    //   emailList: req.body.clientEmail,
-    //   templateId: 6,
-    //   dynamicData,
-    // });
-    // if (!email) {
-    //   emailSent = false;
-    //   responseMessage =
-    //     "New schedule is added but Confirmation email is not sent";
-    // }
+    const email = await sendBrevoEmail({
+      emailList: req.body.clientEmail,
+      templateId: 6,
+      dynamicData,
+    });
+    if (!email) {
+      emailSent = false;
+      responseMessage =
+        "New schedule is added but Confirmation email is not sent";
+    }
 
     await Schedule.create({
       contractNo,
