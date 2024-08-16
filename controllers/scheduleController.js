@@ -117,7 +117,7 @@ export const getAllSchedules = async (req, res) => {
   }
   if (date) {
     query.date = new Date(date);
-    sort = "time.value";
+    sort = { technician: 1, "time.value": 1 };
   }
   if (serviceType && serviceType != "all") {
     query.serviceType = serviceType;
@@ -188,11 +188,34 @@ export const updateSchedule = async (req, res) => {
     if (!scheduler) {
       res.status(400).json({ msg: "Request not found" });
     }
-    if (scheduler.contractNo !== contractNo) {
-      return res
-        .status(400)
-        .json({ msg: "Contract number change not allowed" });
+
+    //to check given service is available in client contract or not
+    if (scheduler.serviceName[0] !== req.body.serviceName[0]) {
+      console.log('ok');
+      
+      const contract = await Contract.findOne({
+        contractNo: scheduler.contractNo,
+      }).populate({
+        path: "services",
+        select: "services",
+      });
+
+      let serviceId = null;
+      contract.services.map((item) =>
+        item.services.map((service) =>
+          service.label == req.body.serviceName[0]
+            ? (serviceId = item._id)
+            : serviceId
+        )
+      );
+      if (!serviceId)
+        return res
+          .status(400)
+          .json({ msg: "Selected service is not valid service" });
+
+      req.body.service = serviceId;
     }
+
     req.body.date = new Date(req.body.date);
 
     //email confirmation
