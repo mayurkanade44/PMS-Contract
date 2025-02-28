@@ -10,6 +10,7 @@ import {
   AiOutlineSchedule,
 } from "react-icons/ai";
 import { RiAdminLine } from "react-icons/ri";
+import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import logo from "../assets/logo.jpg";
 import { useLogoutMutation } from "../redux/userSlice";
 import { toast } from "react-toastify";
@@ -26,6 +27,12 @@ const navData = [
     name: "Schedule",
     link: "/schedule",
     icon: <AiOutlineSchedule className="mr-2 w-5 h-5" />,
+    role: ["Admin", "Back Office"],
+  },
+  {
+    name: "Invoice",
+    link: "/invoice",
+    icon: <LiaFileInvoiceDollarSolid className="mr-2 w-5 h-5" />,
     role: ["Admin", "Back Office"],
   },
   {

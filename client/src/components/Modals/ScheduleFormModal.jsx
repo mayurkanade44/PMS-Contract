@@ -120,7 +120,6 @@ const ScheduleFormModal = ({ open, setOpen }) => {
   }, [scheduleDate, scheduleTime]);
 
   const submit = async (data) => {
-    console.log(data);
     data.serviceName = selectedOption.map((service) => service.label);
     data.time = timeSlot.find((obj) => obj.value === data.time);
     try {
