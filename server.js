@@ -18,6 +18,7 @@ import serviceRouter from "./routes/serviceRoute.js";
 import reportRouter from "./routes/reportRoute.js";
 import adminRouter from "./routes/adminRoute.js";
 import scheduleRouter from "./routes/scheduleRoute.js";
+import billingRouter from "./routes/billingRoute.js";
 
 //Middleware
 import { notFound } from "./middleware/notFound.js";
@@ -49,6 +50,7 @@ app.use("/api/service", authenticateUser, serviceRouter);
 app.use("/api/report", reportRouter);
 app.use("/api/schedule", scheduleRouter);
 app.use("/api/admin", authenticateUser, authorizeUser("Admin"), adminRouter);
+app.use("/api/billing", authenticateUser, billingRouter);
 
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();
