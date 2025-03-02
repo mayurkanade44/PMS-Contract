@@ -204,3 +204,43 @@ export const pincodeOptions = [
   { label: "400103", value: "400103" },
   { label: "400104", value: "400104" },
 ];
+
+export const billingTypes = [
+  { value: "all", label: "All" },
+  { value: "PMS", label: "PMS" },
+  { value: "MK", label: "MK" },
+];
+
+export const paymentStatus = [
+  { value: "all", label: "All" },
+  { value: "Received", label: "Received" },
+  { value: "Pending", label: "Pending" },
+];
+
+export const paymentMode = [
+  { value: "Cash", label: "Cash" },
+  { value: "NEFT", label: "NEFT" },
+  { value: "RTGS", label: "RTGS" },
+  { value: "UPI", label: "UPI" },
+  { value: "PMS Gpay", label: "PMS Gpay" },
+  { value: "MK Gpay", label: "MK Gpay" },
+];
+
+export const paymentTerms = [
+  { value: "monthly", label: "Monthly" },
+  { value: "quarterly", label: "Quarterly" },
+  { value: "6months", label: "6 Months" },
+  { value: "fullPayment", label: "Full Payment" },
+];
+
+export const tdsType = [
+  { value: "no", label: "No" },
+  { value: "1", label: "1%" },
+  { value: "2", label: "2%" },
+];
+
+export const billingService = [
+  { value: "GPC", label: "GPC - GENERAL PEST CONTROL" },
+  { value: "TCS", label: "TCS - TERMITE CONTROL SERVICE" },
+];
+

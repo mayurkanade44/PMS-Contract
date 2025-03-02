@@ -202,31 +202,41 @@ export const createServiceCard = async ({
 };
 
 export const calculateGSTAmount = (amount, frequency, months) => {
-  //calculate contract amount
+  if (amount <= 0 || months <= 0) {
+    return { errorMsg: "Amount and months must be greater than zero." };
+  }
+
   let basic = Number(amount);
-  let gst = Number(((basic * 18) / 100).toFixed(2));
+  let gst = Math.round(Number(((basic * 18) / 100).toFixed(2)));
   let sgst = Number((gst / 2).toFixed(2));
-  let cgst = Number((gst / 2).toFixed(2));
+  let cgst = sgst; // SGST and CGST are equal
   let total = basic + gst;
   let contractAmount = { basic, cgst, sgst, gst, total };
 
-  //calculate invoice amount
-  let duration = 1;
   if (
-    (frequency == "quarterly" && months < 3) ||
-    (frequency == "6months" && months < 6)
-  )
+    (frequency === "quarterly" && months < 3) ||
+    (frequency === "6months" && months < 6)
+  ) {
     return { errorMsg: "Please select valid payment terms" };
+  }
 
-  if (frequency == "monthly") duration = months;
-  else if (frequency == "quarterly") duration = months / 3;
-  else if (frequency == "6months") duration = months / 6;
-  basic = Number((Number(basic) / duration).toFixed(2));
-  gst = Number(((basic * 18) / 100).toFixed(2));
-  sgst = Number((gst / 2).toFixed(2));
-  cgst = sgst;
-  total = basic + gst;
-  let invoiceAmount = { basic, cgst, sgst, gst, total };
+  let duration = 1;
+  if (frequency === "monthly") duration = months;
+  else if (frequency === "quarterly") duration = months / 3;
+  else if (frequency === "6months") duration = months / 6;
+
+  let invoiceBasic = Math.round(Number((Number(basic) / duration).toFixed(2)));
+  let invoiceGST = Math.round(Number(((invoiceBasic * 18) / 100).toFixed(2)));
+  let invoiceSgst = Number((invoiceGST / 2).toFixed(2));
+  let invoiceCgst = invoiceSgst;
+  let invoiceTotal = invoiceBasic + invoiceGST;
+  let invoiceAmount = {
+    basic: invoiceBasic,
+    cgst: invoiceCgst,
+    sgst: invoiceSgst,
+    gst: invoiceGST,
+    total: invoiceTotal,
+  };
 
   return { contractAmount, invoiceAmount, duration };
 };
