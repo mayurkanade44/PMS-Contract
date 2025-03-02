@@ -10,6 +10,8 @@ import ClientReport from "./ClientReport";
 import NotFound from "./NotFound";
 import ServiceCardMessage from "./ServiceCardMessage";
 import Schedule from "./Schedule";
+import NewBilling from "./NewBilling";
+import Invoice from "./Invoice";
 
 
 export {
@@ -25,4 +27,6 @@ export {
   NotFound,
   ServiceCardMessage,
   Schedule,
+  NewBilling,
+  Invoice
 };

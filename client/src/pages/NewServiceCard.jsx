@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { allFrequency } from "../utils/dataHelper";
 import {
   AlertMessage,
@@ -53,7 +53,6 @@ const NewServiceCard = () => {
   const [sendContract, { isLoading: createCardLoading }] =
     useSendContractMutation();
   const { data: adminValues, isLoading: valueLoading } = useGetAllValuesQuery();
-
 
   const {
     register,
@@ -396,28 +395,43 @@ const NewServiceCard = () => {
                 ))}
               </tbody>
             </table>
-            <Button
-              label={
-                !contractDetails.softCopy
-                  ? "Create Digital Contract"
-                  : !contractDetails.sendMail
-                  ? "Send Contract"
-                  : "Contract Already Sent"
-              }
-              width="w-48"
-              height="py-2"
-              color={
-                !contractDetails.softCopy
-                  ? "bg-green-600"
-                  : !contractDetails.sendMail
-                  ? "bg-blue-600"
-                  : "bg-gray-600"
-              }
-              handleClick={() => handleSendContract()}
-              disabled={
-                !contractDetails.services?.length || contractDetails.sendMail
-              }
-            />
+            <div className="flex">
+              <div className="mr-32">
+                <Button
+                  label={
+                    !contractDetails.softCopy
+                      ? "Create Digital Contract"
+                      : !contractDetails.sendMail
+                      ? "Send Contract"
+                      : "Contract Already Sent"
+                  }
+                  width="w-48"
+                  height="py-2"
+                  color={
+                    !contractDetails.softCopy
+                      ? "bg-green-600"
+                      : !contractDetails.sendMail
+                      ? "bg-blue-600"
+                      : "bg-gray-600"
+                  }
+                  handleClick={() => handleSendContract()}
+                  disabled={
+                    !contractDetails.services?.length ||
+                    contractDetails.sendMail
+                  }
+                />
+              </div>
+              {!contractDetails?.billings.length && (
+                <Link to={`/billing/new/${id}`}>
+                  <Button
+                    label="Add Billing Details"
+                    width="w-40"
+                    height="py-2"
+                    color="bg-yellow-600"
+                  />
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}
