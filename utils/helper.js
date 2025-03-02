@@ -200,3 +200,211 @@ export const createServiceCard = async ({
     return false;
   }
 };
+
+export const calculateGSTAmount = (amount, frequency, months) => {
+  //calculate contract amount
+  let basic = Number(amount);
+  let gst = Number(((basic * 18) / 100).toFixed(2));
+  let sgst = Number((gst / 2).toFixed(2));
+  let cgst = Number((gst / 2).toFixed(2));
+  let total = basic + gst;
+  let contractAmount = { basic, cgst, sgst, gst, total };
+
+  //calculate invoice amount
+  let duration = 1;
+  if (
+    (frequency == "quarterly" && months < 3) ||
+    (frequency == "6months" && months < 6)
+  )
+    return { errorMsg: "Please select valid payment terms" };
+
+  if (frequency == "monthly") duration = months;
+  else if (frequency == "quarterly") duration = months / 3;
+  else if (frequency == "6months") duration = months / 6;
+  basic = Number((Number(basic) / duration).toFixed(2));
+  gst = Number(((basic * 18) / 100).toFixed(2));
+  sgst = Number((gst / 2).toFixed(2));
+  cgst = sgst;
+  total = basic + gst;
+  let invoiceAmount = { basic, cgst, sgst, gst, total };
+
+  return { contractAmount, invoiceAmount, duration };
+};
+
+export const calculateInvoiceAmount = (serviceDetails, frequency, months) => {
+  const invoiceServiceDetails = JSON.parse(JSON.stringify(serviceDetails));
+
+  console.log(frequency, months);
+
+  if (frequency == "monthly") duration = months;
+  else if (frequency == "quarterly") duration = months / 3;
+  else if (frequency == "6months") duration = months / 6;
+
+  invoiceServiceDetails.map(
+    (item) =>
+      (item.amount = Number((Number(item.amount) / duration).toFixed(2)))
+  );
+
+  let basic = invoiceServiceDetails.reduce(
+    (sum, service) => sum + Number(service.amount),
+    0
+  );
+  basic = Number(basic.toFixed(2));
+  let gst = Number(((basic * 18) / 100).toFixed(2));
+  let sgst = Number((gst / 2).toFixed(2));
+  let cgst = Number((gst / 2).toFixed(2));
+  let total = basic + gst;
+
+  let invoiceAmount = { basic, cgst, sgst, gst, total };
+
+  return { invoiceAmount, invoiceServiceDetails, duration };
+};
+
+export const billingFrequency = (frequency, tenure) => {
+  let totalMonths = tenure.months;
+
+  let month = tenure.startDate;
+  const billingMonths = [moment(tenure.startDate).format("MMM YY")];
+  let frequencyMonths = 1;
+  if (frequency == "monthly") {
+    frequencyMonths = totalMonths;
+    while (frequencyMonths > 1) {
+      month = moment(month).add(1, "months");
+      billingMonths.push(moment(month).format("MMM YY"));
+      frequencyMonths--;
+    }
+  } else if (frequency == "quarterly") {
+    frequencyMonths = totalMonths / 3;
+    while (frequencyMonths > 1) {
+      month = moment(month).add(3, "months");
+      billingMonths.push(moment(month).format("MMM YY"));
+      frequencyMonths--;
+    }
+  } else if (frequency == "6months") {
+    frequencyMonths = totalMonths / 6;
+    while (frequencyMonths > 1) {
+      month = moment(month).add(6, "months");
+      billingMonths.push(moment(month).format("MMM YY"));
+      frequencyMonths--;
+    }
+  }
+
+  return billingMonths;
+};
+
+export const createInvoiceDoc = async ({ bill, invoice, type }) => {
+  try {
+    const template = fs.readFileSync("./tmp/invoiceTemp.docx");
+
+    const buffer = await createReport({
+      cmdDelimiter: ["{", "}"],
+      template,
+
+      additionalJsContext: {
+        type: type,
+        date: moment().format("DD/MM/YYYY"),
+        number: invoice.number,
+        refNumber: bill.number,
+        gstNo: bill.gstNo,
+        billTo: bill.billToDetails,
+        shipTo: bill.shipToDetails,
+        services: bill.serviceDetails,
+        basic: formatToINR(bill.invoiceAmount.basic),
+        gst: formatToINR(bill.invoiceAmount.cgst),
+        gstTotal: formatToINR(bill.invoiceAmount.gst),
+        total: formatToINR(bill.invoiceAmount.total),
+        amountWords: numberToWords(bill.invoiceAmount.total),
+      },
+    });
+
+    return buffer;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+function formatToINR(number) {
+  return number.toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+function numberToWords(num) {
+  const ones = [
+    "",
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten",
+    "Eleven",
+    "Twelve",
+    "Thirteen",
+    "Fourteen",
+    "Fifteen",
+    "Sixteen",
+    "Seventeen",
+    "Eighteen",
+    "Nineteen",
+  ];
+
+  const tens = [
+    "",
+    "",
+    "Twenty",
+    "Thirty",
+    "Forty",
+    "Fifty",
+    "Sixty",
+    "Seventy",
+    "Eighty",
+    "Ninety",
+  ];
+  const units = ["", "Thousand", "Lakh", "Crore"];
+
+  if (num === 0) return "Zero Rupees";
+
+  function getWords(n) {
+    let str = "";
+    if (n > 19) {
+      str += tens[Math.floor(n / 10)] + (n % 10 ? " " + ones[n % 10] : "");
+    } else {
+      str += ones[n];
+    }
+    return str;
+  }
+
+  let result = "";
+  let i = 0;
+
+  // Split number into groups following Indian system (3,2,2,...)
+  const parts = [];
+  parts.push(num % 1000); // First 3 digits
+  num = Math.floor(num / 1000);
+
+  while (num > 0) {
+    parts.push(num % 100);
+    num = Math.floor(num / 100);
+  }
+
+  // Convert parts into words
+  for (let j = parts.length - 1; j >= 0; j--) {
+    if (parts[j] !== 0) {
+      if (j === 0 && parts[j] > 99) {
+        result += ones[Math.floor(parts[j] / 100)] + " Hundred ";
+        result += getWords(parts[j] % 100);
+      } else {
+        result += getWords(parts[j]) + (units[j] ? " " + units[j] + " " : "");
+      }
+    }
+  }
+
+  return result.trim() + " Rupees Only";
+}
