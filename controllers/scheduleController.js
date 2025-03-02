@@ -191,8 +191,6 @@ export const updateSchedule = async (req, res) => {
 
     //to check given service is available in client contract or not
     if (scheduler.serviceName[0] !== req.body.serviceName[0]) {
-      console.log('ok');
-      
       const contract = await Contract.findOne({
         contractNo: scheduler.contractNo,
       }).populate({

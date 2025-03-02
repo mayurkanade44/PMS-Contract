@@ -54,4 +54,11 @@ ContractSchema.virtual("reports", {
   justOne: false,
 });
 
+ContractSchema.virtual("billings", {
+  ref: "Billing",
+  localField: "_id",
+  foreignField: "contract",
+  justOne: false,
+});
+
 export default mongoose.model("Contract", ContractSchema);
