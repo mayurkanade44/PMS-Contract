@@ -10,14 +10,16 @@ import {
 } from "../../redux/billingSlice";
 import { toast } from "react-toastify";
 import { saveAs } from "file-saver";
-import { useSelector } from "react-redux";
-import { setInvoiceDetails } from "../../redux/allSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setInvoiceDetails, setBillDetails } from "../../redux/allSlice";
 
-const InvoiceFormModal = ({ open, setOpen, bill }) => {
+const InvoiceFormModal = ({ open, setOpen }) => {
   const [tax, setTax] = useState(false);
 
-  const { invoiceDetails } = useSelector((store) => store.all);
-  console.log(invoiceDetails);
+  const dispatch = useDispatch();
+  const { invoiceDetails, billDetails: bill } = useSelector(
+    (store) => store.all
+  );
 
   const [generateInvoice, { isLoading: generateInvoiceLoading }] =
     useGenerateInvoiceMutation();
@@ -45,24 +47,17 @@ const InvoiceFormModal = ({ open, setOpen, bill }) => {
 
   let paymentSts = watch("paymentStatus");
   const submit = async (data) => {
-    console.log(bill);
-
-    if (bill) {
-      if (tax && !bill?.gstNo && !data.gstNo) {
-        toast.error("Please provide GST number");
-        return;
-      }
-
-      data.billNo = bill?.number;
-      data.bill = bill._id;
-      data.tax = tax;
+    if (tax && (!bill?.gstNo || !invoiceDetails?.gstNo) && !data.gstNo) {
+      toast.error("Please provide GST number");
+      return;
     }
+    data.billNo = bill?.number;
+    data.bill = bill._id;
+    data.tax = tax;
 
     try {
       let res;
       if (bill) {
-        console.log(data);
-
         res = await generateInvoice({ id: bill._id, data }).unwrap();
         if (res.url) saveAs(res.url, `${res.name}.docx`);
       } else {
@@ -72,6 +67,8 @@ const InvoiceFormModal = ({ open, setOpen, bill }) => {
 
       reset();
       setOpen(false);
+      dispatch(setInvoiceDetails(null));
+      dispatch(setBillDetails(null));
       toast.success(res.msg);
     } catch (error) {
       console.log(error);

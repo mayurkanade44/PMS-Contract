@@ -83,7 +83,7 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
               </td>
               <td
                 onClick={() => handleEditModal(invoice)}
-                className="text-gray-800 px-2 border-r text-center"
+                className="text-gray-800 px-2 border-r text-center hover:cursor-pointer hover:text-blue-600 hover:font-semibold hover:bg-blue-100"
               >
                 {invoice.number}
               </td>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { Button, InputRow, InputSelect, Loading } from "../components";
 import { toast } from "react-toastify";
+import { setBillDetails } from "../redux/allSlice";
 import {
   billingService,
   billingTypes,
@@ -29,7 +30,8 @@ const NewBilling = () => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [newInvoice, setNewInvoice] = useState(false);
-  const [billDetails, setBillDetails] = useState(null);
+
+  const dispatch = useDispatch();
 
   const [addBilling, { isLoading: addBillingLoading }] =
     useAddBillingMutation();
@@ -148,7 +150,7 @@ const NewBilling = () => {
       }
       toast.success(res.msg);
       setNewInvoice(true);
-      setBillDetails(res.bill);
+      dispatch(setBillDetails(res.bill));
     } catch (error) {
       console.log(error);
       toast.error(error?.data?.msg || error.error);
@@ -260,18 +262,11 @@ const NewBilling = () => {
           <Button
             color="bg-blue-700"
             height="py-2"
-            //   disabled={contractLoading || updateContractLoading}
             label="Generate Invoice"
             width="w-36"
             handleClick={() => setOpen(true)}
           />
-          {open && (
-            <InvoiceFormModal
-              open={open}
-              setOpen={setOpen}
-              bill={billDetails}
-            />
-          )}
+          {open && <InvoiceFormModal open={open} setOpen={setOpen} />}
         </div>
       ) : (
         <form onSubmit={handleSubmit(submit)} className="my-24 lg:my-4">
