@@ -29,6 +29,7 @@ const NewBilling = () => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [newInvoice, setNewInvoice] = useState(false);
+  const [billDetails, setBillDetails] = useState(null);
 
   const [addBilling, { isLoading: addBillingLoading }] =
     useAddBillingMutation();
@@ -120,7 +121,7 @@ const NewBilling = () => {
   };
 
   const submit = async (data) => {
-    let allServices = selectedOption;
+    let allServices = [];
     if (action == "new") {
       contract.services.map((item) =>
         item.services.map((service) => allServices.push(service))
@@ -135,10 +136,8 @@ const NewBilling = () => {
       data.tenure = contract.tenure;
       data.contract = id;
     }
-
-    data.serviceDetails = allServices;
-
-    console.log(data);
+    const finalServices = allServices.concat(selectedOption);
+    data.serviceDetails = finalServices;
 
     try {
       let res;
@@ -149,7 +148,7 @@ const NewBilling = () => {
       }
       toast.success(res.msg);
       setNewInvoice(true);
-      refetch();
+      setBillDetails(res.bill);
     } catch (error) {
       console.log(error);
       toast.error(error?.data?.msg || error.error);
@@ -250,11 +249,13 @@ const NewBilling = () => {
     }, 1000);
   }, [action, contract, bill]);
 
+  console.log(contract);
+
   return (
     <div>
       {loading || contractLoading ? (
         <Loading />
-      ) : newInvoice ? (
+      ) : newInvoice || contract?.billings?.length ? (
         <div className="flex items-center justify-center h-96">
           <Button
             color="bg-blue-700"
@@ -268,7 +269,7 @@ const NewBilling = () => {
             <InvoiceFormModal
               open={open}
               setOpen={setOpen}
-              bill={contract?.billings[0]}
+              bill={billDetails}
             />
           )}
         </div>

@@ -6,6 +6,7 @@ const initialState = {
     : null,
   contractDetails: null,
   scheduleDetails: null,
+  invoiceDetails: null,
 };
 
 const allSlice = createSlice({
@@ -32,6 +33,12 @@ const allSlice = createSlice({
     removeScheduleDetails: (state) => {
       state.scheduleDetails = null;
     },
+    setInvoiceDetails: (state, action) => {
+      state.invoiceDetails = action.payload;
+    },
+    removeInvoiceDetails: (state) => {
+      state.invoiceDetails = null;
+    },
   },
 });
 
@@ -42,6 +49,8 @@ export const {
   removeContractDetails,
   setScheduleDetails,
   removeScheduleDetails,
+  setInvoiceDetails,
+  removeInvoiceDetails,
 } = allSlice.actions;
 
 export default allSlice.reducer;

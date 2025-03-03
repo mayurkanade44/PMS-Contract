@@ -2,8 +2,29 @@ import { Link } from "react-router-dom";
 import { dateFormat } from "../utils/functionHelper";
 import Button from "./Button";
 import { saveAs } from "file-saver";
+import { useDispatch } from "react-redux";
+import { setInvoiceDetails } from "../redux/allSlice";
 
 const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
+  const dispatch = useDispatch();
+
+  const handleEditModal = (invoice) => {
+    dispatch(
+      setInvoiceDetails({
+        id: invoice._id,
+        paymentStatus: invoice.paymentStatus,
+        paymentMode: invoice.paymentMode,
+        paymentDate: invoice?.paymentDate
+          ? new Date(invoice?.paymentDate).toISOString().slice(0, 10)
+          : new Date(),
+        paymentRefernce: invoice.paymentRefernce,
+        remark: invoice.remark,
+        gstNo: invoice.bill.gstNo,
+      })
+    );
+    setOpen(true);
+  };
+
   const progress = (status) => {
     let text = "text-blue-700 bg-blue-100";
     if (status === "Received") text = "text-green-700 bg-green-100";
@@ -55,15 +76,15 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
               key={invoice._id}
               className="h-10 text-[12px] border-gray-300 border-t border-b hover:border-indigo-300 hover:shadow-md transition duration-150 ease-in-out hover:cursor-default"
             >
-              <td
-                onClick={() => handleEditModal(invoice)}
-                className="text-center whitespace-no-wrap text-gray-800 px-2 border-r hover:cursor-pointer hover:text-blue-600 hover:font-semibold hover:bg-orange-100"
-              >
+              <td className="text-center whitespace-no-wrap text-gray-800 px-2 border-r hover:cursor-pointer hover:text-blue-600 hover:font-semibold hover:bg-orange-100">
                 <Link to={"/billing/update/" + invoice.bill._id}>
                   {invoice.billNo}
                 </Link>
               </td>
-              <td className="text-gray-800 px-2 border-r text-center">
+              <td
+                onClick={() => handleEditModal(invoice)}
+                className="text-gray-800 px-2 border-r text-center"
+              >
                 {invoice.number}
               </td>
               <td className="text-gray-800 px-2 border-r text-center">

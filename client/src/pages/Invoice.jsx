@@ -4,6 +4,7 @@ import { AlertMessage, Button, Loading, InvoiceTable } from "../components";
 import { AiOutlineSearch } from "react-icons/ai";
 import Select from "react-select";
 import { billingTypes, paymentTerms, paymentStatus } from "../utils/dataHelper";
+import InvoiceFormModal from "../components/Modals/InvoiceFormModal";
 
 const Invoice = () => {
   const [tempSearch, setTempSearch] = useState("");
@@ -43,6 +44,7 @@ const Invoice = () => {
       ) : (
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       )}
+      {open && <InvoiceFormModal open={open} setOpen={setOpen} />}
       <div className="pt-1 pb-5">
         <div className="mx-auto container bg-white shadow rounded ">
           <div className="flex flex-col lg:flex-row px-8 pt-4 justify-between items-start lg:items-stretch w-full">

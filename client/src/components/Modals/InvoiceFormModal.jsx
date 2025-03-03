@@ -10,9 +10,14 @@ import {
 } from "../../redux/billingSlice";
 import { toast } from "react-toastify";
 import { saveAs } from "file-saver";
+import { useSelector } from "react-redux";
+import { setInvoiceDetails } from "../../redux/allSlice";
 
-const InvoiceFormModal = ({ open, setOpen, bill, invoice }) => {
+const InvoiceFormModal = ({ open, setOpen, bill }) => {
   const [tax, setTax] = useState(false);
+
+  const { invoiceDetails } = useSelector((store) => store.all);
+  console.log(invoiceDetails);
 
   const [generateInvoice, { isLoading: generateInvoiceLoading }] =
     useGenerateInvoiceMutation();
@@ -28,7 +33,7 @@ const InvoiceFormModal = ({ open, setOpen, bill, invoice }) => {
     watch,
     control,
   } = useForm({
-    defaultValues: invoice || {
+    defaultValues: invoiceDetails || {
       paymentStatus: "",
       paymentMode: "",
       paymentDate: "",
@@ -40,6 +45,8 @@ const InvoiceFormModal = ({ open, setOpen, bill, invoice }) => {
 
   let paymentSts = watch("paymentStatus");
   const submit = async (data) => {
+    console.log(bill);
+
     if (bill) {
       if (tax && !bill?.gstNo && !data.gstNo) {
         toast.error("Please provide GST number");
@@ -54,10 +61,13 @@ const InvoiceFormModal = ({ open, setOpen, bill, invoice }) => {
     try {
       let res;
       if (bill) {
+        console.log(data);
+
         res = await generateInvoice({ id: bill._id, data }).unwrap();
         if (res.url) saveAs(res.url, `${res.name}.docx`);
       } else {
-        res = await updateInvoice({ id: invoice.id, data }).unwrap();
+        console.log(data);
+        res = await updateInvoice({ id: invoiceDetails.id, data }).unwrap();
       }
 
       reset();
@@ -68,9 +78,15 @@ const InvoiceFormModal = ({ open, setOpen, bill, invoice }) => {
       toast.error(error?.data?.msg || error.error);
     }
   };
+
+  const handleClose = () => {
+    setOpen(false);
+    setInvoiceDetails(null);
+    reset();
+  };
   return (
     <div>
-      {generateInvoiceLoading ? (
+      {generateInvoiceLoading || updateInvoiceLoading ? (
         <Loading />
       ) : (
         <Modal open={open}>
@@ -82,7 +98,7 @@ const InvoiceFormModal = ({ open, setOpen, bill, invoice }) => {
               <IoMdCloseCircleOutline
                 className="w-6 h-6 text-red-500 mt-1 hover:cursor-pointer"
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={handleClose}
               />
             </div>
             <form onSubmit={handleSubmit(submit)} className="relative my-2">
@@ -153,7 +169,7 @@ const InvoiceFormModal = ({ open, setOpen, bill, invoice }) => {
                     </div>
                   </>
                 )}
-                {!bill?.gstNo && !invoice?.gstNo && (
+                {!bill?.gstNo && !invoiceDetails?.gstNo && (
                   <div className="col-span-2">
                     <InputRow
                       label="GST Number"
@@ -170,12 +186,14 @@ const InvoiceFormModal = ({ open, setOpen, bill, invoice }) => {
                     color="bg-blue-700"
                     height="py-2"
                     //   disabled={contractLoading || updateContractLoading}
-                    label={bill ? "Generate Invoice" : "Update Invoice"}
+                    label={
+                      invoiceDetails ? "Update Invoice" : "Generate Proforma"
+                    }
                     width="w-40"
                     type="submit"
                     handleClick={() => setTax(false)}
                   />
-                  {bill && (
+                  {!invoiceDetails && (
                     <Button
                       color="bg-green-700"
                       height="py-2"
