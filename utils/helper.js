@@ -304,7 +304,7 @@ export const billingFrequency = (frequency, tenure) => {
 
 export const createInvoiceDoc = async ({ bill, invoice, type }) => {
   try {
-    const template = fs.readFileSync("./tmp/invoiceTemp.docx");
+    const template = fs.readFileSync("./tmp/invoiceTemp1.docx");
 
     const buffer = await createReport({
       cmdDelimiter: ["{", "}"],

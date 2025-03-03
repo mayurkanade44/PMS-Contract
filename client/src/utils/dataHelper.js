@@ -240,7 +240,19 @@ export const tdsType = [
 ];
 
 export const billingService = [
-  { value: "GPC", label: "GPC - GENERAL PEST CONTROL" },
-  { value: "TCS", label: "TCS - TERMITE CONTROL SERVICE" },
+  { value: "Rat Guard", label: "Rat Guard" },
+  { value: "Rat Spray", label: "Rat Spray" },
+  {
+    value: "Invisible Grill Installation",
+    label: "Invisible Grill Installation",
+  },
+  { value: "Facade Cleaning", label: "Facade Cleaning" },
+  { value: "Bird Netting", label: "Bird Netting" },
+  { value: "Deep Cleaning", label: "Deep Cleaning" },
+  { value: "Classic Cleaning", label: "Classic Cleaning" },
+  { value: "Bathroom Cleaning", label: "Bathroom Cleaning" },
+  { value: "Sofa Cleaning", label: "Sofa Cleaning" },
+  { value: "Kitchen Deep Cleaning", label: "Kitchen Deep Cleaning" },
+  { value: "Gardening", label: "Gardening" },
+  { value: "Dog Tics Spray", label: "Dog Tics Spray" },
 ];
-
