@@ -4,6 +4,7 @@ import {
   createInvoice,
   getAllInvoices,
   getBillDetails,
+  searchBill,
   updateBillDetails,
   updateInvoice,
 } from "../controllers/billingController.js";
@@ -11,6 +12,7 @@ import { authorizeUser } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.get("/", authorizeUser("Admin", "Back Office"), getAllInvoices);
+router.get("/searchBill", authorizeUser("Admin", "Back Office"), searchBill);
 router.route("/add").post(authorizeUser("Admin", "Back Office"), addBilling);
 router
   .route("/singleBill/:id")

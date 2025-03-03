@@ -54,6 +54,12 @@ export const billingSlice = apiSlice.injectEndpoints({
       providesTags: ["Bills"],
       keepUnusedDataFor: 10,
     }),
+    searchBill: builder.query({
+      query: ({ search }) => ({
+        url: `/api/billing/searchBill`,
+        params: {search},
+      }),
+    }),
   }),
 });
 
@@ -63,5 +69,6 @@ export const {
   useGetSingleBillQuery,
   useUpdateBillDetailsMutation,
   useUpdateInvoiceMutation,
-  useGetAllInvoicesQuery
+  useGetAllInvoicesQuery,
+  useSearchBillQuery,
 } = billingSlice;

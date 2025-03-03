@@ -403,27 +403,49 @@ export const getAllInvoices = async (req, res) => {
   if (paymentStatus && paymentStatus != "all") {
     query.paymentStatus = paymentStatus;
   }
-  if (billType && billType !== "all") {
-    query["bill.type"] = billType;
-  }
 
   let pageNumber = Number(page) || 1;
   try {
-    const count = await Invoice.countDocuments({ ...query });
-
     const invoices = await Invoice.find(query)
       .populate({
         path: "bill",
+        match: billType !== "all" ? { type: billType } : {},
         select:
-          "invoiceAmount.total contractDetails.sales billToDetails.name gstNo",
+          "invoiceAmount.total contractDetails.sales billToDetails.name gstNo type",
       })
       .sort(sort)
       .skip(20 * (pageNumber - 1))
       .limit(20);
 
-    return res
-      .status(200)
-      .json({ invoices, pages: Math.min(10, Math.ceil(count / 20)) });
+    const filterInvoices = invoices.filter((invoice) => {
+      return invoice.bill !== null;
+    });
+    const count = filterInvoices.length;
+
+    return res.status(200).json({
+      invoices: filterInvoices,
+      pages: Math.min(10, Math.ceil(count / 20)),
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const searchBill = async (req, res) => {
+  const { search } = req.query;
+  try {
+    console.log(search);
+    if (!search)
+      return res
+        .status(400)
+        .json({ msg: "Please provide bill reference number" });
+
+    const bill = await Billing.findOne({
+      number: { $regex: search, $options: "i" },
+    });
+    if (!bill) return res.status(404).json({ msg: "bill details not found" });
+    return res.status(200).json(bill);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });
