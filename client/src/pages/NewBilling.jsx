@@ -251,11 +251,17 @@ const NewBilling = () => {
     }, 1000);
   }, [action, contract, bill]);
 
-  console.log(contract);
+  const handleGenerateInvoice = () => {
+    setOpen(true);
+    dispatch(setBillDetails(bill));
+  };
 
   return (
     <div>
-      {loading || contractLoading ? (
+      {loading ||
+      contractLoading ||
+      addBillingLoading ||
+      updateBillingLoading ? (
         <Loading />
       ) : newInvoice || contract?.billings?.length ? (
         <div className="flex items-center justify-center h-96">
@@ -264,7 +270,7 @@ const NewBilling = () => {
             height="py-2"
             label="Generate Invoice"
             width="w-36"
-            handleClick={() => setOpen(true)}
+            handleClick={handleGenerateInvoice}
           />
           {open && <InvoiceFormModal open={open} setOpen={setOpen} />}
         </div>

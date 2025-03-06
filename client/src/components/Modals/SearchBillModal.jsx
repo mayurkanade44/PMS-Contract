@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setBillDetails } from "../../redux/allSlice";
+import { setBillDetails, setInvoiceDetails } from "../../redux/allSlice";
 import Button from "../Button";
 import Modal from "./Modal";
 
@@ -34,6 +34,7 @@ const SearchBillModal = ({ open, close, setOpen }) => {
 
   const handleEditModal = (bill) => {
     dispatch(setBillDetails(bill));
+    dispatch(setInvoiceDetails(null));
     close();
     setOpen(true);
     setSearch("");

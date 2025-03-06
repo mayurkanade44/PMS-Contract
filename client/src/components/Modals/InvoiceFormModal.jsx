@@ -20,6 +20,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
   const { invoiceDetails, billDetails: bill } = useSelector(
     (store) => store.all
   );
+  console.log(bill);
 
   const [generateInvoice, { isLoading: generateInvoiceLoading }] =
     useGenerateInvoiceMutation();
@@ -47,13 +48,17 @@ const InvoiceFormModal = ({ open, setOpen }) => {
 
   let paymentSts = watch("paymentStatus");
   const submit = async (data) => {
-    if (tax && (!bill?.gstNo || !invoiceDetails?.gstNo) && !data.gstNo) {
-      toast.error("Please provide GST number");
-      return;
+    console.log(bill);
+
+    if (bill) {
+      if (tax && (!bill?.gstNo) && !data.gstNo) {
+        toast.error("Please provide GST number");
+        return;
+      }
+      data.billNo = bill?.number;
+      data.bill = bill._id;
+      data.tax = tax;
     }
-    data.billNo = bill?.number;
-    data.bill = bill._id;
-    data.tax = tax;
 
     try {
       let res;
@@ -78,7 +83,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
 
   const handleClose = () => {
     setOpen(false);
-    setInvoiceDetails(null);
+    dispatch(setInvoiceDetails(null));
     reset();
   };
   return (
