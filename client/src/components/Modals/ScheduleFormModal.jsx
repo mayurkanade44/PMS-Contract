@@ -21,6 +21,7 @@ const ScheduleFormModal = ({ open, setOpen }) => {
   const [selectedOption, setSelectedOption] = useState([]);
   const { scheduleDetails } = useSelector((store) => store.all);
   const [services, setServices] = useState([]);
+  const [jobStatus, setJobStatus] = useState("open");
   const [technicianDateTime, setTechnicianDateTime] = useState({
     date: "",
     time: "",
@@ -43,6 +44,7 @@ const ScheduleFormModal = ({ open, setOpen }) => {
     setServices(adminValues?.services);
     if (open && scheduleDetails?.contractNo) {
       setLoading(true);
+      setJobStatus(scheduleDetails?.jobStatus);
       setSelectedOption([]);
       setValue("contractNo", scheduleDetails?.contractNo);
       setValue("clientName", scheduleDetails?.clientName);
@@ -110,6 +112,7 @@ const ScheduleFormModal = ({ open, setOpen }) => {
   useEffect(() => {
     if (
       scheduleDate &&
+      jobStatus === "open" &&
       scheduleTime !== 8 &&
       scheduleTime !== 9 &&
       scheduleTime !== 13.5 &&
@@ -117,7 +120,7 @@ const ScheduleFormModal = ({ open, setOpen }) => {
     ) {
       setTechnicianDateTime({ date: scheduleDate, time: scheduleTime });
     }
-  }, [scheduleDate, scheduleTime]);
+  }, [scheduleDate, scheduleTime, jobStatus]);
 
   const submit = async (data) => {
     data.serviceName = selectedOption.map((service) => service.label);

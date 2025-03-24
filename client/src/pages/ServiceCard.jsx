@@ -35,6 +35,7 @@ const ServiceCard = () => {
       serviceDate: new Date().toISOString().slice(0, 10),
       serviceStatus: "Completed",
       serviceComment: "All job done",
+      remark: "",
     },
   });
 
@@ -175,6 +176,15 @@ const ServiceCard = () => {
                 <p className="text-xs text-red-500 -bottom-4 pl-1">
                   {errors.serviceComment?.message}
                 </p>
+              </div>
+              <div>
+                <InputRow
+                  label="Remark"
+                  id="remark"
+                  errors={errors}
+                  register={register}
+                  required={false}
+                />
               </div>
               <Button label="Submit" type="submit" />
             </div>

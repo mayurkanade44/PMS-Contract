@@ -70,17 +70,20 @@ export const addServiceData = async (req, res) => {
     await Report.create(req.body);
 
     //schedule data updation
+    const schedule = await Schedule.findOne({
+      service: serviceId,
+      date: req.body.serviceDate,
+    });
     if (req.body.serviceStatus === "Completed") {
-      const schedule = await Schedule.findOne({
-        service: serviceId,
-        date: req.body.serviceDate,
-      });
       if (schedule) {
         schedule.jobStatus = "done";
         schedule.image = imageLinks;
-        await schedule.save();
+        schedule.remark = req.body.remark;
       }
+    } else {
+      if (schedule) schedule.remark = req.body.remark;
     }
+    await schedule.save();
 
     const mailSent = await sendBrevoEmail({
       emailList,

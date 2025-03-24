@@ -29,12 +29,12 @@ const navData = [
     icon: <AiOutlineSchedule className="mr-2 w-5 h-5" />,
     role: ["Admin", "Back Office"],
   },
-  {
-    name: "Invoice",
-    link: "/invoice",
-    icon: <LiaFileInvoiceDollarSolid className="mr-2 w-5 h-5" />,
-    role: ["Admin", "Back Office"],
-  },
+  // {
+  //   name: "Invoice",
+  //   link: "/invoice",
+  //   icon: <LiaFileInvoiceDollarSolid className="mr-2 w-5 h-5" />,
+  //   role: ["Admin", "Back Office"],
+  // },
   {
     name: "Dashboard",
     link: "/dashboard",

@@ -421,7 +421,7 @@ const NewServiceCard = () => {
                   }
                 />
               </div>
-              {!contractDetails?.billings.length && (
+              {/* {!contractDetails?.billings.length && (
                 <Link to={`/billing/new/${id}`}>
                   <Button
                     label="Add Billing Details"
@@ -430,7 +430,7 @@ const NewServiceCard = () => {
                     color="bg-yellow-600"
                   />
                 </Link>
-              )}
+              )} */}
             </div>
           </div>
         </div>

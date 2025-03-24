@@ -85,6 +85,9 @@ const ScheduleTable = ({ schedules, setOpen }) => {
             <th className="w-32 px-4 text-left text-sm font-semibold">
               Technicians
             </th>
+            <th className="w-32 px-4 text-left text-sm font-semibold">
+              Remark
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -142,13 +145,14 @@ const ScheduleTable = ({ schedules, setOpen }) => {
               >
                 {progress(schedule.jobStatus)}
               </td>
-              <td className="px-1 whitespace-no-wrap text-center text-gray-800">
+              <td className="px-1 whitespace-no-wrap text-center text-gray-800 border-r">
                 {schedule.assistantTechnician
                   ? schedule.technician?.name +
                     "/ " +
                     schedule.assistantTechnician
                   : schedule.technician?.name}
               </td>
+              <td className="text-gray-800 px-1 whitespace-no-wrap ">{schedule.remark}</td>
             </tr>
           ))}
         </tbody>

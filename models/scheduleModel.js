@@ -32,6 +32,7 @@ const ScheduleSchema = new mongoose.Schema(
     instruction: { type: String },
     image: [String],
     assistantTechnician: { type: String },
+    remark: { type: String },
     technician: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

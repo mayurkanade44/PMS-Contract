@@ -46,16 +46,7 @@ export const addCard = async (req, res) => {
     cardId = service._id;
     const qrLink = `${process.env.WEBSITE}/report/${service._id}`;
 
-    //service qr image creation
-    // const serviceName = service.services.map((item) => item.label + ",");
-    // const buf = await qrCodeGenerator(qrLink, contract.contractNo, serviceName);
-    // if (!buf) {
-    //   if (cardId) {
-    //     await Service.findByIdAndDelete(cardId);
-    //     cardId = null;
-    //   }
-    //   return res.status(400).json({ msg: "QR error, trg again later" });
-    // }
+    
     const qrFilePath = "./tmp/cardQR.png";
     await QRCode.toFile(qrFilePath, qrLink, { width: 1, margin: 2 });
 
