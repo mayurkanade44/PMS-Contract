@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const BillingSchema = new mongoose.Schema(
   {
     number: { type: String, required: true },
-    type: { type: String, required: true },
     contractDetails: {
       number: { type: String, required: true },
       type: { type: String, required: true },

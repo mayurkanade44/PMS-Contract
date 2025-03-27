@@ -12,6 +12,7 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
     dispatch(
       setInvoiceDetails({
         id: invoice._id,
+        type: invoice.type,
         paymentStatus: invoice.paymentStatus,
         paymentMode: invoice.paymentMode,
         paymentDate: invoice?.paymentDate

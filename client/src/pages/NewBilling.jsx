@@ -1,27 +1,23 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useGetSingleContractQuery } from "../redux/contractSlice";
-import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { Controller, useForm, useFieldArray } from "react-hook-form";
-import { Button, InputRow, InputSelect, Loading } from "../components";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import Select from "react-select";
 import { toast } from "react-toastify";
+import { Button, InputRow, InputSelect, Loading } from "../components";
+import InvoiceFormModal from "../components/Modals/InvoiceFormModal";
 import { setBillDetails } from "../redux/allSlice";
-import {
-  billingService,
-  billingTypes,
-  paymentMode,
-  paymentStatus,
-  paymentTerms,
-  tdsType,
-} from "../utils/dataHelper";
 import {
   useAddBillingMutation,
   useGetSingleBillQuery,
   useUpdateBillDetailsMutation,
 } from "../redux/billingSlice";
-import { AiOutlinePlus } from "react-icons/ai";
-import Select from "react-select";
-import InvoiceFormModal from "../components/Modals/InvoiceFormModal";
+import { useGetSingleContractQuery } from "../redux/contractSlice";
+import {
+  billingService,
+  paymentTerms,
+  tdsType
+} from "../utils/dataHelper";
 
 const NewBilling = () => {
   const { action, id } = useParams();
@@ -58,7 +54,6 @@ const NewBilling = () => {
     control,
   } = useForm({
     defaultValues: {
-      type: "PMS",
       paymentTerms: "",
       gstNo: "",
       tds: "no",
@@ -89,38 +84,15 @@ const NewBilling = () => {
           number: "",
         },
       },
-      // serviceDetails: [
-      //   {
-      //     serviceName: "",
-      //     amount: "",
-      //   },
-      // ],
     },
   });
 
-  let serviceDetails = watch("serviceDetails");
+  
 
   const { fields, append, remove } = useFieldArray({
     name: "serviceDetails",
     control,
   });
-
-  // useEffect(() => {
-  //   if (contract) {
-  //     dispatch(setContractDetails(contract));
-  //   }
-  // }, [contract]);
-
-  // console.log(contractDetails);
-
-  const addServiceDetails = async (index) => {
-    if (
-      serviceDetails[index].serviceName.length &&
-      serviceDetails[index].amount.length
-    ) {
-      append({ serviceName: "", amount: "" });
-    } else toast.error("Please select service & amount");
-  };
 
   const submit = async (data) => {
     let allServices = [];
@@ -201,7 +173,6 @@ const NewBilling = () => {
     } else if (action == "update") {
       if (bill) {
         setSelectedOption([]);
-        setValue("type", bill.type);
         setValue("amount", bill.contractAmount.basic);
         setValue("paymentTerms", bill.paymentTerms);
         setValue("gstNo", bill.gstNo);
@@ -253,7 +224,7 @@ const NewBilling = () => {
 
   const handleGenerateInvoice = () => {
     setOpen(true);
-    dispatch(setBillDetails(bill));
+    // dispatch(setBillDetails(bill));
   };
 
   return (
@@ -277,20 +248,6 @@ const NewBilling = () => {
       ) : (
         <form onSubmit={handleSubmit(submit)} className="my-24 lg:my-4">
           <div className="grid grid-cols-12 gap-x-5 gap-y-2 mb-2">
-            <div className="col-span-6 md:col-span-4 lg:col-span-2">
-              <Controller
-                name="type"
-                control={control}
-                render={({ field: { onChange, value, ref } }) => (
-                  <InputSelect
-                    options={billingTypes.slice(1)}
-                    onChange={onChange}
-                    value={value}
-                    label="Billing Type"
-                  />
-                )}
-              />
-            </div>
             <div className="col-span-6 md:col-span-4 lg:col-span-2">
               <InputRow
                 label="Basic Amount"
@@ -342,63 +299,6 @@ const NewBilling = () => {
                 )}
               />
             </div>
-
-            {/* <div className="col-span-6 md:col-span-4 lg:col-span-2">
-              <Controller
-                name="paymentStatus"
-                control={control}
-                render={({ field: { onChange, value, ref } }) => (
-                  <InputSelect
-                    options={paymentStatus}
-                    onChange={onChange}
-                    value={value}
-                    label="Payment Status"
-                  />
-                )}
-              />
-            </div>
-            {paymentSts == "Received" && (
-              <>
-                <div className="col-span-6 md:col-span-4 lg:col-span-2">
-                  <Controller
-                    name="paymentMode"
-                    control={control}
-                    render={({ field: { onChange, value, ref } }) => (
-                      <InputSelect
-                        options={paymentMode}
-                        onChange={onChange}
-                        value={value}
-                        label="Payment Mode"
-                        required={paymentSts == "Received"}
-                      />
-                    )}
-                  />
-                </div>
-                <div className="col-span-8 md:col-span-4 lg:col-span-2">
-                  <InputRow
-                    label="Payment Date"
-                    id="payementDate"
-                    errors={errors}
-                    register={register}
-                    type="date"
-                    required={paymentSts == "Received"}
-                  />
-                  <p className="text-xs text-red-500 -bottom-4 pl-1">
-                    {errors.payementDate && "Payment date is required"}
-                  </p>
-                </div>
-                <div className="col-span-8 md:col-span-4 lg:col-span-2">
-                  <InputRow
-                    label="Payemnt Refernce No"
-                    placeholder="Cheque No/UPI Id"
-                    id="paymentRefernceNo"
-                    errors={errors}
-                    register={register}
-                    required={false}
-                  />
-                </div>
-              </>
-            )} */}
           </div>
           <hr className="h-px mt-4 mb-3 border-0 dark:bg-gray-700" />
           <div className="grid lg:grid-cols-8 gap-x-5 gap-y-2 mb-2">

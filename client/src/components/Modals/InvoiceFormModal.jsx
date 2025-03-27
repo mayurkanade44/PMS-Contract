@@ -2,7 +2,7 @@ import Modal from "./Modal";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button, InputRow, InputSelect, Loading } from "..";
-import { paymentMode, paymentStatus } from "../../utils/dataHelper";
+import { billingTypes, paymentMode, paymentStatus } from "../../utils/dataHelper";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import {
   useGenerateInvoiceMutation,
@@ -37,6 +37,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
     control,
   } = useForm({
     defaultValues: invoiceDetails || {
+      type: "PMS",
       paymentStatus: "",
       paymentMode: "",
       paymentDate: "",
@@ -51,7 +52,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
     console.log(bill);
 
     if (bill) {
-      if (tax && (!bill?.gstNo) && !data.gstNo) {
+      if (tax && !bill?.gstNo && !data.gstNo) {
         toast.error("Please provide GST number");
         return;
       }
@@ -105,6 +106,20 @@ const InvoiceFormModal = ({ open, setOpen }) => {
             </div>
             <form onSubmit={handleSubmit(submit)} className="relative my-2">
               <div className="grid gap-x-5 gap-y-2 ">
+                <div className="col-span-6 md:col-span-4 lg:col-span-2">
+                  <Controller
+                    name="type"
+                    control={control}
+                    render={({ field: { onChange, value, ref } }) => (
+                      <InputSelect
+                        options={billingTypes.slice(1)}
+                        onChange={onChange}
+                        value={value}
+                        label="Billing Type"
+                      />
+                    )}
+                  />
+                </div>
                 <div className="col-span-6 md:col-span-4 lg:col-span-2">
                   <Controller
                     name="paymentStatus"

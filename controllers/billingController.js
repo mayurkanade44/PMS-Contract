@@ -49,6 +49,8 @@ export const addBilling = async (req, res) => {
     req.body.number = `${req.body.contractDetails.number} P/${calculatedAmount.duration}`;
 
     let newBill = await Billing.create(req.body);
+    console.log(newBill);
+
     return res.status(201).json({ bill: newBill, msg: "Bill details added" });
   } catch (error) {
     console.log(error);
@@ -138,6 +140,7 @@ export const addBilling = async (req, res) => {
 export const createInvoice = async (req, res) => {
   const { id } = req.params;
   let session = null;
+  req.body.createdBy = req.user.name;
 
   try {
     // Start session
@@ -172,55 +175,13 @@ export const createInvoice = async (req, res) => {
     let maxAttempts = 5;
     let isUnique = false;
 
-    // Try to generate a unique number with retries
-    // while (!isUnique && maxAttempts > 0) {
-    //   if (req.body.tax) {
-    //     // Generate tax invoice number
-    //     const taxCount = admin.taxCounter + 1;
-    //     number = `PMST${taxCount}`;
-    //     admin.taxCounter = taxCount;
-    //     type = "TAX";
-    //   } else {
-    //     // Generate proforma invoice number
-    //     const invoiceType = bill.type;
-    //     if (invoiceType === "MK") {
-    //       const mkCount = admin.mkCounter + 1;
-    //       number = `${invoiceType}P${mkCount}`;
-    //       admin.mkCounter = mkCount;
-    //     } else {
-    //       const proformaCount = admin.proformaCounter + 1;
-    //       number = `${invoiceType}P${proformaCount}`;
-    //       admin.proformaCounter = proformaCount;
-    //     }
-    //   }
-
-    //   // Check for uniqueness with the session
-    //   const existingInvoice = await Invoice.findOne({ number }).session(
-    //     session
-    //   );
-    //   if (!existingInvoice) {
-    //     isUnique = true;
-    //   } else {
-    //     maxAttempts--;
-    //   }
-    // }
-
-    // // If we couldn't generate a unique number after max attempts
-    // if (!isUnique) {
-    //   await session.abortTransaction();
-    //   session.endSession();
-    //   return res
-    //     .status(500)
-    //     .json({ msg: "Failed to generate unique invoice number" });
-    // }
-
     if (req.body.tax) {
       type = "TAX";
       const taxCount = admin.taxCounter + 1;
       number = `PMST${taxCount}`;
       admin.taxCounter = taxCount;
     } else {
-      const invoiceType = bill.type;
+      const invoiceType = req.body.type;
       if (invoiceType === "MK") {
         const mkCount = admin.mkCounter + 1;
         number = `${invoiceType}P${mkCount}`;
@@ -373,6 +334,10 @@ export const updateInvoice = async (req, res) => {
       return res.status(404).json({ msg: "Invoice not found" });
     }
 
+    if(invoice.type !== req.body.type){
+      return res.status(400).json({ msg: "Invoce type can not be changed" });
+    }
+
     await Invoice.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
@@ -386,7 +351,6 @@ export const updateInvoice = async (req, res) => {
 
 export const getAllInvoices = async (req, res) => {
   const { search, page, paymentStatus, billType } = req.query;
-  console.log(billType);
 
   //filtering
   let query = {};
