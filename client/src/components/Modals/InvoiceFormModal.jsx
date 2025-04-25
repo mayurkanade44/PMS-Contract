@@ -1,17 +1,21 @@
-import Modal from "./Modal";
-import { useEffect, useState } from "react";
+import { saveAs } from "file-saver";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Button, InputRow, InputSelect, Loading } from "..";
-import { billingTypes, paymentMode, paymentStatus } from "../../utils/dataHelper";
 import { IoMdCloseCircleOutline } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { Button, InputRow, InputSelect, Loading } from "..";
+import { setBillDetails, setInvoiceDetails } from "../../redux/allSlice";
 import {
   useGenerateInvoiceMutation,
   useUpdateInvoiceMutation,
 } from "../../redux/billingSlice";
-import { toast } from "react-toastify";
-import { saveAs } from "file-saver";
-import { useDispatch, useSelector } from "react-redux";
-import { setInvoiceDetails, setBillDetails } from "../../redux/allSlice";
+import {
+  billingTypes,
+  paymentModes,
+  paymentStatus,
+} from "../../utils/dataHelper";
+import Modal from "./Modal";
 
 const InvoiceFormModal = ({ open, setOpen }) => {
   const [tax, setTax] = useState(false);
@@ -155,7 +159,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
                         control={control}
                         render={({ field: { onChange, value, ref } }) => (
                           <InputSelect
-                            options={paymentMode}
+                            options={paymentModes.slice(1)}
                             onChange={onChange}
                             value={value}
                             label="Payment Mode"

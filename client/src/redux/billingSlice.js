@@ -42,12 +42,21 @@ export const billingSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Bills"],
     }),
     getAllInvoices: builder.query({
-      query: ({ paymentStatus, billType, search, page }) => ({
+      query: ({
+        paymentStatus,
+        billType,
+        search,
+        paymentMode,
+        month,
+        page,
+      }) => ({
         url: `/api/billing`,
         params: {
           paymentStatus,
           billType,
           search,
+          paymentMode,
+          month,
           page,
         },
       }),
@@ -57,7 +66,7 @@ export const billingSlice = apiSlice.injectEndpoints({
     searchBill: builder.query({
       query: ({ search }) => ({
         url: `/api/billing/searchBill`,
-        params: {search},
+        params: { search },
       }),
     }),
   }),

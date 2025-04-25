@@ -271,7 +271,10 @@ export const updateInvoice = async (req, res) => {
 };
 
 export const getAllInvoices = async (req, res) => {
-  const { search, page, paymentStatus, billType } = req.query;
+  const { search, page, paymentStatus, billType, paymentMode, month } =
+    req.query;
+
+  console.log(typeof month, month);
 
   //filtering
   let query = {};
@@ -285,31 +288,49 @@ export const getAllInvoices = async (req, res) => {
       ],
     };
   }
+  if (billType && billType != "all") {
+    query.type = billType;
+  }
   if (paymentStatus && paymentStatus != "all") {
     query.paymentStatus = paymentStatus;
+  }
+  if (paymentMode && paymentMode != "all") {
+    query.paymentMode = paymentMode;
+  }
+  if (month && month != "all") {
+    // Start date
+    const startDate = new Date(`${month}-01`);
+
+    // End date
+    const endDate = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth() + 1,
+      0
+    );
+    query.createdAt = { $gte: startDate, $lte: endDate };
   }
 
   let pageNumber = Number(page) || 1;
   try {
+    const count = await Invoice.countDocuments({ ...query });
+
     const invoices = await Invoice.find(query)
       .populate({
         path: "bill",
-        match: billType !== "all" ? { type: billType } : {},
         select:
-          "invoiceAmount.total contractDetails.sales billToDetails.name gstNo type",
+          "invoiceAmount.total contractDetails.sales billToDetails.name gstNo",
       })
       .sort(sort)
-      .skip(20 * (pageNumber - 1))
-      .limit(20);
+      .skip(10 * (pageNumber - 1))
+      .limit(10);
 
     const filterInvoices = invoices.filter((invoice) => {
       return invoice.bill !== null;
     });
-    const count = filterInvoices.length;
 
     return res.status(200).json({
       invoices: filterInvoices,
-      pages: Math.min(10, Math.ceil(count / 20)),
+      pages: Math.min(10, Math.ceil(count / 10)),
     });
   } catch (error) {
     console.log(error);

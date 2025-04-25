@@ -217,7 +217,8 @@ export const paymentStatus = [
   { value: "Pending", label: "Pending" },
 ];
 
-export const paymentMode = [
+export const paymentModes = [
+  { value: "all", label: "All" },
   { value: "Cash", label: "Cash" },
   { value: "NEFT", label: "NEFT" },
   { value: "RTGS", label: "RTGS" },

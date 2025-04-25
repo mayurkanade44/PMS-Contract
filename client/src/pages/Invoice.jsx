@@ -1,9 +1,20 @@
 import { useState, useEffect, useMemo } from "react";
 import { useGetAllInvoicesQuery } from "../redux/billingSlice";
-import { AlertMessage, Button, Loading, InvoiceTable, SearchBillModal } from "../components";
+import {
+  AlertMessage,
+  Button,
+  Loading,
+  InvoiceTable,
+  SearchBillModal,
+} from "../components";
 import { AiOutlineSearch } from "react-icons/ai";
 import Select from "react-select";
-import { billingTypes, paymentTerms, paymentStatus } from "../utils/dataHelper";
+import {
+  billingTypes,
+  paymentTerms,
+  paymentStatus,
+  paymentModes,
+} from "../utils/dataHelper";
 import InvoiceFormModal from "../components/Modals/InvoiceFormModal";
 
 const Invoice = () => {
@@ -20,6 +31,11 @@ const Invoice = () => {
     value: "all",
     label: "All",
   });
+  const [paymentMode, setPaymentMode] = useState({
+    value: "all",
+    label: "All",
+  });
+  const [month, setMonth] = useState("");
 
   const {
     data,
@@ -30,16 +46,16 @@ const Invoice = () => {
     paymentStatus: payment.value,
     billType: billType.value,
     search: search,
-    page: 1,
+    paymentMode: paymentMode.value,
+    month: month,
+    page: page,
   });
 
   useEffect(() => {
     setPage(1);
-  }, [payment, billType]);
+  }, [payment, billType, paymentMode, month]);
 
   const pages = Array.from({ length: data?.pages }, (_, index) => index + 1);
-
-  
 
   const debounce = () => {
     let timeoutId;
@@ -74,9 +90,9 @@ const Invoice = () => {
       )}
       {open && <InvoiceFormModal open={open} setOpen={setOpen} />}
       <div className="pt-1 pb-5">
-        <div class="grid lg:grid-cols-5 gap-4 mb-5">
+        <div className="grid lg:grid-cols-7 gap-3 mb-5">
           <div className="flex flex-col lg:flex-row px-8 pt-6 justify-center items-center lg:items-stretch w-full">
-            <h1 className="text-xl md:text-3xl font-semibold text-center">
+            <h1 className="text-xl md:text-2xl font-semibold text-center">
               All Invoices
             </h1>
           </div>
@@ -112,6 +128,27 @@ const Invoice = () => {
               defaultValue={billType}
               onChange={setBillType}
               options={billingTypes}
+            />
+          </div>
+          <div className="">
+            <label className="text-sm font-medium text-gray-900 pl-1">
+              Payment Mode
+            </label>
+            <Select
+              defaultValue={paymentMode}
+              onChange={setPaymentMode}
+              options={paymentModes}
+            />
+          </div>
+          <div className="">
+            <label className="text-sm font-medium text-gray-900 pl-1">
+              Month
+            </label>
+            <input
+              type="month"
+              value={month}
+              onChange={(e) => setMonth(e.target.value)}
+              className="w-full h-10 rounded-md border-gray-300 border px-2"
             />
           </div>
           <div className="flex flex-col lg:flex-row px-8 pt-4 justify-center items-start lg:items-stretch w-full">
