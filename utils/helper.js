@@ -304,7 +304,10 @@ export const billingFrequency = (frequency, tenure) => {
 
 export const createInvoiceDoc = async ({ bill, invoice, type }) => {
   try {
-    const template = fs.readFileSync("./tmp/invoiceTemp1.docx");
+    let template = fs.readFileSync("./tmp/invoiceTemp1.docx");
+    if (invoice.type == "MK") {
+      template = fs.readFileSync("./tmp/mkTemp.docx");
+    }
 
     const buffer = await createReport({
       cmdDelimiter: ["{", "}"],
@@ -320,10 +323,17 @@ export const createInvoiceDoc = async ({ bill, invoice, type }) => {
         shipTo: bill.shipToDetails,
         services: bill.serviceDetails,
         basic: formatToINR(bill.invoiceAmount.basic),
-        gst: formatToINR(bill.invoiceAmount.cgst),
-        gstTotal: formatToINR(bill.invoiceAmount.gst),
-        total: formatToINR(bill.invoiceAmount.total),
-        amountWords: numberToWords(bill.invoiceAmount.total),
+        gst: invoice.type == "PMS" ? formatToINR(bill.invoiceAmount.cgst) : 0,
+        gstTotal:
+          invoice.type == "PMS" ? formatToINR(bill.invoiceAmount.gst) : 0,
+        total:
+          invoice.type == "PMS"
+            ? formatToINR(bill.invoiceAmount.total)
+            : formatToINR(bill.invoiceAmount.basic),
+        amountWords:
+          invoice.type == "PMS"
+            ? numberToWords(bill.invoiceAmount.total)
+            : numberToWords(bill.invoiceAmount.basic),
       },
     });
 

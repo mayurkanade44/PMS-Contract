@@ -58,85 +58,6 @@ export const addBilling = async (req, res) => {
   }
 };
 
-// export const createInvoice = async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const bill = await Billing.findById(id);
-//     if (!bill) {
-//       return res.status(404).json({ msg: "Billing details not found" });
-//     }
-
-//     if (!bill.gstNo) {
-//       bill.gstNo = req.body.gstNo;
-//       await bill.save();
-//     }
-
-//     //calculate proforma/gst number
-//     const admin = await Admin.findById("64fef7fee25b8a61d21a381e");
-//     let type = "PROFORMA";
-//     let number = "1";
-//     if (req.body.tax) {
-//       let taxCount = admin.taxCounter + 1;
-//       number = "PMST" + taxCount;
-//       let taxInvoiceExists = await Invoice.findOne({ number });
-//       while (taxInvoiceExists) {
-//         taxCount += 1;
-//         number = "PMST" + taxCount;
-//         taxInvoiceExists = await Invoice.findOne({ number });
-//       }
-//       admin.taxCounter = taxCount;
-//       await admin.save();
-//       type = "TAX";
-//     } else {
-//       let proformaCount;
-//       let invoiceType = bill.type;
-//       if (invoiceType == "MK") {
-//         proformaCount = admin.mkCounter + 1;
-//         number = invoiceType + "P" + proformaCount;
-//       } else {
-//         proformaCount = admin.proformaCounter + 1;
-//         number = invoiceType + "P" + proformaCount;
-//       }
-//       let proformaInvoiceExists = await Invoice.findOne({ number });
-//       while (proformaInvoiceExists) {
-//         proformaCount += 1;
-//         number = invoiceType  + "P" + proformaCount;
-//         proformaInvoiceExists = await Invoice.findOne({ number });
-//       }
-//       admin.proformaCounter = proformaCount;
-//       await admin.save();
-//     }
-
-//     req.body.number = number;
-//     const invoice = await Invoice.create(req.body);
-
-//     const buffer = await createInvoiceDoc({
-//       bill,
-//       invoice,
-//       type,
-//     });
-//     const filename = `${invoice.number} ${bill.billToDetails.name} ${type} Invoice`;
-//     const filePath = `./tmp/${filename}.docx`;
-//     fs.writeFileSync(filePath, buffer);
-
-//     const invoiceUrl = await uploadFile({ filePath, folder: "invoices" });
-//     if (!invoiceUrl) {
-//       await Invoice.findByIdAndDelete(invoice._id);
-//       return res.status(400).json({ msg: "Upload error, trg again later" });
-//     }
-
-//     invoice.url = invoiceUrl;
-//     await invoice.save();
-
-//     return res
-//       .status(201)
-//       .json({ url: invoiceUrl, name: filename, msg: "Invoice generated" });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ msg: "Server error, try again later" });
-//   }
-// };
-
 export const createInvoice = async (req, res) => {
   const { id } = req.params;
   let session = null;
@@ -334,7 +255,7 @@ export const updateInvoice = async (req, res) => {
       return res.status(404).json({ msg: "Invoice not found" });
     }
 
-    if(invoice.type !== req.body.type){
+    if (invoice.type !== req.body.type) {
       return res.status(400).json({ msg: "Invoce type can not be changed" });
     }
 

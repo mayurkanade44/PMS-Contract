@@ -221,6 +221,7 @@ export const paymentMode = [
   { value: "Cash", label: "Cash" },
   { value: "NEFT", label: "NEFT" },
   { value: "RTGS", label: "RTGS" },
+  { value: "Cheque", label: "Cheque" },
   { value: "UPI", label: "UPI" },
   { value: "PMS Gpay", label: "PMS Gpay" },
   { value: "MK Gpay", label: "MK Gpay" },
