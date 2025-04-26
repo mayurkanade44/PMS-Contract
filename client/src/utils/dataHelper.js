@@ -258,3 +258,9 @@ export const billingService = [
   { value: "Gardening", label: "Gardening" },
   { value: "Dog Tics Spray", label: "Dog Tics Spray" },
 ];
+
+export const cancelStatus = [
+  { value: "all", label: "All" },
+  { value: "false", label: "Active" },
+  { value: "true", label: "Cancelled" },
+];

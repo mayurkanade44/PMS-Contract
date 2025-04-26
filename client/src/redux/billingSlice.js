@@ -48,6 +48,7 @@ export const billingSlice = apiSlice.injectEndpoints({
         search,
         paymentMode,
         month,
+        isCancelled,
         page,
       }) => ({
         url: `/api/billing`,
@@ -57,6 +58,7 @@ export const billingSlice = apiSlice.injectEndpoints({
           search,
           paymentMode,
           month,
+          isCancelled,
           page,
         },
       }),
@@ -67,6 +69,12 @@ export const billingSlice = apiSlice.injectEndpoints({
       query: ({ search }) => ({
         url: `/api/billing/searchBill`,
         params: { search },
+      }),
+    }),
+    cancelInvoice: builder.mutation({
+      query: (id) => ({
+        url: `/api/billing/cancelInvoice/${id}`,
+        method: "PUT",
       }),
     }),
   }),
@@ -80,4 +88,5 @@ export const {
   useUpdateInvoiceMutation,
   useGetAllInvoicesQuery,
   useSearchBillQuery,
+  useCancelInvoiceMutation,
 } = billingSlice;

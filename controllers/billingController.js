@@ -271,10 +271,15 @@ export const updateInvoice = async (req, res) => {
 };
 
 export const getAllInvoices = async (req, res) => {
-  const { search, page, paymentStatus, billType, paymentMode, month } =
-    req.query;
-
-  console.log(typeof month, month);
+  const {
+    search,
+    page,
+    paymentStatus,
+    billType,
+    paymentMode,
+    month,
+    isCancelled,
+  } = req.query;
 
   //filtering
   let query = {};
@@ -308,6 +313,10 @@ export const getAllInvoices = async (req, res) => {
       0
     );
     query.createdAt = { $gte: startDate, $lte: endDate };
+  }
+
+  if (isCancelled && isCancelled != "all") {
+    query.isCancelled = isCancelled;
   }
 
   let pageNumber = Number(page) || 1;
@@ -352,6 +361,22 @@ export const searchBill = async (req, res) => {
     });
     if (!bill) return res.status(404).json({ msg: "bill details not found" });
     return res.status(200).json(bill);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const cancelInvoice = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const invoice = await Invoice.findById(id);
+    if (!invoice) {
+      return res.status(404).json({ msg: "Invoice not found" });
+    }
+    invoice.isCancelled = true;
+    await invoice.save();
+    return res.status(200).json({ msg: "Invoice cancelled" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

@@ -14,6 +14,7 @@ import {
   paymentTerms,
   paymentStatus,
   paymentModes,
+  cancelStatus,
 } from "../utils/dataHelper";
 import InvoiceFormModal from "../components/Modals/InvoiceFormModal";
 
@@ -36,6 +37,10 @@ const Invoice = () => {
     label: "All",
   });
   const [month, setMonth] = useState("");
+  const [isCancelled, setIsCancelled] = useState({
+    value: "all",
+    label: "All",
+  });
 
   const {
     data,
@@ -48,6 +53,7 @@ const Invoice = () => {
     search: search,
     paymentMode: paymentMode.value,
     month: month,
+    isCancelled: isCancelled.value,
     page: page,
   });
 
@@ -91,11 +97,6 @@ const Invoice = () => {
       {open && <InvoiceFormModal open={open} setOpen={setOpen} />}
       <div className="pt-1 pb-5">
         <div className="grid lg:grid-cols-7 gap-3 mb-5">
-          <div className="flex flex-col lg:flex-row px-8 pt-6 justify-center items-center lg:items-stretch w-full">
-            <h1 className="text-xl md:text-2xl font-semibold text-center">
-              All Invoices
-            </h1>
-          </div>
           <div className="col-span-1">
             <div className="w-full relative mb-2 lg:mb-0 lg:mt-6">
               <div className="absolute text-gray-600 dark:text-gray-400 flex items-center pl-2 h-full">
@@ -138,6 +139,16 @@ const Invoice = () => {
               defaultValue={paymentMode}
               onChange={setPaymentMode}
               options={paymentModes}
+            />
+          </div>
+          <div className="">
+            <label className="text-sm font-medium text-gray-900 pl-1">
+              Active / Cancelled
+            </label>
+            <Select
+              defaultValue={isCancelled}
+              onChange={setIsCancelled}
+              options={cancelStatus}
             />
           </div>
           <div className="">

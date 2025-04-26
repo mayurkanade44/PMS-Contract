@@ -17,6 +17,7 @@ const InvoiceSchema = new mongoose.Schema(
       required: true,
       ref: "Billing",
     },
+    isCancelled: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

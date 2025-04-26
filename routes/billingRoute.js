@@ -7,6 +7,7 @@ import {
   searchBill,
   updateBillDetails,
   updateInvoice,
+  cancelInvoice,
 } from "../controllers/billingController.js";
 import { authorizeUser } from "../middleware/authMiddleware.js";
 const router = express.Router();
@@ -22,5 +23,8 @@ router
   .route("/invoice/:id")
   .post(authorizeUser("Admin", "Back Office"), createInvoice)
   .put(authorizeUser("Admin", "Back Office"), updateInvoice);
+router
+  .route("/cancelInvoice/:id")
+  .put(authorizeUser("Admin", "Back Office"), cancelInvoice);
 
 export default router;
