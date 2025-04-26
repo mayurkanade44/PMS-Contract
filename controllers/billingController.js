@@ -10,6 +10,7 @@ import {
   createInvoiceDoc,
   uploadFile,
 } from "../utils/helper.js";
+import moment from "moment";
 
 export const addBilling = async (req, res) => {
   const {} = req.body;
@@ -62,6 +63,7 @@ export const createInvoice = async (req, res) => {
   const { id } = req.params;
   let session = null;
   req.body.createdBy = req.user.name;
+  console.log(typeof req.body.month);
 
   try {
     // Start session
@@ -230,6 +232,7 @@ export const updateBillDetails = async (req, res) => {
     req.body.serviceDetails.map((item) => (item.hsn = 998531));
     req.body.invoiceAmount = calculatedAmount.invoiceAmount;
     req.body.contractAmount = calculatedAmount.contractAmount;
+    console.log(req.body);
 
     req.body.number = `${bill.contractDetails.number} P/${calculatedAmount.duration}`;
 
@@ -263,6 +266,7 @@ export const updateInvoice = async (req, res) => {
       new: true,
       runValidators: true,
     });
+
     return res.status(200).json({ msg: "Invoice details updated" });
   } catch (error) {
     console.log(error);
@@ -303,16 +307,9 @@ export const getAllInvoices = async (req, res) => {
     query.paymentMode = paymentMode;
   }
   if (month && month != "all") {
-    // Start date
-    const startDate = new Date(`${month}-01`);
+    console.log(moment(month).format("MMM YY"));
 
-    // End date
-    const endDate = new Date(
-      startDate.getFullYear(),
-      startDate.getMonth() + 1,
-      0
-    );
-    query.createdAt = { $gte: startDate, $lte: endDate };
+    query.month = moment(month).format("MMM YY");
   }
 
   if (isCancelled && isCancelled != "all") {
@@ -388,6 +385,71 @@ export const cancelInvoice = async (req, res) => {
     return res.status(200).json({ msg: "Invoice cancelled" });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const getMonthlyInvoiceStats = async (req, res) => {
+  try {
+    const now = new Date();
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const currentMonthString = `${monthNames[now.getMonth()]} ${now
+      .getFullYear()
+      .toString()
+      .slice(-2)}`;
+
+    console.log(currentMonthString);
+
+    const toGenerateCount = await Billing.countDocuments({
+      billingMonths: currentMonthString,
+    });
+
+    const pendingCount = await Invoice.countDocuments({
+      month: currentMonthString,
+      paymentStatus: "Pending",
+      "cancelled.status": false,
+    });
+
+    const receivedCount = await Invoice.countDocuments({
+      month: currentMonthString,
+      paymentStatus: "Received",
+      "cancelled.status": false,
+    });
+
+    const cancelledCount = await Invoice.countDocuments({
+      month: currentMonthString,
+      "cancelled.status": true,
+    });
+
+    const st = await Invoice.find({
+      month: currentMonthString,
+      paymentStatus: "Received",
+      "cancelled.status": false,
+    });
+    console.log(st.length);
+
+    return res.status(200).json({
+      currentMonth: currentMonthString,
+      toGenerate: toGenerateCount,
+      pending: pendingCount,
+      received: receivedCount,
+      cancelled: cancelledCount,
+    });
+  } catch (error) {
+    console.error("Error fetching monthly invoice stats:", error);
     res.status(500).json({ msg: "Server error, try again later" });
   }
 };

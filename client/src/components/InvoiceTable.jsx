@@ -5,20 +5,27 @@ import { Link } from "react-router-dom";
 import { setInvoiceDetails } from "../redux/allSlice";
 import { dateFormat } from "../utils/functionHelper";
 import CancelInvoiceModal from "./Modals/CancelInvoiceModal";
+import moment from "moment";
 const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
   const dispatch = useDispatch();
 
   const handleEditModal = (invoice) => {
     if (invoice.cancelled.status) return;
+    // Format as "YYYY-MM"
+    const date = new Date(`01 ${invoice.month}`);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const formatted = `${year}-${month}`;
     dispatch(
       setInvoiceDetails({
         id: invoice._id,
         type: invoice.type,
+        month: formatted,
         paymentStatus: invoice.paymentStatus,
         paymentMode: invoice.paymentMode,
         paymentDate: invoice?.paymentDate
           ? new Date(invoice?.paymentDate).toISOString().slice(0, 10)
-          : new Date(),
+          : "",
         paymentRefernce: invoice.paymentRefernce,
         remark: invoice.remark,
         gstNo: invoice.bill.gstNo,
@@ -56,6 +63,9 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
               Created Date
             </th>
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
+              Billing Month
+            </th>
+            <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
               Client Name
             </th>
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
@@ -72,6 +82,9 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
             </th>
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
               Sales Person
+            </th>
+            <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
+              Created By
             </th>
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
               Action
@@ -101,6 +114,9 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
                 {dateFormat(invoice.createdAt)}
               </td>
               <td className="text-gray-800 px-2 border-r text-center">
+                {invoice.month}
+              </td>
+              <td className="text-gray-800 px-2 border-r text-center">
                 {invoice.bill.billToDetails.name}
               </td>
 
@@ -118,6 +134,9 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
               </td>
               <td className="text-gray-800 px-2 border-r text-center">
                 {invoice.bill.contractDetails.sales}
+              </td>
+              <td className="text-gray-800 px-2 border-r text-center">
+                {invoice.createdBy}
               </td>
               <td className="flex gap-4 mt-2 justify-center items-center">
                 <RiDownload2Fill

@@ -79,6 +79,12 @@ export const billingSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Bills"],
     }),
+    getMonthlyInvoiceStats: builder.query({
+      query: () => ({
+        url: `/api/billing/invoice-stats`,
+      }),
+      providesTags: ["Bills"],
+    }),
   }),
 });
 
@@ -91,4 +97,5 @@ export const {
   useGetAllInvoicesQuery,
   useSearchBillQuery,
   useCancelInvoiceMutation,
+  useGetMonthlyInvoiceStatsQuery,
 } = billingSlice;

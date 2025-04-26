@@ -1,11 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
-import { useGetAllInvoicesQuery } from "../redux/billingSlice";
+import {
+  useGetAllInvoicesQuery,
+  useGetMonthlyInvoiceStatsQuery,
+} from "../redux/billingSlice";
 import {
   AlertMessage,
   Button,
   Loading,
   InvoiceTable,
   SearchBillModal,
+  InvoiceStatsCard,
 } from "../components";
 import { AiOutlineSearch } from "react-icons/ai";
 import Select from "react-select";
@@ -57,6 +61,9 @@ const Invoice = () => {
     page: page,
   });
 
+  const { data: monthlyStats } = useGetMonthlyInvoiceStatsQuery();
+  console.log(monthlyStats);
+
   useEffect(() => {
     setPage(1);
   }, [payment, billType, paymentMode, month]);
@@ -96,6 +103,7 @@ const Invoice = () => {
       )}
       {open && <InvoiceFormModal open={open} setOpen={setOpen} />}
       <div className="pt-1 pb-5">
+        <InvoiceStatsCard />
         <div className="grid lg:grid-cols-7 gap-3 mb-5">
           <div className="col-span-1">
             <div className="w-full relative mb-2 lg:mb-0 lg:mt-6">
@@ -172,15 +180,11 @@ const Invoice = () => {
             />
           </div>
         </div>
-        <div className="mx-auto container bg-white shadow rounded ">
-          <div className="flex flex-col lg:flex-row px-8 pt-4 justify-between items-start lg:items-stretch w-full"></div>
-          <div className="grid grid-cols-4 gap-4 mb-5"></div>
-          <InvoiceTable
-            invoices={data?.invoices}
-            isLoading={invoicesLoading}
-            setOpen={setOpen}
-          />
-        </div>
+        <InvoiceTable
+          invoices={data?.invoices}
+          isLoading={invoicesLoading}
+          setOpen={setOpen}
+        />
         <div className="mx-auto container pt-6 flex justify-center items-center">
           {pages.length > 1 && (
             <nav className="">

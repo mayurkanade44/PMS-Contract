@@ -16,7 +16,7 @@ import {
   paymentStatus,
 } from "../../utils/dataHelper";
 import Modal from "./Modal";
-
+import moment from "moment";
 const InvoiceFormModal = ({ open, setOpen }) => {
   const [tax, setTax] = useState(false);
 
@@ -24,7 +24,6 @@ const InvoiceFormModal = ({ open, setOpen }) => {
   const { invoiceDetails, billDetails: bill } = useSelector(
     (store) => store.all
   );
-  console.log(bill);
 
   const [generateInvoice, { isLoading: generateInvoiceLoading }] =
     useGenerateInvoiceMutation();
@@ -42,7 +41,8 @@ const InvoiceFormModal = ({ open, setOpen }) => {
   } = useForm({
     defaultValues: invoiceDetails || {
       type: "PMS",
-      paymentStatus: "",
+      paymentStatus: "Pending",
+      month: "",
       paymentMode: "",
       paymentDate: "",
       paymentRefernce: "",
@@ -53,7 +53,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
 
   let paymentSts = watch("paymentStatus");
   const submit = async (data) => {
-    console.log(bill);
+    console.log(data);
 
     if (bill) {
       if (tax && !bill?.gstNo && !data.gstNo) {
@@ -64,6 +64,8 @@ const InvoiceFormModal = ({ open, setOpen }) => {
       data.bill = bill._id;
       data.tax = tax;
     }
+
+    data.month = moment(data.month).format("MMM YY");
 
     try {
       let res;
@@ -97,7 +99,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
         <Loading />
       ) : (
         <Modal open={open}>
-          <div className="h-[440px] md:h-full overflow-x-scroll md:overflow-visible md:w-[300px]">
+          <div className="h-[440px] md:h-full overflow-x-scroll md:overflow-visible md:w-[320px]">
             <div className="flex justify-around mb-4">
               <h4 className="text-center text-xl font-semibold">
                 Add Invoice Details
@@ -137,6 +139,18 @@ const InvoiceFormModal = ({ open, setOpen }) => {
                       />
                     )}
                   />
+                </div>
+                <div className="col-span-6 md:col-span-4 lg:col-span-2">
+                  <InputRow
+                    label="Billing Month"
+                    id="month"
+                    errors={errors}
+                    register={register}
+                    type="month"
+                  />
+                  <p className="text-xs text-red-500 -bottom-4 pl-1">
+                    {errors.month && "Billing month is required"}
+                  </p>
                 </div>
                 {paymentSts == "Received" && (
                   <>
