@@ -72,10 +72,12 @@ export const billingSlice = apiSlice.injectEndpoints({
       }),
     }),
     cancelInvoice: builder.mutation({
-      query: (id) => ({
+      query: ({ id, data }) => ({
         url: `/api/billing/cancelInvoice/${id}`,
         method: "PUT",
+        body: data,
       }),
+      invalidatesTags: ["Bills"],
     }),
   }),
 });

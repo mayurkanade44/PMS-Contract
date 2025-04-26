@@ -1,22 +1,15 @@
 import { saveAs } from "file-saver";
-import { useState } from "react";
+import { RiDownload2Fill } from "react-icons/ri";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { setInvoiceDetails } from "../redux/allSlice";
-import { useCancelInvoiceMutation } from "../redux/billingSlice";
 import { dateFormat } from "../utils/functionHelper";
-import Button from "./Button";
-import DeleteModal from "./Modals/DeleteModal";
-import { AiOutlineDelete } from "react-icons/ai";
-import { RiDownload2Fill } from "react-icons/ri";
+import CancelInvoiceModal from "./Modals/CancelInvoiceModal";
 const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
-  const [openCancelModal, setOpenCancelModal] = useState(false);
   const dispatch = useDispatch();
-  const [cancelInvoice, { isLoading: cancelLoading }] =
-    useCancelInvoiceMutation();
 
   const handleEditModal = (invoice) => {
-    if (invoice.isCancelled) return;
+    if (invoice.cancelled.status) return;
     dispatch(
       setInvoiceDetails({
         id: invoice._id,
@@ -90,7 +83,7 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
             <tr
               key={invoice._id}
               className={`h-10 text-[12px] border-gray-300 border-t border-b hover:border-indigo-300 hover:shadow-md transition duration-150 ease-in-out hover:cursor-default ${
-                invoice.isCancelled && "opacity-50 bg-red-100"
+                invoice.cancelled.status && "opacity-50 bg-red-100"
               }`}
             >
               <td className="text-center whitespace-no-wrap text-gray-800 px-2 border-r hover:cursor-pointer hover:text-blue-600 hover:font-semibold hover:bg-orange-100">
@@ -136,24 +129,9 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
                     )
                   }
                 />
-                {!invoice.isCancelled && (
-                  <AiOutlineDelete
-                    className="w-7 h-5 text-red-500 bg-red-100 border-2 rounded-sm hover:cursor-pointer hover:bg-red-200"
-                    onClick={() => setOpenCancelModal(true)}
-                  />
+                {!invoice.cancelled.status && (
+                  <CancelInvoiceModal invoiceId={invoice._id} />
                 )}
-
-                <DeleteModal
-                  label="Confirm"
-                  open={openCancelModal}
-                  close={() => setOpenCancelModal(false)}
-                  title="Cancel Invoice"
-                  description="Are you sure you want to cancel this invoice? once cancelled, the invoice will be inactivated."
-                  handleClick={() => {
-                    cancelInvoice(invoice._id);
-                    setOpenCancelModal(false);
-                  }}
-                />
               </td>
             </tr>
           ))}

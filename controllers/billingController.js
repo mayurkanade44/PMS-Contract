@@ -316,7 +316,7 @@ export const getAllInvoices = async (req, res) => {
   }
 
   if (isCancelled && isCancelled != "all") {
-    query.isCancelled = isCancelled;
+    query.cancelled.status = isCancelled;
   }
 
   let pageNumber = Number(page) || 1;
@@ -370,11 +370,20 @@ export const searchBill = async (req, res) => {
 export const cancelInvoice = async (req, res) => {
   const { id } = req.params;
   try {
+    console.log(req.body);
+    if (!req.body.reason) {
+      return res.status(400).json({ msg: "Please provide a reason" });
+    }
     const invoice = await Invoice.findById(id);
     if (!invoice) {
       return res.status(404).json({ msg: "Invoice not found" });
     }
-    invoice.isCancelled = true;
+    invoice.cancelled = {
+      status: true,
+      reason: req.body.reason,
+      by: req.user.name,
+      at: new Date(),
+    };
     await invoice.save();
     return res.status(200).json({ msg: "Invoice cancelled" });
   } catch (error) {

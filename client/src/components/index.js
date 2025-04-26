@@ -13,6 +13,7 @@ import ScheduleTable from "./ScheduleTable";
 import TechnicianScheduleTable from "./TechnicianScheduleTable";
 import InvoiceTable from "./InvoiceTable";
 import SearchBillModal from "./Modals/SearchBillModal";
+import CancelInvoiceModal from "./Modals/CancelInvoiceModal";
 
 export {
   Navbar,
@@ -30,4 +31,5 @@ export {
   TechnicianScheduleTable,
   InvoiceTable,
   SearchBillModal,
+  CancelInvoiceModal,
 };

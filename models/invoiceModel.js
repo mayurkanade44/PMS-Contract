@@ -10,14 +10,20 @@ const InvoiceSchema = new mongoose.Schema(
     paymentDate: { type: Date },
     paymentRefernce: { type: String },
     remark: { type: String },
+    month: { type: String },
     url: { type: String },
+    cancelled: {
+      status: { type: Boolean, default: false },
+      reason: { type: String },
+      by: { type: String },
+      at: { type: Date },
+    },
     createdBy: { type: String, required: true },
     bill: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "Billing",
     },
-    isCancelled: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
