@@ -5,6 +5,8 @@ import Contract from "../models/contractModel.js";
 import Report from "../models/reportModel.js";
 import Service from "../models/serviceModel.js";
 import Schedule from "../models/scheduleModel.js";
+import Bill from "../models/billingModel.js";
+import Invoice from "../models/invoiceModel.js";
 import { sendBrevoEmail, uploadFile } from "../utils/helper.js";
 
 export const addServiceData = async (req, res) => {
@@ -604,6 +606,75 @@ export const expireContractsReport = async (req, res) => {
     if (!link) return res.status(400).json({ msg: "File generation error" });
 
     return res.status(200).json({ link });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const monthlyInvoicesToBeGeneratedReport = async (req, res) => {
+  try {
+    if (req.body.month == "") {
+      return res.status(400).json({ msg: "Month is required" });
+    }
+
+    const month = moment(req.body.month).format("MMM YY");
+    console.log(month);
+
+    const invoices = await Bill.find({
+      billingMonths: { $in: [month] },
+    });
+
+    if (!invoices.length)
+      return res
+        .status(404)
+        .json({ msg: "No invoices found during given month" });
+
+    const workbook = new exceljs.Workbook();
+    let worksheet = workbook.addWorksheet("Sheet1");
+
+    worksheet.columns = [
+      { header: "Bill Number", key: "bill" },
+      { header: "Contract Number", key: "contract" },
+      { header: "Client Name", key: "name" },
+      { header: "Bill Address", key: "address" },
+      { header: "Pincode", key: "pincode" },
+      { header: "Service Details", key: "serviceDetails" },
+      { header: "Sales Person", key: "sales" },
+      { header: "Payment Terms", key: "paymentTerms" },
+      { header: "Contract Amount With GST", key: "contractAmount" },
+      { header: "Invoice Amount With GST", key: "invoiceAmount" },
+    ];
+
+    for (let invoice of invoices) {
+      worksheet.addRow({
+        bill: invoice.number,
+        contract: invoice.contractDetails.number,
+        name: invoice.billToDetails.name,
+        address:
+          invoice.billToDetails.address +
+          ", " +
+          invoice.billToDetails.area +
+          ", " +
+          invoice.billToDetails.city,
+        pincode: invoice.billToDetails.pincode,
+        serviceDetails: invoice.serviceDetails
+          .map((item) => item.label)
+          .join(", "),
+        sales: invoice.contractDetails.sales,
+        paymentTerms: invoice.paymentTerms,
+        contractAmount: invoice.contractAmount.total,
+        invoiceAmount: invoice.invoiceAmount.total,
+      });
+
+      const filePath = `./tmp/monthlyInvoicesToBeGenerated.xlsx`;
+      await workbook.xlsx.writeFile(filePath);
+
+      const link = await uploadFile({ filePath, folder: "reports" });
+      if (!link) return res.status(400).json({ msg: "File generation error" });
+
+      return res.status(200).json({ link });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

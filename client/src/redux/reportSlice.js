@@ -50,6 +50,13 @@ export const reportSlice = apiSlice.injectEndpoints({
         url: "/api/report/serviceDue",
       }),
     }),
+    monthlyInvoicesToBeGeneratedReport: builder.mutation({
+      query: (data) => ({
+        url: "/api/report/monthlyInvoicesToBeGenerated",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -61,5 +68,6 @@ export const {
   useAllStatsQuery,
   useMonthlyServiceMutation,
   useSevenDayServiceDueQuery,
-  useContractExpiryMutation
+  useContractExpiryMutation,
+  useMonthlyInvoicesToBeGeneratedReportMutation,
 } = reportSlice;

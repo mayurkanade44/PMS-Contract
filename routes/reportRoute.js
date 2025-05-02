@@ -8,6 +8,7 @@ import {
   dailyServices,
   expireContractsReport,
   generateReport,
+  monthlyInvoicesToBeGeneratedReport,
   monthlyServiceDue,
   quarterlyReport,
   sendQuarterlyReport,
@@ -42,12 +43,19 @@ router.post(
   authorizeUser("Admin", "Back Office"),
   expireContractsReport
 );
+router.post(
+  "/monthlyInvoicesToBeGenerated",
+  authenticateUser,
+  authorizeUser("Admin", "Back Office"),
+  monthlyInvoicesToBeGeneratedReport
+);
 router.get(
   "/dailyServices",
   authenticateUser,
   authorizeUser("Admin", "Back Office"),
   dailyServices
 );
+
 router.get("/allStats", authenticateUser, allStats);
 
 export default router;

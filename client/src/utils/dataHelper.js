@@ -264,3 +264,7 @@ export const cancelStatus = [
   { value: "false", label: "Active" },
   { value: "true", label: "Cancelled" },
 ];
+
+export const reportTypes = [
+  { value: "invoiceToGenerate", label: "Invoices To Generate" },
+];
