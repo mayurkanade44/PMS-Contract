@@ -10,6 +10,8 @@ const InvoiceSchema = new mongoose.Schema(
     paymentDate: { type: Date },
     paymentRefernce: { type: String },
     remark: { type: String },
+    chequeBank: { type: String },
+    chequeDrawer: { type: String },
     month: { type: String },
     url: { type: String },
     cancelled: {

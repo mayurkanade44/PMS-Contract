@@ -51,6 +51,7 @@ const ServiceCard = () => {
     form.set("serviceComment", values.serviceComment);
     form.set("serviceStatus", values.serviceStatus);
     form.set("serviceDate", values.serviceDate);
+    form.set("remark", values.remark);
     form.set("service", id);
     form.set("contract", data.contractId);
     images.forEach((file) => {

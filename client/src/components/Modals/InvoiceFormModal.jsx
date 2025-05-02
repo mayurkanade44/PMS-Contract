@@ -47,11 +47,14 @@ const InvoiceFormModal = ({ open, setOpen }) => {
       paymentDate: "",
       paymentRefernce: "",
       remark: "",
+      chequeBank: "",
+      chequeDrawer: "",
       gstNo: "",
     },
   });
 
   let paymentSts = watch("paymentStatus");
+  let paymentMode = watch("paymentMode");
   const submit = async (data) => {
     console.log(data);
 
@@ -99,7 +102,11 @@ const InvoiceFormModal = ({ open, setOpen }) => {
         <Loading />
       ) : (
         <Modal open={open}>
-          <div className="h-[440px] md:h-full overflow-x-scroll md:overflow-visible md:w-[320px]">
+          <div
+            className={`h-[440px] ${
+              paymentMode == "Cheque" ? "h-[500px]" : "h-full"
+            } overflow-auto md:w-[320px]`}
+          >
             <div className="flex justify-around mb-4">
               <h4 className="text-center text-xl font-semibold">
                 Add Invoice Details
@@ -189,9 +196,43 @@ const InvoiceFormModal = ({ open, setOpen }) => {
                         id="paymentRefernce"
                         errors={errors}
                         register={register}
-                        required={false}
+                        required={paymentMode == "Cheque"}
                       />
+                      <p className="text-xs text-red-500 -bottom-4 pl-1">
+                        {errors.paymentRefernce &&
+                          "Cheque no is required"}
+                      </p>
                     </div>
+                    {paymentMode == "Cheque" && (
+                      <>
+                        <div className="col-span-2">
+                          <InputRow
+                            label="Cheque Bank"
+                            placeholder=""
+                            id="chequeBank"
+                            errors={errors}
+                            register={register}
+                            required={paymentMode == "Cheque"}
+                          />
+                          <p className="text-xs text-red-500 -bottom-4 pl-1">
+                            {errors.chequeBank && "Cheque bank is required"}
+                          </p>
+                        </div>
+                        <div className="col-span-2">
+                          <InputRow
+                            label="Cheque Drawer"
+                            placeholder=""
+                            id="chequeDrawer"
+                            errors={errors}
+                            register={register}
+                            required={paymentMode == "Cheque"}
+                          />
+                          <p className="text-xs text-red-500 -bottom-4 pl-1">
+                            {errors.chequeDrawer && "Cheque drawer is required"}
+                          </p>
+                        </div>
+                      </>
+                    )}
                     <div className="col-span-2">
                       <InputRow
                         label="Remark"
@@ -220,7 +261,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
                   <Button
                     color="bg-blue-700"
                     height="py-2"
-                    //   disabled={contractLoading || updateContractLoading}
+                    disabled={generateInvoiceLoading || updateInvoiceLoading}
                     label={
                       invoiceDetails ? "Update Invoice" : "Generate Proforma"
                     }
@@ -232,7 +273,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
                     <Button
                       color="bg-green-700"
                       height="py-2"
-                      //   disabled={contractLoading || updateContractLoading}
+                      disabled={contractLoading || updateContractLoading}
                       label="Generate Tax"
                       width="w-32"
                       type="submit"

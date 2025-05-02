@@ -26,9 +26,11 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
         paymentDate: invoice?.paymentDate
           ? new Date(invoice?.paymentDate).toISOString().slice(0, 10)
           : "",
-        paymentRefernce: invoice.paymentRefernce,
+        paymentRefernce: invoice?.paymentRefernce,
         remark: invoice.remark,
         gstNo: invoice.bill.gstNo,
+        chequeBank: invoice?.chequeBank,
+        chequeDrawer: invoice?.chequeDrawer,
       })
     );
     setOpen(true);

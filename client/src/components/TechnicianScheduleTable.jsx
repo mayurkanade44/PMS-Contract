@@ -38,14 +38,18 @@ const TechnicianScheduleTable = () => {
 
   const handleDate = (date) => {
     let currentDate = new Date();
-    if(date === 'today'){
-      setDate(formatDate(currentDate))
-    } else if (date === "nextDay"){
+    if (date === "today") {
+      setDate(formatDate(currentDate));
+    } else if (date === "nextDay") {
       let nextDay = new Date(currentDate);
       nextDay.setDate(currentDate.getDate() + 1);
-      setDate(formatDate(nextDay))
+      setDate(formatDate(nextDay));
+    } else if (date === "yesterday") {
+      let yesterday = new Date(currentDate);
+      yesterday.setDate(currentDate.getDate() - 1);
+      setDate(formatDate(yesterday));
     }
-  }
+  };
 
   return (
     <div>
@@ -54,7 +58,7 @@ const TechnicianScheduleTable = () => {
       ) : (
         error && <AlertMessage>{error?.data?.msg || error.error}</AlertMessage>
       )}
-      <div className="grid grid-cols-2 gap-x-5">
+      <div className="grid grid-cols-3 gap-x-5">
         <div>
           <Button
             label="Todays Schedule"
@@ -68,6 +72,14 @@ const TechnicianScheduleTable = () => {
             label="Tomorrow Schedule"
             width="w-full"
             handleClick={() => handleDate("nextDay")}
+          />
+        </div>
+        <div>
+          <Button
+            label="Yesterdays Schedule"
+            width="w-full"
+            color="bg-red-600"
+            handleClick={() => handleDate("yesterday")}
           />
         </div>
       </div>

@@ -7,7 +7,7 @@ import Modal from "./Modal";
 const CancelInvoiceModal = ({ invoiceId }) => {
   const [reason, setReason] = useState("");
   const [open, setOpen] = useState(false);
-  const [cancelInvoice, isLoading] = useCancelInvoiceMutation();
+  const [cancelInvoice, { isLoading }] = useCancelInvoiceMutation();
 
   const handleCancel = async (e) => {
     e.preventDefault();
@@ -62,7 +62,7 @@ const CancelInvoiceModal = ({ invoiceId }) => {
             </button>
             <button
               onClick={() => setOpen(false)}
-              type="submit"
+              type="button"
               className="btn bg-gray-200 w-full rounded-md text-dark py-1 font-semibold cursor-pointer h-8"
               disabled={isLoading}
             >
