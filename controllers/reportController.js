@@ -618,12 +618,16 @@ export const monthlyInvoicesToBeGeneratedReport = async (req, res) => {
       return res.status(400).json({ msg: "Month is required" });
     }
 
+    console.log(req.body.month);
+
     const month = moment(req.body.month).format("MMM YY");
     console.log(month);
 
     const invoices = await Bill.find({
       billingMonths: { $in: [month] },
     });
+
+    console.log(invoices.length);
 
     if (!invoices.length)
       return res
@@ -666,15 +670,15 @@ export const monthlyInvoicesToBeGeneratedReport = async (req, res) => {
         contractAmount: invoice.contractAmount.total,
         invoiceAmount: invoice.invoiceAmount.total,
       });
-
-      const filePath = `./tmp/monthlyInvoicesToBeGenerated.xlsx`;
-      await workbook.xlsx.writeFile(filePath);
-
-      const link = await uploadFile({ filePath, folder: "reports" });
-      if (!link) return res.status(400).json({ msg: "File generation error" });
-
-      return res.status(200).json({ link });
     }
+
+    const filePath = `./tmp/monthlyInvoicesToBeGenerated.xlsx`;
+    await workbook.xlsx.writeFile(filePath);
+
+    const link = await uploadFile({ filePath, folder: "reports" });
+    if (!link) return res.status(400).json({ msg: "File generation error" });
+
+    return res.status(200).json({ link });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

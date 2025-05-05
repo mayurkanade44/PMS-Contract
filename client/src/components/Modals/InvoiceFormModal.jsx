@@ -18,8 +18,6 @@ import {
 import Modal from "./Modal";
 import moment from "moment";
 const InvoiceFormModal = ({ open, setOpen }) => {
-  const [tax, setTax] = useState(false);
-
   const dispatch = useDispatch();
   const { invoiceDetails, billDetails: bill } = useSelector(
     (store) => store.all
@@ -58,14 +56,18 @@ const InvoiceFormModal = ({ open, setOpen }) => {
   const submit = async (data) => {
     console.log(data);
 
+    data.tax = false;
     if (bill) {
-      if (tax && !bill?.gstNo && !data.gstNo) {
+      if (data.type == "PMS Tax" && !bill?.gstNo && !data.gstNo) {
         toast.error("Please provide GST number");
         return;
       }
       data.billNo = bill?.number;
       data.bill = bill._id;
-      data.tax = tax;
+      data.tax = data.type == "PMS Tax" ? true : false;
+    } else {
+      toast.error("Bill is requried to generate invoice");
+      return;
     }
 
     data.month = moment(data.month).format("MMM YY");
@@ -128,7 +130,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
                         options={billingTypes.slice(1)}
                         onChange={onChange}
                         value={value}
-                        label="Billing Type"
+                        label="Invoice Type"
                       />
                     )}
                   />
@@ -199,8 +201,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
                         required={paymentMode == "Cheque"}
                       />
                       <p className="text-xs text-red-500 -bottom-4 pl-1">
-                        {errors.paymentRefernce &&
-                          "Cheque no is required"}
+                        {errors.paymentRefernce && "Cheque no is required"}
                       </p>
                     </div>
                     {paymentMode == "Cheque" && (
@@ -257,29 +258,17 @@ const InvoiceFormModal = ({ open, setOpen }) => {
                     />
                   </div>
                 )}
-                <div className="col-span-2 flex justify-between mt-4">
+                <div className="col-span-2 flex justify-center mt-4">
                   <Button
                     color="bg-blue-700"
                     height="py-2"
                     disabled={generateInvoiceLoading || updateInvoiceLoading}
                     label={
-                      invoiceDetails ? "Update Invoice" : "Generate Proforma"
+                      invoiceDetails ? "Update Invoice" : "Generate Invoice"
                     }
                     width="w-40"
                     type="submit"
-                    handleClick={() => setTax(false)}
                   />
-                  {!invoiceDetails && (
-                    <Button
-                      color="bg-green-700"
-                      height="py-2"
-                      disabled={contractLoading || updateContractLoading}
-                      label="Generate Tax"
-                      width="w-32"
-                      type="submit"
-                      handleClick={() => setTax(true)}
-                    />
-                  )}
                 </div>
               </div>
             </form>

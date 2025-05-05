@@ -4,6 +4,7 @@ const InvoiceSchema = new mongoose.Schema(
   {
     number: { type: String, required: true },
     type: { type: String, required: true },
+    tax: { type: Boolean, default: false },
     billNo: { type: String, required: true },
     paymentStatus: { type: String, required: true },
     paymentMode: { type: String },

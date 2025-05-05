@@ -9,6 +9,7 @@ import Button from "./Button";
 import InputSelect from "./InputSelect";
 import Modal from "./Modals/Modal";
 import { saveAs } from "file-saver";
+import Loading from "./Loading";
 
 const InvoiceStatsCard = () => {
   const [open, setOpen] = useState(false);

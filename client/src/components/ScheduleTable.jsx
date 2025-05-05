@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { setScheduleDetails } from "../redux/allSlice";
 import { dateFormat } from "../utils/functionHelper";
 
-const ScheduleTable = ({ schedules, setOpen }) => {
+const ScheduleTable = ({ schedules, setOpen, page }) => {
   const dispatch = useDispatch();
 
   const handleEditModal = (schedule) => {
@@ -48,6 +48,7 @@ const ScheduleTable = ({ schedules, setOpen }) => {
       <table className="min-w-full bg-white rounded">
         <thead>
           <tr className="w-full h-12 border-gray-300 border-b py-10 bg-indigo-100 ">
+            <th className="font-semibold whitespace-nowrap px-1 text-sm">No</th>
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
               Contract No
             </th>
@@ -91,11 +92,14 @@ const ScheduleTable = ({ schedules, setOpen }) => {
           </tr>
         </thead>
         <tbody>
-          {schedules?.map((schedule) => (
+          {schedules?.map((schedule, i) => (
             <tr
               key={schedule._id}
               className="h-20 text-[12px] border-gray-300 border-t border-b hover:border-indigo-300 hover:shadow-md transition duration-150 ease-in-out hover:cursor-default"
             >
+              <td className="text-center whitespace-no-wrap text-gray-800 px-2 border-r">
+                {i + 1 + (page - 1) * 20}
+              </td>
               <td
                 onClick={() => handleEditModal(schedule)}
                 className="text-center whitespace-no-wrap text-gray-800 px-2 border-r hover:cursor-pointer hover:text-blue-600 hover:font-semibold hover:bg-orange-100"
@@ -152,7 +156,9 @@ const ScheduleTable = ({ schedules, setOpen }) => {
                     schedule.assistantTechnician
                   : schedule.technician?.name}
               </td>
-              <td className="text-gray-800 px-1 whitespace-no-wrap ">{schedule.remark}</td>
+              <td className="text-gray-800 px-1 whitespace-no-wrap ">
+                {schedule.remark}
+              </td>
             </tr>
           ))}
         </tbody>

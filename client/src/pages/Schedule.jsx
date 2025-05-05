@@ -223,8 +223,8 @@ const Schedule = () => {
           </div>
           <ScheduleTable
             schedules={data?.schedules}
-            isLoading={schedulesLoading}
             setOpen={setOpen}
+            page={page}
           />
         </div>
         <div className="mx-auto container pt-6 flex justify-center items-center">

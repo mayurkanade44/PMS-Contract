@@ -207,9 +207,11 @@ export const pincodeOptions = [
 
 export const billingTypes = [
   { value: "all", label: "All" },
-  { value: "PMS", label: "PMS" },
+  { value: "PMS", label: "PMS Proforma" },
+  { value: "PMS Tax", label: "PMS Tax" },
   { value: "MK", label: "MK" },
 ];
+
 
 export const paymentStatus = [
   { value: "all", label: "All" },

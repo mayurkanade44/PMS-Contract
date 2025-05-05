@@ -63,7 +63,7 @@ export const createInvoice = async (req, res) => {
   const { id } = req.params;
   let session = null;
   req.body.createdBy = req.user.name;
-  console.log(typeof req.body.month);
+  console.log(req.body);
 
   try {
     // Start session
@@ -298,7 +298,16 @@ export const getAllInvoices = async (req, res) => {
     };
   }
   if (billType && billType != "all") {
-    query.type = billType;
+    if (billType === "PMS") {
+      query.type = billType;
+      query.tax = false;
+    } else if (billType === "PMS Tax") {
+      query.type = billType;
+      query.tax = true;
+    } else {
+      query.type = billType;
+      query.tax = false;
+    }
   }
   if (paymentStatus && paymentStatus != "all") {
     query.paymentStatus = paymentStatus;

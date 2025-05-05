@@ -131,7 +131,7 @@ const Invoice = () => {
           </div>
           <div className="">
             <label className="text-sm font-medium text-gray-900 pl-1">
-              Bill Type
+              Invoice Type
             </label>
             <Select
               defaultValue={billType}
