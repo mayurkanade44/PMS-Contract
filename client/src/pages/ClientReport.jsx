@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useGetClientReportQuery } from "../redux/reportSlice";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button, ClientScheduleForm, Loading } from "../components";
 import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import logo from "../assets/logo.jpg";
+import { Button, ClientScheduleForm, Loading } from "../components";
+import { useGetClientReportQuery } from "../redux/reportSlice";
 import { dateFormat } from "../utils/functionHelper";
 
 const ClientReport = () => {

@@ -1,9 +1,8 @@
+import { saveAs } from "file-saver";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import {
-  useDeactiveContractMutation,
-  useGetSingleContractQuery,
-} from "../redux/contractSlice";
-import { useDeleteContractMutation } from "../redux/adminSlice";
+import { toast } from "react-toastify";
 import {
   AlertMessage,
   Button,
@@ -11,13 +10,13 @@ import {
   Loading,
   ServiceTable,
 } from "../components";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { default as DeactiveModal, default as DeleteModal } from "../components/Modals/DeleteModal";
+import { useDeleteContractMutation } from "../redux/adminSlice";
 import { setContractDetails } from "../redux/allSlice";
-import { toast } from "react-toastify";
-import DeleteModal from "../components/Modals/DeleteModal";
-import DeactiveModal from "../components/Modals/DeleteModal";
-import { saveAs } from "file-saver";
+import {
+  useDeactiveContractMutation,
+  useGetSingleContractQuery,
+} from "../redux/contractSlice";
 
 import { useGenerateReportMutation } from "../redux/reportSlice";
 

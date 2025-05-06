@@ -1,16 +1,16 @@
+import { useState } from "react";
+import { AiOutlineClose, AiOutlineSearch } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AlertMessage,
   Button,
   Loading,
   TechnicianScheduleTable,
 } from "../components";
-import { AiOutlineSearch, AiOutlineClose } from "react-icons/ai";
-import { Link, useNavigate } from "react-router-dom";
-import { useGetAllContractsQuery } from "../redux/contractSlice";
-import { useState } from "react";
-import { dateFormat } from "../utils/functionHelper";
-import { useDispatch, useSelector } from "react-redux";
 import { removeContractDetails } from "../redux/allSlice";
+import { useGetAllContractsQuery } from "../redux/contractSlice";
+import { dateFormat } from "../utils/functionHelper";
 
 const Home = () => {
   const [search, setSearch] = useState("");

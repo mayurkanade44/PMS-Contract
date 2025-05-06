@@ -1,18 +1,18 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useSingleCardQuery } from "../redux/serviceSlice";
-import { useForm, Controller } from "react-hook-form";
-import {
-  InputSelect,
-  InputRow,
-  Button,
-  Loading,
-  AlertMessage,
-} from "../components";
-import { toast } from "react-toastify";
-import { serviceStatus, serviceType } from "../utils/dataHelper";
 import { useState } from "react";
-import { useAddReportDataMutation } from "../redux/reportSlice";
+import { Controller, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  AlertMessage,
+  Button,
+  InputRow,
+  InputSelect,
+  Loading,
+} from "../components";
 import { useGetAllValuesQuery } from "../redux/contractSlice";
+import { useAddReportDataMutation } from "../redux/reportSlice";
+import { useSingleCardQuery } from "../redux/serviceSlice";
+import { serviceStatus, serviceType } from "../utils/dataHelper";
 
 const ServiceCard = () => {
   const [images, setImages] = useState([]);

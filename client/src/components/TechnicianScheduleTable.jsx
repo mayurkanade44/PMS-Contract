@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { useGetTechnicianSchedulesQuery } from "../redux/scheduleSlice";
-import AlertMessage from "./AlertMessage";
-import Loading from "./Loading";
-import Button from "./Button";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useGetTechnicianSchedulesQuery } from "../redux/scheduleSlice";
 import { dateFormat, formatDate, todaysDate } from "../utils/functionHelper";
+import AlertMessage from "./AlertMessage";
+import Button from "./Button";
+import Loading from "./Loading";
 
 const TechnicianScheduleTable = () => {
   const [date, setDate] = useState(todaysDate());

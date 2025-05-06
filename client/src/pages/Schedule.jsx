@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { AiOutlineSearch } from "react-icons/ai";
 import Select from "react-select";
 import { AlertMessage, Button, Loading, ScheduleTable } from "../components";
+import ScheduleFormModal from "../components/Modals/ScheduleFormModal";
+import SearchClientModal from "../components/Modals/SearchClientModal";
 import {
   useGetAllSchedulesQuery,
   useGetAllTechniciansQuery,
@@ -12,9 +15,6 @@ import {
   serviceTypeOptions,
   timeSlot,
 } from "../utils/dataHelper";
-import { AiOutlineSearch } from "react-icons/ai";
-import SearchClientModal from "../components/Modals/SearchClientModal";
-import ScheduleFormModal from "../components/Modals/ScheduleFormModal";
 
 const Schedule = () => {
   const [scheduleType, setScheduleType] = useState({

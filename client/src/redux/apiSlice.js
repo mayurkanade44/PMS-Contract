@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { removeCredentials } from "./allSlice";
 import { toast } from "react-toastify";
+import { removeCredentials } from "./allSlice";
 
 const baseQuery = fetchBaseQuery({ baseUrl: "/" });
 const authBaseQuery = async (args, api, extraOptions) => {

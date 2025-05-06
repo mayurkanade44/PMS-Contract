@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { setInvoiceDetails } from "../redux/allSlice";
 import { dateFormat } from "../utils/functionHelper";
 import CancelInvoiceModal from "./Modals/CancelInvoiceModal";
-import moment from "moment";
+
 const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
   const dispatch = useDispatch();
 

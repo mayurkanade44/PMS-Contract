@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { useParams, Link } from "react-router-dom";
-import { allFrequency } from "../utils/dataHelper";
+import { Controller, useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import Select from "react-select";
+import { toast } from "react-toastify";
 import {
   AlertMessage,
   Button,
@@ -9,22 +11,20 @@ import {
   InputSelect,
   Loading,
 } from "../components";
-import Select from "react-select";
+import DeleteModal from "../components/Modals/DeleteModal";
+import { useDeleteCardMutation } from "../redux/adminSlice";
+import {
+  useGetAllValuesQuery,
+  useGetSingleContractQuery,
+} from "../redux/contractSlice";
 import {
   useAddCardMutation,
   useDigitalContractMutation,
   useSendContractMutation,
   useUpdateCardMutation,
 } from "../redux/serviceSlice";
-import { useDeleteCardMutation } from "../redux/adminSlice";
-import { toast } from "react-toastify";
-import {
-  useGetAllValuesQuery,
-  useGetSingleContractQuery,
-} from "../redux/contractSlice";
-import DeleteModal from "../components/Modals/DeleteModal";
+import { allFrequency } from "../utils/dataHelper";
 import { dateFormat } from "../utils/functionHelper";
-import { useSelector } from "react-redux";
 
 const NewServiceCard = () => {
   const [selectedOption, setSelectedOption] = useState([]);

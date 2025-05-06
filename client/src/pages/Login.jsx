@@ -1,12 +1,12 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useLoginMutation } from "../redux/userSlice";
+import { AiFillUnlock } from "react-icons/ai";
+import { HiMail } from "react-icons/hi";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { setCredentials } from "../redux/allSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { HiMail } from "react-icons/hi";
-import { AiFillUnlock } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useLoginMutation } from "../redux/userSlice";
 
 const Login = () => {
   const [login, { isLoading }] = useLoginMutation();

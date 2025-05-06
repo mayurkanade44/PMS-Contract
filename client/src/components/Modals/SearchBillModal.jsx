@@ -5,8 +5,8 @@ import Button from "../Button";
 import Modal from "./Modal";
 
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import Loading from "../Loading";
 import { useSearchBillQuery } from "../../redux/billingSlice";
+import Loading from "../Loading";
 
 const SearchBillModal = ({ open, close, setOpen }) => {
   const dispatch = useDispatch();

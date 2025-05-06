@@ -1,26 +1,25 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { AiOutlineSearch } from "react-icons/ai";
+import Select from "react-select";
+import {
+  AlertMessage,
+  Button,
+  InvoiceStatsCard,
+  InvoiceTable,
+  Loading,
+  SearchBillModal,
+} from "../components";
+import InvoiceFormModal from "../components/Modals/InvoiceFormModal";
 import {
   useGetAllInvoicesQuery,
   useGetMonthlyInvoiceStatsQuery,
 } from "../redux/billingSlice";
 import {
-  AlertMessage,
-  Button,
-  Loading,
-  InvoiceTable,
-  SearchBillModal,
-  InvoiceStatsCard,
-} from "../components";
-import { AiOutlineSearch } from "react-icons/ai";
-import Select from "react-select";
-import {
   billingTypes,
-  paymentTerms,
-  paymentStatus,
-  paymentModes,
   cancelStatus,
+  paymentModes,
+  paymentStatus
 } from "../utils/dataHelper";
-import InvoiceFormModal from "../components/Modals/InvoiceFormModal";
 
 const Invoice = () => {
   const [tempSearch, setTempSearch] = useState("");
