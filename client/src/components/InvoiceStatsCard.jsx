@@ -1,5 +1,4 @@
 import { saveAs } from "file-saver";
-import moment from "moment";
 import { useState } from "react";
 import { FaFileInvoiceDollar } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -12,7 +11,7 @@ import Modal from "./Modals/Modal";
 
 const InvoiceStatsCard = () => {
   const [open, setOpen] = useState(false);
-  const [month, setMonth] = useState(moment().format("YYYY-MM"));
+  const [month, setMonth] = useState();
   const [report, setReport] = useState("invoiceToGenerate");
 
   const { data: monthlyStats, isLoading } = useGetMonthlyInvoiceStatsQuery();
@@ -37,7 +36,6 @@ const InvoiceStatsCard = () => {
         if (res.link) saveAs(res.link, `${month}_Invoices_To_Generate`);
         toast.success("Reports generated successfully");
         setOpen(false);
-        setMonth(moment().format("YYYY-MM"));
         setReport("invoiceToGenerate");
       }
     } catch (error) {

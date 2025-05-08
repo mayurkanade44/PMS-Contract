@@ -1,5 +1,4 @@
 import { saveAs } from "file-saver";
-import moment from "moment";
 import { Controller, useForm } from "react-hook-form";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -52,6 +51,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
 
   let paymentSts = watch("paymentStatus");
   let paymentMode = watch("paymentMode");
+
   const submit = async (data) => {
     console.log(data);
 
@@ -64,12 +64,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
       data.billNo = bill?.number;
       data.bill = bill._id;
       data.tax = data.type == "PMS Tax" ? true : false;
-    } else {
-      toast.error("Bill is requried to generate invoice");
-      return;
     }
-
-    data.month = moment(data.month).format("MMM YY");
 
     try {
       let res;

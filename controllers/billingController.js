@@ -63,6 +63,7 @@ export const createInvoice = async (req, res) => {
   const { id } = req.params;
   let session = null;
   req.body.createdBy = req.user.name;
+  req.body.month = moment(req.body.month).format("MMM YY");
   console.log(req.body);
 
   try {
