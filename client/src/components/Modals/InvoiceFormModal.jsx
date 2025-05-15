@@ -105,7 +105,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
           >
             <div className="flex justify-around mb-4">
               <h4 className="text-center text-xl font-semibold">
-                Add Invoice Details
+                Invoice Details
               </h4>
               <IoMdCloseCircleOutline
                 className="w-6 h-6 text-red-500 mt-1 hover:cursor-pointer"

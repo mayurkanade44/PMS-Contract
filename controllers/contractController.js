@@ -112,7 +112,7 @@ export const deactiveContract = async (req, res) => {
 };
 
 export const getAllContracts = async (req, res) => {
-  const { search, page } = req.query;
+  const { search, page, date } = req.query;
   let query = {};
   if (search) {
     query = {
@@ -133,6 +133,11 @@ export const getAllContracts = async (req, res) => {
       ],
     };
   }
+  if (date) {
+    const startDate = moment(date).startOf("day").toDate();
+    const endDate = moment(date).endOf("day").toDate();
+    query.createdAt = { $gte: startDate, $lte: endDate };
+}
   try {
     let pageNumber = Number(page) || 1;
 

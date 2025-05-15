@@ -76,11 +76,14 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
               Payement Status
             </th>
-            <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
+            <th className="font-semibold w-16 whitespace-nowrap px-2 text-center text-sm">
               Payement Mode
             </th>
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
               Payement Date
+            </th>
+            <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
+              Remark
             </th>
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
               Sales Person
@@ -128,11 +131,14 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
               <td className="text-gray-800 px-2 border-r text-center">
                 {progress(invoice.paymentStatus)}
               </td>
-              <td className="text-gray-800 px-2 border-r text-center">
+              <td className="text-gray-800 w-16 px-2 border-r text-center">
                 {invoice.paymentMode}
               </td>
               <td className="text-gray-800 px-2 border-r text-center">
                 {invoice.paymentDate ? dateFormat(invoice?.paymentDate) : "N/A"}
+              </td>
+              <td className="text-gray-800 px-2 border-r text-center">
+                {invoice.remark}
               </td>
               <td className="text-gray-800 px-2 border-r text-center">
                 {invoice.bill.contractDetails.sales}

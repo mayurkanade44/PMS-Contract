@@ -323,15 +323,15 @@ export const createInvoiceDoc = async ({ bill, invoice, type }) => {
         shipTo: bill.shipToDetails,
         services: bill.serviceDetails,
         basic: formatToINR(bill.invoiceAmount.basic),
-        gst: invoice.type == "PMS" ? formatToINR(bill.invoiceAmount.cgst) : 0,
+        gst: invoice.type !== "MK" ? formatToINR(bill.invoiceAmount.cgst) : 0,
         gstTotal:
-          invoice.type == "PMS" ? formatToINR(bill.invoiceAmount.gst) : 0,
+          invoice.type !== "MK" ? formatToINR(bill.invoiceAmount.gst) : 0,
         total:
-          invoice.type == "PMS"
+          invoice.type !== "MK"
             ? formatToINR(bill.invoiceAmount.total)
             : formatToINR(bill.invoiceAmount.basic),
         amountWords:
-          invoice.type == "PMS"
+          invoice.type !== "MK"
             ? numberToWords(bill.invoiceAmount.total)
             : numberToWords(bill.invoiceAmount.basic),
       },

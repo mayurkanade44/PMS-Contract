@@ -6,7 +6,6 @@ import Report from "../models/reportModel.js";
 import Service from "../models/serviceModel.js";
 import Schedule from "../models/scheduleModel.js";
 import Bill from "../models/billingModel.js";
-import Invoice from "../models/invoiceModel.js";
 import { sendBrevoEmail, uploadFile } from "../utils/helper.js";
 
 export const addServiceData = async (req, res) => {
@@ -570,7 +569,7 @@ export const expireContractsReport = async (req, res) => {
       { header: "Area", key: "area" },
       { header: "Pincode", key: "pincode" },
       { header: "Contact Details", key: "contact" },
-      // { header: "Service Name", key: "service" },
+      { header: "Service Name", key: "service" },
       // { header: "Service Frequency", key: "frequency" },
       { header: "Start Date", key: "start" },
       { header: "End Date", key: "end" },
@@ -579,9 +578,9 @@ export const expireContractsReport = async (req, res) => {
     ];
 
     for (let contract of contracts) {
-      // const services = contract.services.map((item) =>
-      //   item.services.map((ser) => ser.label)
-      // );
+      const services = contract.services
+        .map((item) => item.services.map((i) => i.label).join(", "))
+        .join(", ");
 
       worksheet.addRow({
         contract: contract.contractNo,
@@ -590,7 +589,7 @@ export const expireContractsReport = async (req, res) => {
         area: `${contract.billToDetails.area}`,
         pincode: `${contract.billToDetails.pincode}`,
         contact: `${contract.billToDetails.contact[0].number} / ${contract.billToDetails.contact[0].email}`,
-        // service: services,
+        service: services,
         // frequency: contract.services.map((item) => item.frequency),
         start: moment(contract.tenure.startDate).format("DD/MM/YY"),
         end: moment(contract.tenure.endDate).format("DD/MM/YY"),

@@ -16,6 +16,7 @@ const Home = () => {
   const [search, setSearch] = useState("");
   const [tempSearch, setTempSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [date, setDate] = useState("");
   const { user } = useSelector((store) => store.all);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,14 +27,19 @@ const Home = () => {
     isFetching,
     error,
   } = useGetAllContractsQuery(
-    { search, page },
+    { search, page, date },
     { skip: user.role == "Technician" }
   );
 
   const handleSearch = (e) => {
     e.preventDefault();
     setSearch(tempSearch);
-    setPage(1)
+    setPage(1);
+  };
+
+  const handleDateChange = (e) => {
+    setDate(e.target.value);
+    setPage(1);
   };
 
   const clearSearch = () => {
@@ -63,29 +69,38 @@ const Home = () => {
                 <p className=" text-center  lg:text-2xl font-bold leading-normal text-gray-800">
                   All Contracts
                 </p>
-                <form onSubmit={handleSearch} className="flex items-center">
-                  <div className="flex items-center px-1 bg-white border md:w-52 lg:w-80 rounded border-gray-300 mr-3">
-                    <AiOutlineSearch />
-                    <input
-                      type="text"
-                      className="py-1 md:py-1.5 pl-1 w-full focus:outline-none text-sm rounded text-gray-600 placeholder-gray-500"
-                      placeholder="Search..."
-                      value={tempSearch}
-                      onChange={(e) => setTempSearch(e.target.value)}
+                <div className="flex gap-4">
+                  <form onSubmit={handleSearch} className="flex items-center">
+                    <div className="flex items-center px-1 bg-white border md:w-52 lg:w-80 rounded border-gray-300 mr-3">
+                      <AiOutlineSearch />
+                      <input
+                        type="text"
+                        className="py-1 md:py-1.5 pl-1 w-full focus:outline-none text-sm rounded text-gray-600 placeholder-gray-500"
+                        placeholder="Search..."
+                        value={tempSearch}
+                        onChange={(e) => setTempSearch(e.target.value)}
+                      />
+                      {tempSearch && (
+                        <button type="button" onClick={clearSearch}>
+                          <AiOutlineClose color="red" />
+                        </button>
+                      )}
+                    </div>
+                    <Button
+                      type="submit"
+                      label="Search"
+                      color="bg-black"
+                      height="h-8"
                     />
-                    {tempSearch && (
-                      <button type="button" onClick={clearSearch}>
-                        <AiOutlineClose color="red" />
-                      </button>
-                    )}
-                  </div>
-                  <Button
-                    type="submit"
-                    label="Search"
-                    color="bg-black"
-                    height="h-8"
+                  </form>
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={handleDateChange}
+                    className="px-1 w-52 border-2 rounded-md outline-none transition border-neutral-300 focus:border-black"
                   />
-                </form>
+                </div>
+
                 <div className="flex items-end justify-around mt-4 md:mt-0 md:ml-3 lg:ml-0">
                   {user.role !== "Technician" && (
                     <button

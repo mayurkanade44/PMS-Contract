@@ -1,6 +1,7 @@
 import Billing from "../models/billingModel.js";
 import Invoice from "../models/invoiceModel.js";
 import Admin from "../models/adminModel.js";
+import Contract from "../models/contractModel.js";
 import fs from "fs";
 import mongoose from "mongoose";
 import {
@@ -125,6 +126,13 @@ export const createInvoice = async (req, res) => {
     const invoice = await Invoice.create([req.body], { session }).then(
       (docs) => docs[0]
     );
+
+    if (invoice.paymentStatus === "Received") {
+      await Contract.updateOne(
+        { contractNo: bill.contractDetails.number },
+        { $set: { active: true } }
+      ).session(session);
+    }
 
     // Commit the database transaction before doing file operations
     await session.commitTransaction();
@@ -254,7 +262,10 @@ export const updateBillDetails = async (req, res) => {
 export const updateInvoice = async (req, res) => {
   const { id } = req.params;
   try {
-    const invoice = await Invoice.findById(id);
+    const invoice = await Invoice.findById(id).populate({
+      path: "bill",
+      select: "contractDetails",
+    });
     if (!invoice) {
       return res.status(404).json({ msg: "Invoice not found" });
     }
@@ -263,10 +274,21 @@ export const updateInvoice = async (req, res) => {
       return res.status(400).json({ msg: "Invoce type can not be changed" });
     }
 
+    req.body.month = moment(req.body.month).format("MMM YY");
+
     await Invoice.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
     });
+
+    if (req.body.paymentStatus === "Received") {
+      console.log(invoice.paymentStatus);
+
+      await Contract.updateOne(
+        { contractNo: invoice.bill.contractDetails.number },
+        { $set: { active: true } }
+      );
+    }
 
     return res.status(200).json({ msg: "Invoice details updated" });
   } catch (error) {
