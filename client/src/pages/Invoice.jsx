@@ -11,14 +11,13 @@ import {
 } from "../components";
 import InvoiceFormModal from "../components/Modals/InvoiceFormModal";
 import {
-  useGetAllInvoicesQuery,
-  useGetMonthlyInvoiceStatsQuery,
+  useGetAllInvoicesQuery
 } from "../redux/billingSlice";
 import {
   billingTypes,
   cancelStatus,
   paymentModes,
-  paymentStatus
+  paymentStatus,
 } from "../utils/dataHelper";
 
 const Invoice = () => {
@@ -59,9 +58,6 @@ const Invoice = () => {
     isCancelled: isCancelled.value,
     page: page,
   });
-
-  const { data: monthlyStats } = useGetMonthlyInvoiceStatsQuery();
-  console.log(monthlyStats);
 
   useEffect(() => {
     setPage(1);

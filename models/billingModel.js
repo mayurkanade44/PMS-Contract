@@ -57,7 +57,14 @@ const BillingSchema = new mongoose.Schema(
       ref: "Contract",
     },
   },
-  { timestamps: true }
+  { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );
+
+BillingSchema.virtual("invoices", {
+  ref: "Invoice",
+  localField: "_id",
+  foreignField: "bill",
+  justOne: false,
+});
 
 export default mongoose.model("Billing", BillingSchema);

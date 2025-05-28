@@ -85,6 +85,14 @@ export const billingSlice = apiSlice.injectEndpoints({
       }),
       providesTags: ["Bills"],
     }),
+    convertToTaxInvoice: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/api/billing/convert-to-taxinvoice/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Bills"],
+    }),
   }),
 });
 
@@ -98,4 +106,5 @@ export const {
   useSearchBillQuery,
   useCancelInvoiceMutation,
   useGetMonthlyInvoiceStatsQuery,
+  useConvertToTaxInvoiceMutation,
 } = billingSlice;

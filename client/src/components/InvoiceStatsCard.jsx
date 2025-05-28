@@ -3,7 +3,10 @@ import { useState } from "react";
 import { FaFileInvoiceDollar } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useGetMonthlyInvoiceStatsQuery } from "../redux/billingSlice";
-import { useMonthlyInvoicesToBeGeneratedReportMutation } from "../redux/reportSlice";
+import {
+  useMonthlyFullInvoiceReportMutation,
+  useMonthlyInvoicesToBeGeneratedReportMutation,
+} from "../redux/reportSlice";
 import { reportTypes } from "../utils/dataHelper";
 import Button from "./Button";
 import InputSelect from "./InputSelect";
@@ -11,12 +14,14 @@ import Modal from "./Modals/Modal";
 
 const InvoiceStatsCard = () => {
   const [open, setOpen] = useState(false);
-  const [month, setMonth] = useState();
+  const [month, setMonth] = useState("");
   const [report, setReport] = useState("invoiceToGenerate");
 
   const { data: monthlyStats, isLoading } = useGetMonthlyInvoiceStatsQuery();
   const [invoicesToGenerate, { isLoading: invoicesToGenerateLoading }] =
     useMonthlyInvoicesToBeGeneratedReportMutation();
+  const [monthlyInvoiceReport, { isLoading: monthlyInvoiceReportLoading }] =
+    useMonthlyFullInvoiceReportMutation();
   const handleClose = () => {
     setOpen(false);
   };
@@ -30,14 +35,18 @@ const InvoiceStatsCard = () => {
     }
 
     try {
+      let res = "";
       if (report === "invoiceToGenerate") {
-        const res = await invoicesToGenerate({ month }).unwrap();
-        console.log(res);
+        res = await invoicesToGenerate({ month }).unwrap();
         if (res.link) saveAs(res.link, `${month}_Invoices_To_Generate`);
-        toast.success("Reports generated successfully");
-        setOpen(false);
-        setReport("invoiceToGenerate");
+      } else if (report === "monthlyInvoice") {
+        res = await monthlyInvoiceReport({ month }).unwrap();
+        if (res.link) saveAs(res.link, `${month}_Full_Invoice_Report`);
       }
+
+      toast.success("Reports generated successfully");
+      setOpen(false);
+      setReport("invoiceToGenerate");
     } catch (error) {
       console.log(error);
       toast.error(error?.data?.msg || error.error);
@@ -171,18 +180,24 @@ const InvoiceStatsCard = () => {
                   <InputSelect
                     options={reportTypes}
                     value={report}
-                    onChange={(e) => setReport(e.target.value)}
+                    onChange={setReport}
                     label="Report Type"
                   />
                 </div>
                 <div className="flex gap-4">
                   <Button
-                    label="Generate"
+                    label={`${
+                      invoicesToGenerateLoading || monthlyInvoiceReportLoading
+                        ? "Generating..."
+                        : "Generate Report"
+                    }`}
                     height="h-10"
                     width="w-full"
                     color="bg-green-500"
                     type="submit"
-                    disabled={invoicesToGenerateLoading}
+                    disabled={
+                      invoicesToGenerateLoading || monthlyInvoiceReportLoading
+                    }
                   />
                   <Button
                     label="Cancel"

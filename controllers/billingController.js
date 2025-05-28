@@ -65,7 +65,6 @@ export const createInvoice = async (req, res) => {
   let session = null;
   req.body.createdBy = req.user.name;
   req.body.month = moment(req.body.month).format("MMM YY");
-  console.log(req.body);
 
   try {
     // Start session
@@ -356,7 +355,7 @@ export const getAllInvoices = async (req, res) => {
       .populate({
         path: "bill",
         select:
-          "invoiceAmount.total contractDetails.sales billToDetails.name gstNo",
+          "invoiceAmount.total invoiceAmount.basic contractDetails.sales billToDetails.name gstNo",
       })
       .sort(sort)
       .skip(10 * (pageNumber - 1))
@@ -379,7 +378,6 @@ export const getAllInvoices = async (req, res) => {
 export const searchBill = async (req, res) => {
   const { search } = req.query;
   try {
-    console.log(search);
     if (!search)
       return res
         .status(400)
@@ -443,8 +441,6 @@ export const getMonthlyInvoiceStats = async (req, res) => {
       .toString()
       .slice(-2)}`;
 
-    console.log(currentMonthString);
-
     const toGenerateCount = await Billing.countDocuments({
       billingMonths: currentMonthString,
     });
@@ -482,6 +478,161 @@ export const getMonthlyInvoiceStats = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching monthly invoice stats:", error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const convertToTaxInvoice = async (req, res) => {
+  const { id } = req.params;
+  let session = null;
+  try {
+    // start session
+    session = await mongoose.startSession();
+    session.startTransaction();
+
+    // Find invoice with session to ensure consistency
+    const invoice = await Invoice.findById(id).session(session);
+    if (!invoice) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ msg: "Billing details not found" });
+    }
+
+    if (invoice.type !== "PMS") {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({
+        msg: "Only PMS performa can be converted to tax invoices",
+      });
+    }
+
+    const bill = await Billing.findById(invoice.bill._id).session(session);
+    if (!bill) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ msg: "Billing details not found" });
+    }
+
+    if (!bill.gstNo && !req.body.gstNo) {
+      await session.abortTransaction();
+      session.endSession();
+      return res
+        .status(400)
+        .json({ msg: "GST number is required for tax invoice" });
+    } else if (!invoice.bill.gstNo && req.body.gstNo) {
+      bill.gstNo = req.body.gstNo;
+      await bill.save({ session });
+    }
+
+    // Get admin with session
+    const adminId = "64fef7fee25b8a61d21a381e";
+    const admin = await Admin.findById(adminId).session(session);
+    if (!admin) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(500).json({ msg: "Admin configuration not found" });
+    }
+
+    let type = "TAX";
+    let number = "";
+    let taxCount = admin.taxCounter + 1;
+    number = `PMST${taxCount}`;
+    admin.taxCounter = taxCount;
+
+    // else {
+    //   const invoiceType = req.body.type;
+    //   if (invoiceType === "MK") {
+    //     const mkCount = admin.mkCounter + 1;
+    //     number = `${invoiceType}P${mkCount}`;
+    //     admin.mkCounter = mkCount;
+    //   } else {
+    //     const proformaCount = admin.proformaCounter + 1;
+    //     number = `${invoiceType}P${proformaCount}`;
+    //     admin.proformaCounter = proformaCount;
+    //   }
+    // }
+
+    // Save admin counters
+    await admin.save({ session });
+
+    // save invoice with session
+    req.body.number = number;
+    req.body.type = "PMS Tax";
+    req.body.tax = true;
+    req.body.month = moment(req.body.month).format("MMM YY");
+
+    const updatedInvoice = await Invoice.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    }).session(session);
+
+    if (invoice.paymentStatus === "Received") {
+      await Contract.updateOne(
+        { contractNo: bill.contractDetails.number },
+        { $set: { active: true } }
+      ).session(session);
+    }
+
+    // Commit the database transaction before doing file operations
+    await session.commitTransaction();
+    session.endSession();
+    session = null; // Mark session as completed
+
+    // Generate document
+    try {
+      const buffer = await createInvoiceDoc({
+        bill,
+        invoice: updatedInvoice,
+        type,
+      });
+
+      const filename = `${updatedInvoice.number} ${bill.billToDetails.name} ${type} Invoice`;
+      const filePath = `./tmp/${filename}.docx`;
+
+      // Ensure the tmp directory exists
+      if (!fs.existsSync("./tmp")) {
+        fs.mkdirSync("./tmp", { recursive: true });
+      }
+      fs.writeFileSync(filePath, buffer);
+
+      // Upload file (outside of transaction)
+      const invoiceUrl = await uploadFile({ filePath, folder: "invoices" });
+      if (!invoiceUrl) {
+        await Invoice.findByIdAndUpdate(invoice._id, { status: "error" });
+        return res.status(400).json({ msg: "Upload error, try again later" });
+      }
+
+      // Update invoice with URL (outside transaction)
+      await Invoice.findByIdAndUpdate(invoice._id, { url: invoiceUrl });
+
+      return res.status(201).json({
+        url: invoiceUrl,
+        name: filename,
+        msg: "Tax Invoice generated",
+      });
+    } catch (fileError) {
+      console.error("File system or upload error:", fileError);
+
+      // The transaction is already committed, so we need to update the invoice
+      await Invoice.findByIdAndUpdate(invoice._id, { status: "error" });
+
+      return res
+        .status(500)
+        .json({ msg: "Error generating or uploading invoice document" });
+    }
+  } catch (error) {
+    console.error("Create invoice error:", error);
+
+    // Only abort transaction if session exists and is active
+    if (session) {
+      try {
+        await session.abortTransaction();
+        session.endSession();
+      } catch (sessionError) {
+        console.error("Session cleanup error:", sessionError);
+      }
+    }
+
     res.status(500).json({ msg: "Server error, try again later" });
   }
 };

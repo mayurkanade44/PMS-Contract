@@ -61,16 +61,16 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
               Invoice Number
             </th>
-            <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
-              Created Date
+            <th className="font-semibold w-20 whitespace-nowrap px-2 text-center text-sm">
+              Created
             </th>
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
               Billing Month
             </th>
-            <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
+            <th className="font-semibold w-40 whitespace-nowrap px-2 text-center text-sm">
               Client Name
             </th>
-            <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
+            <th className="font-semibold w-16 px-2 text-center text-sm">
               Amount
             </th>
             <th className="font-semibold w-24 whitespace-nowrap px-2 text-center text-sm">
@@ -115,18 +115,20 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
               >
                 {invoice.number}
               </td>
-              <td className="text-gray-800 px-2 border-r text-center">
+              <td className="text-gray-800 border-r text-center">
                 {dateFormat(invoice.createdAt)}
               </td>
               <td className="text-gray-800 px-2 border-r text-center">
                 {invoice.month}
               </td>
-              <td className="text-gray-800 px-2 border-r text-center">
+              <td className="text-gray-800 border-r text-center">
                 {invoice.bill.billToDetails.name}
               </td>
 
-              <td className="text-gray-800 px-2 border-r text-center">
-                {invoice.bill.invoiceAmount.total}
+              <td className="text-gray-800 px-1 border-r text-center">
+                {invoice.type !== "MK"
+                  ? invoice.bill.invoiceAmount.total
+                  : invoice.bill.invoiceAmount.basic}
               </td>
               <td className="text-gray-800 px-2 border-r text-center">
                 {progress(invoice.paymentStatus)}
@@ -140,10 +142,10 @@ const InvoiceTable = ({ invoices, isLoading, setOpen }) => {
               <td className="text-gray-800 px-2 border-r text-center">
                 {invoice.remark}
               </td>
-              <td className="text-gray-800 px-2 border-r text-center">
+              <td className="text-gray-800 border-r text-center">
                 {invoice.bill.contractDetails.sales}
               </td>
-              <td className="text-gray-800 px-2 border-r text-center">
+              <td className="text-gray-800 border-r text-center">
                 {invoice.createdBy}
               </td>
               <td className="flex gap-4 mt-2 justify-center items-center">

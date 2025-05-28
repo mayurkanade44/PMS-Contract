@@ -9,6 +9,7 @@ import {
   updateInvoice,
   cancelInvoice,
   getMonthlyInvoiceStats,
+  convertToTaxInvoice,
 } from "../controllers/billingController.js";
 import { authorizeUser } from "../middleware/authMiddleware.js";
 const router = express.Router();
@@ -20,6 +21,11 @@ router.get(
   "/invoice-stats",
   authorizeUser("Admin", "Back Office"),
   getMonthlyInvoiceStats
+);
+router.put(
+  "/convert-to-taxinvoice/:id",
+  authorizeUser("Admin", "Back Office"),
+  convertToTaxInvoice
 );
 router
   .route("/singleBill/:id")

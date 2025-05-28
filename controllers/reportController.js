@@ -6,6 +6,7 @@ import Report from "../models/reportModel.js";
 import Service from "../models/serviceModel.js";
 import Schedule from "../models/scheduleModel.js";
 import Bill from "../models/billingModel.js";
+import Invoice from "../models/invoiceModel.js";
 import { sendBrevoEmail, uploadFile } from "../utils/helper.js";
 
 export const addServiceData = async (req, res) => {
@@ -617,16 +618,10 @@ export const monthlyInvoicesToBeGeneratedReport = async (req, res) => {
       return res.status(400).json({ msg: "Month is required" });
     }
 
-    console.log(req.body.month);
-
     const month = moment(req.body.month).format("MMM YY");
-    console.log(month);
-
     const invoices = await Bill.find({
       billingMonths: { $in: [month] },
-    });
-
-    console.log(invoices.length);
+    }).populate({ path: "invoices", select: "number paymentStatus" });
 
     if (!invoices.length)
       return res
@@ -646,10 +641,21 @@ export const monthlyInvoicesToBeGeneratedReport = async (req, res) => {
       { header: "Sales Person", key: "sales" },
       { header: "Payment Terms", key: "paymentTerms" },
       { header: "Contract Amount With GST", key: "contractAmount" },
-      { header: "Invoice Amount With GST", key: "invoiceAmount" },
+      { header: "Invoice Amount Without GST", key: "invoiceAmount" },
+      { header: "Invoice Amount With GST", key: "invoiceAmountGst" },
+      { header: "Invoice Number", key: "invoiceNumber" },
+      { header: "Payment Status", key: "paymentStatus" },
     ];
 
     for (let invoice of invoices) {
+      let invoiceNumber = "Not Generated",
+        invoiceStatus = "";
+      if (invoice.invoices.length > 0) {
+        invoiceNumber = invoice.invoices[invoice.invoices.length - 1].number;
+        paymentStatus =
+          invoice.invoices[invoice.invoices.length - 1].paymentStatus;
+      }
+
       worksheet.addRow({
         bill: invoice.number,
         contract: invoice.contractDetails.number,
@@ -667,11 +673,116 @@ export const monthlyInvoicesToBeGeneratedReport = async (req, res) => {
         sales: invoice.contractDetails.sales,
         paymentTerms: invoice.paymentTerms,
         contractAmount: invoice.contractAmount.total,
-        invoiceAmount: invoice.invoiceAmount.total,
+        invoiceAmount: invoice.invoiceAmount.basic,
+        invoiceAmountGst: invoice.invoiceAmount.total,
+        invoiceNumber: invoiceNumber,
+        paymentStatus: invoiceStatus,
       });
     }
 
     const filePath = `./tmp/monthlyInvoicesToBeGenerated.xlsx`;
+    await workbook.xlsx.writeFile(filePath);
+
+    const link = await uploadFile({ filePath, folder: "reports" });
+    if (!link) return res.status(400).json({ msg: "File generation error" });
+
+    return res.status(200).json({ link });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const monthlyFullInvoicesReport = async (req, res) => {
+  try {
+    if (req.body.month == "") {
+      return res.status(400).json({ msg: "Month is required" });
+    }
+
+    const month = moment(req.body.month).format("MMM YY");
+
+    const invoices = await Invoice.find({
+      month: month,
+    }).populate("bill");
+
+    if (!invoices.length)
+      return res
+        .status(404)
+        .json({ msg: "No invoices found during given month" });
+
+    const workbook = new exceljs.Workbook();
+    let worksheet = workbook.addWorksheet("Sheet1");
+
+    worksheet.columns = [
+      { header: "Created Date", key: "createdAt" },
+      { header: "Invoice Number", key: "invoice" },
+      { header: "Contract Number", key: "contract" },
+      { header: "Cse Name", key: "sales" },
+      { header: "Client Name", key: "name" },
+      { header: "Service Details", key: "serviceDetails" },
+      { header: "Payment Terms", key: "paymentTerms" },
+      { header: "Billing Months", key: "billingMonths" },
+      { header: "Payment Status", key: "status" },
+      { header: "Payment Mode", key: "mode" },
+      { header: "Payment Date", key: "date" },
+      { header: "Payment Reference No", key: "reference" },
+      { header: "Cheque Details", key: "cheque" },
+      { header: "GST no", key: "gst" },
+      { header: "TDS", key: "tds" },
+      { header: "Gross", key: "basic" },
+      { header: "SGST", key: "sgst" },
+      { header: "CGST", key: "cgst" },
+      { header: "Total Gst", key: "totalGst" },
+      { header: "Total Amount", key: "totalAmount" },
+      { header: "Remark", key: "remark" },
+      { header: "Created By", key: "createdBy" },
+      { header: "Cancelled By", key: "cancelledBy" },
+    ];
+
+    for (let invoice of invoices) {
+      worksheet.addRow({
+        createdAt: moment(invoice.createdAt).format("DD/MM/YYYY"),
+        invoice: invoice.number,
+        contract: invoice.bill.contractDetails.number,
+        sales: invoice.bill.contractDetails.sales,
+        name: invoice.bill.billToDetails.name,
+        serviceDetails: invoice.bill.serviceDetails
+          .map((item) => item.label)
+          .join(", "),
+        paymentTerms: invoice.bill.paymentTerms,
+        billingMonths: invoice.bill.billingMonths.join(", "),
+        status: invoice.paymentStatus,
+        mode: invoice.paymentMode,
+        date:
+          invoice.paymentDate &&
+          moment(invoice.paymentDate).format("DD/MM/YYYY"),
+        reference: invoice.paymentRefernce,
+        cheque: invoice.chequeBank
+          ? `${invoice.chequeBank} / ${invoice.chequeDrawer}`
+          : "",
+
+        gst: invoice.bill.gstNo,
+        tds: invoice.bill.tds,
+        basic: invoice.bill.invoiceAmount.basic,
+        sgst: invoice.type != "MK" ? invoice.bill.invoiceAmount.sgst : "",
+        cgst: invoice.type != "MK" ? invoice.bill.invoiceAmount.cgst : "",
+        totalGst:
+          invoice.type != "MK" ? invoice.bill.invoiceAmount.gst : "",
+        totalAmount:
+          invoice.type != "MK"
+            ? invoice.bill.invoiceAmount.total
+            : invoice.bill.invoiceAmount.basic,
+        remark: invoice.remark,
+        createdBy: invoice.createdBy,
+        cancelledBy: invoice.cancelled.status
+          ? invoice.cancelled.by +
+            " / " +
+            moment(invoice.cancelled.at).format("DD/MM/YYYY")
+          : "",
+      });
+    }
+
+    const filePath = `./tmp/monthlyFullInvoiceReport.xlsx`;
     await workbook.xlsx.writeFile(filePath);
 
     const link = await uploadFile({ filePath, folder: "reports" });

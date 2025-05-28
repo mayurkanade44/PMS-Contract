@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { Button, InputRow, InputSelect, Loading } from "..";
 import { setBillDetails, setInvoiceDetails } from "../../redux/allSlice";
 import {
+  useConvertToTaxInvoiceMutation,
   useGenerateInvoiceMutation,
   useUpdateInvoiceMutation,
 } from "../../redux/billingSlice";
@@ -15,16 +16,22 @@ import {
   paymentStatus,
 } from "../../utils/dataHelper";
 import Modal from "./Modal";
+import { useState } from "react";
+import { set } from "mongoose";
+
 const InvoiceFormModal = ({ open, setOpen }) => {
   const dispatch = useDispatch();
   const { invoiceDetails, billDetails: bill } = useSelector(
     (store) => store.all
   );
+  const [convertToTax, setConvertToTax] = useState(false);
 
   const [generateInvoice, { isLoading: generateInvoiceLoading }] =
     useGenerateInvoiceMutation();
   const [updateInvoice, { isLoading: updateInvoiceLoading }] =
     useUpdateInvoiceMutation();
+  const [convertToTaxInvoice, { isLoading: convertToTaxInvoiceLoading }] =
+    useConvertToTaxInvoiceMutation();
 
   const {
     register,
@@ -71,6 +78,12 @@ const InvoiceFormModal = ({ open, setOpen }) => {
       if (bill) {
         res = await generateInvoice({ id: bill._id, data }).unwrap();
         if (res.url) saveAs(res.url, `${res.name}.docx`);
+      } else if (convertToTax) {
+        res = await convertToTaxInvoice({
+          id: invoiceDetails.id,
+          data,
+        }).unwrap();
+        if (res.url) saveAs(res.url, `${res.name}.docx`);
       } else {
         console.log(data);
         res = await updateInvoice({ id: invoiceDetails.id, data }).unwrap();
@@ -80,6 +93,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
       setOpen(false);
       dispatch(setInvoiceDetails(null));
       dispatch(setBillDetails(null));
+      setConvertToTax(false);
       toast.success(res.msg);
     } catch (error) {
       console.log(error);
@@ -101,7 +115,7 @@ const InvoiceFormModal = ({ open, setOpen }) => {
           <div
             className={`h-[440px] ${
               paymentMode == "Cheque" ? "h-[500px]" : "h-full"
-            } overflow-auto md:w-[320px]`}
+            } overflow-auto md:w-[380px]`}
           >
             <div className="flex justify-around mb-4">
               <h4 className="text-center text-xl font-semibold">
@@ -252,17 +266,36 @@ const InvoiceFormModal = ({ open, setOpen }) => {
                     />
                   </div>
                 )}
-                <div className="col-span-2 flex justify-center mt-4">
+                <div className="col-span-2 flex justify-center mt-4 space-x-2">
                   <Button
                     color="bg-blue-700"
                     height="py-2"
-                    disabled={generateInvoiceLoading || updateInvoiceLoading}
+                    disabled={
+                      generateInvoiceLoading ||
+                      updateInvoiceLoading ||
+                      convertToTaxInvoiceLoading
+                    }
                     label={
                       invoiceDetails ? "Update Invoice" : "Generate Invoice"
                     }
                     width="w-40"
                     type="submit"
                   />
+                  {invoiceDetails?.type == "PMS" && (
+                    <Button
+                      color="bg-green-700"
+                      height="py-2"
+                      disabled={
+                        generateInvoiceLoading ||
+                        updateInvoiceLoading ||
+                        convertToTaxInvoiceLoading
+                      }
+                      label="Convert To Tax Invoice"
+                      width="w-52"
+                      type="submit"
+                      handleClick={() => setConvertToTax(true)}
+                    />
+                  )}
                 </div>
               </div>
             </form>

@@ -269,4 +269,5 @@ export const cancelStatus = [
 
 export const reportTypes = [
   { value: "invoiceToGenerate", label: "Invoices To Generate" },
+  { value: "monthlyInvoice", label: "Full Invoice Report" },
 ];
