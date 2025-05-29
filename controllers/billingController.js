@@ -240,7 +240,6 @@ export const updateBillDetails = async (req, res) => {
     req.body.serviceDetails.map((item) => (item.hsn = 998531));
     req.body.invoiceAmount = calculatedAmount.invoiceAmount;
     req.body.contractAmount = calculatedAmount.contractAmount;
-    console.log(req.body);
 
     req.body.number = `${bill.contractDetails.number} P/${calculatedAmount.duration}`;
 

@@ -212,7 +212,6 @@ export const billingTypes = [
   { value: "MK", label: "MK" },
 ];
 
-
 export const paymentStatus = [
   { value: "all", label: "All" },
   { value: "Received", label: "Received" },
@@ -233,6 +232,7 @@ export const paymentModes = [
 export const paymentTerms = [
   { value: "monthly", label: "Monthly" },
   { value: "quarterly", label: "Quarterly" },
+  { value: "4months", label: "3 Times a year" },
   { value: "6months", label: "6 Months" },
   { value: "fullPayment", label: "Full Payment" },
 ];

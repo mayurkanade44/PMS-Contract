@@ -215,7 +215,8 @@ export const calculateGSTAmount = (amount, frequency, months) => {
 
   if (
     (frequency === "quarterly" && months < 3) ||
-    (frequency === "6months" && months < 6)
+    (frequency === "6months" && months < 6) ||
+    (frequency === "4months" && months < 4)
   ) {
     return { errorMsg: "Please select valid payment terms" };
   }
@@ -224,6 +225,7 @@ export const calculateGSTAmount = (amount, frequency, months) => {
   if (frequency === "monthly") duration = months;
   else if (frequency === "quarterly") duration = months / 3;
   else if (frequency === "6months") duration = months / 6;
+  else if (frequency === "4months") duration = months / 4;
 
   let invoiceBasic = Math.round(Number((Number(basic) / duration).toFixed(2)));
   let invoiceGST = Math.round(Number(((invoiceBasic * 18) / 100).toFixed(2)));
@@ -249,6 +251,7 @@ export const calculateInvoiceAmount = (serviceDetails, frequency, months) => {
   if (frequency == "monthly") duration = months;
   else if (frequency == "quarterly") duration = months / 3;
   else if (frequency == "6months") duration = months / 6;
+  else if (frequency == "4months") duration = months / 4;
 
   invoiceServiceDetails.map(
     (item) =>
@@ -294,6 +297,13 @@ export const billingFrequency = (frequency, tenure) => {
     frequencyMonths = totalMonths / 6;
     while (frequencyMonths > 1) {
       month = moment(month).add(6, "months");
+      billingMonths.push(moment(month).format("MMM YY"));
+      frequencyMonths--;
+    }
+  } else if (frequency == "4months") {
+    frequencyMonths = totalMonths / 4;
+    while (frequencyMonths > 1) {
+      month = moment(month).add(4, "months");
       billingMonths.push(moment(month).format("MMM YY"));
       frequencyMonths--;
     }

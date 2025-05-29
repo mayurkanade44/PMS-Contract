@@ -13,11 +13,7 @@ import {
   useUpdateBillDetailsMutation,
 } from "../redux/billingSlice";
 import { useGetSingleContractQuery } from "../redux/contractSlice";
-import {
-  billingService,
-  paymentTerms,
-  tdsType
-} from "../utils/dataHelper";
+import { billingService, paymentTerms, tdsType } from "../utils/dataHelper";
 
 const NewBilling = () => {
   const { action, id } = useParams();
@@ -86,8 +82,6 @@ const NewBilling = () => {
       },
     },
   });
-
-  
 
   const { fields, append, remove } = useFieldArray({
     name: "serviceDetails",
