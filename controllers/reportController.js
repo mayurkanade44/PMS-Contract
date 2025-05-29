@@ -621,7 +621,7 @@ export const monthlyInvoicesToBeGeneratedReport = async (req, res) => {
     const month = moment(req.body.month).format("MMM YY");
     const invoices = await Bill.find({
       billingMonths: { $in: [month] },
-    }).populate({ path: "invoices", select: "number paymentStatus" });
+    }).populate({ path: "invoices", select: "number paymentStatus cancelled" });
 
     if (!invoices.length)
       return res
@@ -652,8 +652,10 @@ export const monthlyInvoicesToBeGeneratedReport = async (req, res) => {
         invoiceStatus = "";
       if (invoice.invoices.length > 0) {
         invoiceNumber = invoice.invoices[invoice.invoices.length - 1].number;
-        paymentStatus =
-          invoice.invoices[invoice.invoices.length - 1].paymentStatus;
+        invoiceStatus = invoice.invoices[invoice.invoices.length - 1].cancelled
+          .status
+          ? "Cancelled"
+          : invoice.invoices[invoice.invoices.length - 1].paymentStatus;
       }
 
       worksheet.addRow({
@@ -751,7 +753,7 @@ export const monthlyFullInvoicesReport = async (req, res) => {
           .join(", "),
         paymentTerms: invoice.bill.paymentTerms,
         billingMonths: invoice.bill.billingMonths.join(", "),
-        status: invoice.paymentStatus,
+        status: invoice.cancelled.status ? "Cancelled" : invoice.paymentStatus,
         mode: invoice.paymentMode,
         date:
           invoice.paymentDate &&
@@ -766,8 +768,7 @@ export const monthlyFullInvoicesReport = async (req, res) => {
         basic: invoice.bill.invoiceAmount.basic,
         sgst: invoice.type != "MK" ? invoice.bill.invoiceAmount.sgst : "",
         cgst: invoice.type != "MK" ? invoice.bill.invoiceAmount.cgst : "",
-        totalGst:
-          invoice.type != "MK" ? invoice.bill.invoiceAmount.gst : "",
+        totalGst: invoice.type != "MK" ? invoice.bill.invoiceAmount.gst : "",
         totalAmount:
           invoice.type != "MK"
             ? invoice.bill.invoiceAmount.total

@@ -137,7 +137,7 @@ export const getAllContracts = async (req, res) => {
     const startDate = moment(date).startOf("day").toDate();
     const endDate = moment(date).endOf("day").toDate();
     query.createdAt = { $gte: startDate, $lte: endDate };
-}
+  }
   try {
     let pageNumber = Number(page) || 1;
 

@@ -338,13 +338,13 @@ export const getAllInvoices = async (req, res) => {
     query.paymentMode = paymentMode;
   }
   if (month && month != "all") {
-    console.log(moment(month).format("MMM YY"));
-
     query.month = moment(month).format("MMM YY");
   }
 
+  console.log(isCancelled);
+
   if (isCancelled && isCancelled != "all") {
-    query.cancelled.status = isCancelled;
+    query["cancelled.status"] = isCancelled;
   }
 
   let pageNumber = Number(page) || 1;
