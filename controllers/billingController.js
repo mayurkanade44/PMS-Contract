@@ -295,78 +295,227 @@ export const updateInvoice = async (req, res) => {
   }
 };
 
+// export const getAllInvoices = async (req, res) => {
+//   const {
+//     search,
+//     page,
+//     paymentStatus,
+//     billType,
+//     paymentMode,
+//     month,
+//     isCancelled,
+//     sales,
+//   } = req.query;
+
+//   //filtering
+//   let query = {};
+//   let sort = "-createdAt";
+//   if (search) {
+//     query = {
+//       $or: [
+//         { billNo: { $regex: search, $options: "i" } },
+//         { number: { $regex: search, $options: "i" } },
+//         { "bill.billToDetails.name": { $regex: search, $options: "i" } },
+//       ],
+//     };
+//   }
+//   if (billType && billType != "all") {
+//     if (billType === "PMS") {
+//       query.type = billType;
+//       query.tax = false;
+//     } else if (billType === "PMS Tax") {
+//       query.type = billType;
+//       query.tax = true;
+//     } else {
+//       query.type = billType;
+//       query.tax = false;
+//     }
+//   }
+//   if (paymentStatus && paymentStatus != "all") {
+//     query.paymentStatus = paymentStatus;
+//   }
+//   if (paymentMode && paymentMode != "all") {
+//     query.paymentMode = paymentMode;
+//   }
+//   if (month && month != "all") {
+//     query.month = moment(month).format("MMM YY");
+//   }
+
+//   if (isCancelled && isCancelled != "all") {
+//     query["cancelled.status"] = isCancelled;
+//   }
+
+//   let pageNumber = Number(page) || 1;
+//   try {
+//     let count = await Invoice.countDocuments({ ...query });
+
+//     let invoiceQuery = Invoice.find(query);
+
+//     if (sales && sales !== "all") {
+//       invoiceQuery = invoiceQuery.populate({
+//         path: "bill",
+//         match: {
+//           "contractDetails.sales": { $regex: sales, $options: "i" },
+//         },
+//         select:
+//           "invoiceAmount.total invoiceAmount.basic contractDetails.sales billToDetails.name gstNo",
+//       });
+//     } else {
+//       invoiceQuery = invoiceQuery.populate({
+//         path: "bill",
+//         select:
+//           "invoiceAmount.total invoiceAmount.basic contractDetails.sales billToDetails.name gstNo",
+//       });
+//     }
+
+//     // Execute query with pagination
+//     const invoices = await invoiceQuery
+//       .sort(sort)
+//       .skip(10 * (pageNumber - 1))
+//       .limit(10);
+
+//     const filterInvoices = invoices.filter((invoice) => {
+//       return invoice.bill !== null;
+//     });
+
+//     return res.status(200).json({
+//       invoices: filterInvoices,
+//       pages: Math.min(10, Math.ceil(count / 10)),
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ msg: "Server error, try again later" });
+//   }
+// };
+
 export const getAllInvoices = async (req, res) => {
   const {
     search,
-    page,
+    page = 1,
     paymentStatus,
     billType,
     paymentMode,
     month,
     isCancelled,
+    sales,
   } = req.query;
 
-  //filtering
-  let query = {};
-  let sort = "-createdAt";
-  if (search) {
-    query = {
-      $or: [
-        { billNo: { $regex: search, $options: "i" } },
-        { number: { $regex: search, $options: "i" } },
-        { "bill.billToDetails.name": { $regex: search, $options: "i" } },
-      ],
-    };
-  }
-  if (billType && billType != "all") {
-    if (billType === "PMS") {
-      query.type = billType;
-      query.tax = false;
-    } else if (billType === "PMS Tax") {
-      query.type = billType;
-      query.tax = true;
-    } else {
-      query.type = billType;
-      query.tax = false;
-    }
-  }
-  if (paymentStatus && paymentStatus != "all") {
-    query.paymentStatus = paymentStatus;
-  }
-  if (paymentMode && paymentMode != "all") {
-    query.paymentMode = paymentMode;
-  }
-  if (month && month != "all") {
-    query.month = moment(month).format("MMM YY");
-  }
-
-  console.log(isCancelled);
-
-  if (isCancelled && isCancelled != "all") {
-    query["cancelled.status"] = isCancelled;
-  }
-
-  let pageNumber = Number(page) || 1;
   try {
-    const count = await Invoice.countDocuments({ ...query });
+    const pageNumber = Number(page);
+    const limit = 10;
+    const skip = (pageNumber - 1) * limit;
 
-    const invoices = await Invoice.find(query)
-      .populate({
-        path: "bill",
-        select:
-          "invoiceAmount.total invoiceAmount.basic contractDetails.sales billToDetails.name gstNo",
-      })
-      .sort(sort)
-      .skip(10 * (pageNumber - 1))
-      .limit(10);
+    // Build the aggregation pipeline
+    const pipeline = [];
 
-    const filterInvoices = invoices.filter((invoice) => {
-      return invoice.bill !== null;
+    // Lookup to join with billing collection
+    pipeline.push({
+      $lookup: {
+        from: "billings", // The collection name is usually plural and lowercase
+        localField: "bill",
+        foreignField: "_id",
+        as: "billDetails",
+      },
     });
 
+    // Unwind the billDetails array
+    pipeline.push({
+      $unwind: "$billDetails",
+    });
+
+    // Match stage for filtering
+    const matchStage = {};
+
+    if (search) {
+      matchStage.$or = [
+        { billNo: { $regex: search, $options: "i" } },
+        { number: { $regex: search, $options: "i" } },
+        { "billDetails.billToDetails.name": { $regex: search, $options: "i" } },
+      ];
+    }
+
+    if (billType && billType !== "all") {
+      if (billType === "PMS") {
+        matchStage.type = billType;
+        matchStage.tax = false;
+      } else if (billType === "PMS Tax") {
+        matchStage.type = billType;
+        matchStage.tax = true;
+      } else {
+        matchStage.type = billType;
+        matchStage.tax = false;
+      }
+    }
+
+    if (paymentStatus && paymentStatus !== "all") {
+      matchStage.paymentStatus = paymentStatus;
+    }
+
+    if (paymentMode && paymentMode !== "all") {
+      matchStage.paymentMode = paymentMode;
+    }
+
+    if (month && month !== "all") {
+      matchStage.month = moment(month).format("MMM YY");
+    }
+
+    if (isCancelled && isCancelled !== "all") {
+      matchStage["cancelled.status"] = isCancelled === "true";
+    }
+
+    if (sales && sales !== "all") {
+      matchStage["billDetails.contractDetails.sales"] = {
+        $regex: sales,
+        $options: "i",
+      };
+    }
+
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
+
+    // Add count stage for total documents
+    const countPipeline = [...pipeline, { $count: "total" }];
+
+    // Add sorting, skip and limit to main pipeline
+    pipeline.push(
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $project: {
+          _id: 1,
+          number: 1,
+          type: 1,
+          tax: 1,
+          billNo: 1,
+          paymentStatus: 1,
+          paymentMode: 1,
+          month: 1,
+          cancelled: 1,
+          createdAt: 1,
+          bill: {
+            _id: "$billDetails._id",
+            invoiceAmount: "$billDetails.invoiceAmount",
+            contractDetails: "$billDetails.contractDetails",
+            billToDetails: "$billDetails.billToDetails",
+            gstNo: "$billDetails.gstNo",
+          },
+        },
+      }
+    );
+
+    // Execute both pipelines in parallel
+    const [invoices, countResult] = await Promise.all([
+      Invoice.aggregate(pipeline),
+      Invoice.aggregate(countPipeline),
+    ]);
+
+    const total = countResult[0]?.total || 0;
+
     return res.status(200).json({
-      invoices: filterInvoices,
-      pages: Math.min(10, Math.ceil(count / 10)),
+      invoices,
+      pages: Math.min(10, Math.ceil(total / limit)),
     });
   } catch (error) {
     console.log(error);
@@ -420,25 +569,8 @@ export const cancelInvoice = async (req, res) => {
 
 export const getMonthlyInvoiceStats = async (req, res) => {
   try {
-    const now = new Date();
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const currentMonthString = `${monthNames[now.getMonth()]} ${now
-      .getFullYear()
-      .toString()
-      .slice(-2)}`;
+    const { month } = req.query;
+    const currentMonthString = month;
 
     const toGenerateCount = await Billing.countDocuments({
       billingMonths: currentMonthString,
@@ -466,7 +598,6 @@ export const getMonthlyInvoiceStats = async (req, res) => {
       paymentStatus: "Received",
       "cancelled.status": false,
     });
-    console.log(st.length);
 
     return res.status(200).json({
       currentMonth: currentMonthString,

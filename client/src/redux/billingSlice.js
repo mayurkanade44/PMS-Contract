@@ -50,6 +50,7 @@ export const billingSlice = apiSlice.injectEndpoints({
         month,
         isCancelled,
         page,
+        sales,
       }) => ({
         url: `/api/billing`,
         params: {
@@ -60,6 +61,7 @@ export const billingSlice = apiSlice.injectEndpoints({
           month,
           isCancelled,
           page,
+          sales,
         },
       }),
       providesTags: ["Bills"],
@@ -80,8 +82,9 @@ export const billingSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Bills"],
     }),
     getMonthlyInvoiceStats: builder.query({
-      query: () => ({
+      query: ({month}) => ({
         url: `/api/billing/invoice-stats`,
+        params: {month}
       }),
       providesTags: ["Bills"],
     }),

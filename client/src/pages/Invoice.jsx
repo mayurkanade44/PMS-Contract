@@ -10,9 +10,8 @@ import {
   SearchBillModal,
 } from "../components";
 import InvoiceFormModal from "../components/Modals/InvoiceFormModal";
-import {
-  useGetAllInvoicesQuery
-} from "../redux/billingSlice";
+import { useGetAllInvoicesQuery } from "../redux/billingSlice";
+import { useGetAllValuesQuery } from "../redux/contractSlice";
 import {
   billingTypes,
   cancelStatus,
@@ -43,6 +42,12 @@ const Invoice = () => {
     value: "all",
     label: "All",
   });
+  const [sales, setSales] = useState({
+    value: "all",
+    label: "All",
+  });
+
+  const { data: admin, isLoading } = useGetAllValuesQuery();
 
   const {
     data,
@@ -57,11 +62,14 @@ const Invoice = () => {
     month: month,
     isCancelled: isCancelled.value,
     page: page,
+    sales: sales.value,
   });
+
+
 
   useEffect(() => {
     setPage(1);
-  }, [payment, billType, paymentMode, month]);
+  }, [payment, billType, paymentMode, month, sales, isCancelled]);
 
   const pages = Array.from({ length: data?.pages }, (_, index) => index + 1);
 
@@ -99,21 +107,31 @@ const Invoice = () => {
       {open && <InvoiceFormModal open={open} setOpen={setOpen} />}
       <div className="pt-1 pb-5">
         <InvoiceStatsCard />
-        <div className="grid lg:grid-cols-7 gap-3 mb-5">
-          <div className="col-span-1">
-            <div className="w-full relative mb-2 lg:mb-0 lg:mt-6">
-              <div className="absolute text-gray-600 dark:text-gray-400 flex items-center pl-2 h-full">
-                <AiOutlineSearch />
-              </div>
-              <input
-                id="search"
-                className=" text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-7 text-sm border-gray-300 rounded border"
-                placeholder="Refernce / Invoice Number or Clinet Name"
-                value={tempSearch}
-                onChange={handleSearch}
-              />
+        <div className="flex justify-between items-center my-5">
+          <div className="w-80 relative mb-2">
+            <div className="absolute text-gray-600 dark:text-gray-400 flex items-center pl-2 h-full">
+              <AiOutlineSearch />
             </div>
+            <input
+              id="search"
+              className=" text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-7 text-sm border-gray-300 rounded border"
+              placeholder="Refernce / Invoice Number or Clinet Name"
+              value={tempSearch}
+              onChange={handleSearch}
+            />
           </div>
+          <div className="">
+            <Button
+              label="Add Invoice"
+              height="h-8 md:h-10"
+              width="w-32 md:w-40"
+              color="bg-indigo-700"
+              handleClick={() => setOpenSearch(true)}
+            />
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-6 gap-3 mb-5">
           <div className="">
             <label className="text-sm font-medium text-gray-900 pl-1">
               Payment Type
@@ -155,6 +173,21 @@ const Invoice = () => {
             />
           </div>
           <div className="">
+            <label className="text-sm font-medium text-gray-900 pb-1 pl-1">
+              Sales Person
+            </label>
+            <Select
+              defaultValue={sales}
+              onChange={setSales}
+              options={
+                admin?.sales && [
+                  { value: "all", label: "All" },
+                  ...admin?.sales,
+                ]
+              }
+            />
+          </div>
+          <div className="">
             <label className="text-sm font-medium text-gray-900 pl-1">
               Month
             </label>
@@ -163,15 +196,6 @@ const Invoice = () => {
               value={month}
               onChange={(e) => setMonth(e.target.value)}
               className="w-full h-10 rounded-md border-gray-300 border px-2"
-            />
-          </div>
-          <div className="flex flex-col lg:flex-row px-8 pt-4 justify-center items-start lg:items-stretch w-full">
-            <Button
-              label="Add Invoice"
-              height="h-8 md:h-10"
-              width="w-32 md:w-40"
-              color="bg-indigo-700"
-              handleClick={() => setOpenSearch(true)}
             />
           </div>
         </div>
