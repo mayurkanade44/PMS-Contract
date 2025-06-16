@@ -491,6 +491,8 @@ export const getAllInvoices = async (req, res) => {
           billNo: 1,
           paymentStatus: 1,
           paymentMode: 1,
+          paymentDate: 1,
+          url: 1,
           month: 1,
           cancelled: 1,
           createdAt: 1,
